@@ -1,5 +1,12 @@
 ﻿Module Module1
 
+    Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
+
+    Private Enum PlayerMoveResult
+        Blocked
+        Move
+    End Enum
+
     Private Class Coordinate
         Public Property Top As Integer
         Public Property Left As Integer
@@ -13,18 +20,46 @@
         End Sub
 
     End Class
+
+    Private Class Player
+        Public Property CurrentPosition As Coordinate
+        Public Property TargetPosition As Coordinate
+
+
+
+        Public Function MoveAttempt() As PlayerMoveResult
+
+            Dim ReturnValue As PlayerMoveResult
+
+            ' What's in the target position?
+            Dim TargetContents As String = map(TargetPosition.top).Substring(TargetPosition.left, 1)
+
+            Select Case TargetContents
+                Case " "
+                    ReturnValue = PlayerMoveResult.Move
+
+                Case "#"
+                    ReturnValue = PlayerMoveResult.Blocked
+            End Select
+
+            Return ReturnValue
+        End Function
+    End Class
+
+
     Dim map As New List(Of String)
-    Dim PlayerPosition As Coordinate
+    Dim Player1 As Player
 
     Sub Main()
         Console.CursorVisible = False
         Console.WindowWidth = 80
         Console.WindowHeight = 40
+        Console.SetBufferSize(80, 40)
+        Player1 = New Player
+        Player1.CurrentPosition = (New Coordinate(3, 3))
 
 
-
-
-        Using sr As New System.IO.StreamReader("C:\Users\droelands\Documents\Visual Studio 2010\Projects\Glyphica\Glyphica\Map files\testmap1.txt")
+        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap1.txt")
             Dim Line As String = sr.ReadLine
             Do While Line IsNot Nothing
                 map.Add(Line)
@@ -32,9 +67,8 @@
             Loop
         End Using
 
-        PlayerPosition = New Coordinate(3, 3)
         DrawMap()
-        DrawViewportBorder(60, 30)
+        ViewportBorderDraw(60, 30)
 
 
         Dim KeyPress As ConsoleKeyInfo
@@ -43,54 +77,38 @@
             KeyPress = Console.ReadKey
             Select Case KeyPress.Key
                 Case ConsoleKey.DownArrow
-                    targetposition = New Coordinate(PlayerPosition.Top + 1, PlayerPosition.Left)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top + 1, Player1.CurrentPosition.Left)
 
                 Case ConsoleKey.UpArrow
-                    targetposition = New Coordinate(PlayerPosition.Top - 1, PlayerPosition.Left)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top - 1, Player1.CurrentPosition.Left)
 
                 Case ConsoleKey.LeftArrow
-                    targetposition = New Coordinate(PlayerPosition.Top, PlayerPosition.Left - 1)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top, Player1.CurrentPosition.Left - 1)
 
                 Case ConsoleKey.RightArrow
-                    targetposition = New Coordinate(PlayerPosition.Top, PlayerPosition.Left + 1)
-
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top, Player1.CurrentPosition.Left + 1)
             End Select
 
-            ProcessPlayerMove(PlayerPosition, targetposition)
+            MovesProcess()
 
-            DrawMap()
         Loop While KeyPress.Key <> ConsoleKey.X
 
 
 
     End Sub
 
-    Public Sub ProcessPlayerMove(CurrentPosition, TargetPosition)
-        ' What's in the target position?
-        Dim TargetContents As String = map(TargetPosition.top).Substring(TargetPosition.left, 1)
-
-        Dim MoveResult As String = String.Empty
-
-        Select Case TargetContents
-            Case " "
-                MoveResult = "MOVE"
-
-            Case "#"
-                MoveResult = "BLOCKED"
-        End Select
-
-        Select Case MoveResult
-            Case "MOVE"
-                PlayerPosition = TargetPosition
-
-            Case "BLOCKED"
-                '' nothing happens - you can't move here
-        End Select
-
-        If CurrentPosition.top <> TargetPosition.top And CurrentPosition.left <> TargetPosition.left Then
-            playerposition = TargetPosition
+    Public Sub MovesProcess()
+        If Player1.MoveAttempt = PlayerMoveResult.Move Then
+            Player1.CurrentPosition = Player1.TargetPosition
         End If
     End Sub
+
+
+    '  current "position values" are screen and not absolute map positions.
+    '  must fix
+
+
+
 
     Public Sub DrawMap()
         Console.Clear()
@@ -103,25 +121,22 @@
         Console.Write("@")
     End Sub
 
-    Public Sub DrawViewportBorder(Height As Integer, width As Integer)
+    Public Sub ViewportBorderDraw(Height As Integer, width As Integer)
         For x = 0 To Height - 1
-            Console.SetCursorPosition(width, x)
-            Console.Write(Chr(219))
+            SolidBlockDraw(New Coordinate(width, x))
         Next
 
         For y = 0 To width - 1
-            Console.SetCursorPosition(y, y)
-            Console.Write(Chr(219))
+            SolidBlockDraw(New Coordinate(y, Height - 1))
         Next
-
-
-
-
-
-
     End Sub
 
-
+    Private Sub SolidBlockDraw(Position As Coordinate)
+        Dim SOLIDBLOCK As Byte = 219
+        Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {SOLIDBLOCK})(0)
+        Console.SetCursorPosition(Position.Left, Position.Top)
+        Console.Write(c)
+    End Sub
 
 
 
