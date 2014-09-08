@@ -7,22 +7,4 @@
         Move
     End Enum
 
-    Public Function MoveAttempt() As PlayerMoveResult
-
-        Dim ReturnValue As PlayerMoveResult
-
-        ' What's in the target position?
-        Dim TargetContents As String = map(TargetPosition.top).Substring(TargetPosition.left, 1)
-
-        Select Case TargetContents
-            Case " "
-                ReturnValue = PlayerMoveResult.Move
-
-            Case "#"
-                ReturnValue = PlayerMoveResult.Blocked
-        End Select
-
-        Return ReturnValue
-    End Function
-
 End Class
