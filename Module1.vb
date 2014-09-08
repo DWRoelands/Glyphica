@@ -2,55 +2,12 @@
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
 
-    Private Enum PlayerMoveResult
-        Blocked
-        Move
-    End Enum
-
-    Private Class Coordinate
-        Public Property Top As Integer
-        Public Property Left As Integer
-        Public Sub New(InitialTop As Integer, InitalLeft As Integer)
-            Me.Top = InitialTop
-            Me.Left = InitalLeft
-        End Sub
-
-        Public Sub New()
-
-        End Sub
-
-    End Class
-
-    Private Class Player
-        Public Property CurrentPosition As Coordinate
-        Public Property TargetPosition As Coordinate
-
-
-
-        Public Function MoveAttempt() As PlayerMoveResult
-
-            Dim ReturnValue As PlayerMoveResult
-
-            ' What's in the target position?
-            Dim TargetContents As String = map(TargetPosition.top).Substring(TargetPosition.left, 1)
-
-            Select Case TargetContents
-                Case " "
-                    ReturnValue = PlayerMoveResult.Move
-
-                Case "#"
-                    ReturnValue = PlayerMoveResult.Blocked
-            End Select
-
-            Return ReturnValue
-        End Function
-    End Class
 
 
     Dim map As New List(Of String)
     Dim Player1 As Player
 
-    Sub Main()
+    Public Sub Main()
         Console.CursorVisible = False
         Console.WindowWidth = 80
         Console.WindowHeight = 40
@@ -58,7 +15,9 @@
         Player1 = New Player
         Player1.CurrentPosition = (New Coordinate(3, 3))
 
+        Dim vp As New ViewPort(60, 35)
 
+        ' load the amap
         Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap1.txt")
             Dim Line As String = sr.ReadLine
             Do While Line IsNot Nothing
@@ -68,7 +27,7 @@
         End Using
 
         DrawMap()
-        ViewportBorderDraw(60, 30)
+        vp.BorderDraw()
 
 
         Dim KeyPress As ConsoleKeyInfo
@@ -77,16 +36,16 @@
             KeyPress = Console.ReadKey
             Select Case KeyPress.Key
                 Case ConsoleKey.DownArrow
-                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top + 1, Player1.CurrentPosition.Left)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Left, Player1.CurrentPosition.Top + 1)
 
                 Case ConsoleKey.UpArrow
-                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top - 1, Player1.CurrentPosition.Left)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Left, Player1.CurrentPosition.Top - 1)
 
                 Case ConsoleKey.LeftArrow
-                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top, Player1.CurrentPosition.Left - 1)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Left - 1, Player1.CurrentPosition.Top)
 
                 Case ConsoleKey.RightArrow
-                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Top, Player1.CurrentPosition.Left + 1)
+                    Player1.TargetPosition = New Coordinate(Player1.CurrentPosition.Left + 1, Player1.CurrentPosition.Top)
             End Select
 
             MovesProcess()
@@ -98,7 +57,7 @@
     End Sub
 
     Public Sub MovesProcess()
-        If Player1.MoveAttempt = PlayerMoveResult.Move Then
+        If Player1.MoveAttempt() = Player.PlayerMoveResult.Move Then
             Player1.CurrentPosition = Player1.TargetPosition
         End If
     End Sub
@@ -122,21 +81,13 @@
     End Sub
 
     Public Sub ViewportBorderDraw(Height As Integer, width As Integer)
-        For x = 0 To Height - 1
-            SolidBlockDraw(New Coordinate(width, x))
-        Next
-
-        For y = 0 To width - 1
-            SolidBlockDraw(New Coordinate(y, Height - 1))
-        Next
     End Sub
 
-    Private Sub SolidBlockDraw(Position As Coordinate)
-        Dim SOLIDBLOCK As Byte = 219
-        Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {SOLIDBLOCK})(0)
-        Console.SetCursorPosition(Position.Left, Position.Top)
-        Console.Write(c)
-    End Sub
+
+
+
+
+
 
 
 
