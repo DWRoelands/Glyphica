@@ -13,6 +13,7 @@
         Width = ViewPortWidth
     End Sub
 
+
     Public Sub OriginSet(NewOrigin As Coordinate)
         Origin = NewOrigin
     End Sub
@@ -53,19 +54,24 @@
         Next
     End Sub
 
-    Public Function MapTileGet(Location As Coordinate) As String
+    Public Function LocationGet(Location As Coordinate) As String
         Return Map(Location.Top).Substring(Location.Left, 1)
     End Function
 
-    Public Function PlayerMoveProcess(Player1 As Player) As Player.PlayerMoveResult
-        Dim ReturnValue As Player.PlayerMoveResult
-        Dim TargetContents As String = MapTileGet(Player1.TargetPosition)
-        Select Case TargetContents
-            Case " "
-                ReturnValue = Player.PlayerMoveResult.Move
-            Case "#"
-                ReturnValue = Player.PlayerMoveResult.Blocked
-        End Select
-        Return ReturnValue
-    End Function
+    Public Sub LocationClear(Location As Coordinate)
+        Console.SetCursorPosition(Location.Left, Location.Top)
+        Console.Write(" ")
+    End Sub
+
+    Public Sub PlayerDraw(Player1 As Player)
+        Console.SetCursorPosition(Player1.CurrentLocation.Left, Player1.CurrentLocation.Top)
+        Console.Write("@")
+    End Sub
+
+
+
 End Class
+
+
+
+
