@@ -2,29 +2,41 @@
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
 
-    Public Property Height As Integer
-    Public Property Width As Integer
+    Public Property ViewPortHeight As Integer
+    Public Property ViewPortWidth As Integer
     Public Property Origin As New Coordinate  '' this represents the top-left coordinate of the map that is displayed in the viewport
+
+    Public ReadOnly Property MapHeight As Integer
+        Get
+            Return Map.Count
+        End Get
+    End Property
+
+    Public ReadOnly Property MapWidth As Integer
+        Get
+            Return Map(0).Length
+        End Get
+    End Property
 
     Private _HorizontalScrollBorder
     Public ReadOnly Property HorizontalScrollBorder As Integer
         Get
-            Return Width / 5
+            Return ViewPortWidth / 5
         End Get
     End Property
 
     Private _VerticalScrollBorder As Integer
     Public ReadOnly Property VerticalScrollBorder As Integer
         Get
-            Return Height / 5
+            Return ViewPortHeight / 5
         End Get
     End Property
 
     Private Map As List(Of String)
 
-    Public Sub New(ViewPortHeight As Integer, ViewPortWidth As Integer)
-        Height = ViewPortHeight
-        Width = ViewPortWidth
+    Public Sub New(Height As Integer, Width As Integer)
+        ViewPortHeight = Height
+        ViewPortWidth = Width
     End Sub
 
     Public Sub OriginSet(NewOrigin As Coordinate)
@@ -43,12 +55,12 @@
     End Sub
 
     Public Sub BorderDraw()
-        For x = 0 To Height - 1
-            SolidBlockDraw(New Coordinate(Width, x))
+        For x = 0 To ViewPortHeight - 1
+            SolidBlockDraw(New Coordinate(ViewPortWidth, x))
         Next
 
-        For y = 0 To Width - 1
-            SolidBlockDraw(New Coordinate(y, Height - 1))
+        For y = 0 To ViewPortWidth - 1
+            SolidBlockDraw(New Coordinate(y, ViewPortHeight - 1))
         Next
 
     End Sub
@@ -61,9 +73,9 @@
     End Sub
 
     Public Sub MapDraw()
-        For ViewportRow = 0 To Height - 2
+        For ViewportRow = 0 To ViewPortHeight - 2
             Console.SetCursorPosition(0, ViewportRow)
-            Console.Write(Map(ViewportRow + Origin.Top).Substring(Origin.Left, Width))
+            Console.Write(Map(ViewportRow + Origin.Top).Substring(Origin.Left, ViewPortWidth))
         Next
     End Sub
 
@@ -78,21 +90,58 @@
 
     Public Sub PlayerDraw(Player1 As Player)
 
-        If Player1.CurrentLocation.Left >= Origin.Left + Width - VerticalScrollBorder Then
+        If Player1.CurrentLocation.Left >= Origin.Left + ViewPortWidth - VerticalScrollBorder Then
             Debug.WriteLine("right scroll border hit")
-            Origin.Left += (Width / 2)
+
+            ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
+            Dim NewOriginLeft As Integer = Origin.Left + (ViewPortWidth / 2)
+
+            If MapWidth - NewOriginLeft < ViewPortWidth Then
+                Origin.Left = MapWidth - ViewPortWidth
+            Else
+                Origin.Left += (ViewPortWidth / 2)
+            End If
+
             MapDraw()
+
         ElseIf Player1.CurrentLocation.Left <= Origin.Left + VerticalScrollBorder Then
             Debug.WriteLine("left scroll border hit")
-            Origin.Left -= (Width / 2)
+
+            ' If we are too close to the left edge of the map to scroll fully, then scroll just enough
+            Dim NewOriginLeft As Integer = Origin.Left - (ViewPortWidth / 2)
+
+            If NewOriginLeft < 0 Then
+                Origin.Left = 0
+            Else
+                Origin.Left -= (ViewPortWidth / 2)
+            End If
+
             MapDraw()
-        ElseIf Player1.CurrentLocation.Top >= Origin.Top + Height - 1 - HorizontalScrollBorder Then
+
+        ElseIf Player1.CurrentLocation.Top >= Origin.Top + ViewPortHeight - 1 - HorizontalScrollBorder Then
             Debug.WriteLine("bottom scroll border hit")
-            Origin.Top += (Height / 2)
+
+            ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
+            Dim NewOriginTop As Integer = Origin.Top + (ViewPortHeight / 2)
+            If MapHeight - NewOriginTop < ViewPortHeight Then
+                Origin.Top = MapHeight - ViewPortHeight + 1
+            Else
+                Origin.Top += (ViewPortHeight / 2)
+            End If
+
             MapDraw()
+
         ElseIf Player1.CurrentLocation.Top <= Origin.Top + HorizontalScrollBorder Then
             Debug.WriteLine("top scroll border hit")
-            Origin.Top -= (Height / 2)
+
+            ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
+            Dim NewOriginTop As Integer = Origin.Top - (ViewPortHeight / 2)
+            If NewOriginTop < 0 Then
+                Origin.Top = 0
+            Else
+                Origin.Top -= (ViewPortHeight / 2)
+            End If
+
             MapDraw()
         End If
 
