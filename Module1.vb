@@ -2,6 +2,7 @@
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
     Dim Player1 As Player
+    Dim vp As ViewPort
 
     Public Sub Main()
         Console.CursorVisible = False
@@ -10,8 +11,8 @@
         Console.SetBufferSize(80, 40)
         Player1 = New Player
 
-        Dim vp As New ViewPort(30, 30)
-        vp.MapLoad()
+        vp = New ViewPort(30, 30)
+        vp.LevelLoad(1)
         vp.BorderDraw()
         vp.MapDraw()
         vp.OriginSet(New Coordinate(0, 0))
@@ -25,30 +26,66 @@
         Do
             Dim TargetLocation As New Coordinate
             KeyPress = Console.ReadKey(True)
+
             Select Case KeyPress.Key
-                Case ConsoleKey.DownArrow
+                Case ConsoleKey.DownArrow, ConsoleKey.NumPad2
                     TargetLocation = New Coordinate(Player1.CurrentLocation.Left, Player1.CurrentLocation.Top + 1)
 
-                Case ConsoleKey.UpArrow
+                Case ConsoleKey.UpArrow, ConsoleKey.NumPad8
                     TargetLocation = New Coordinate(Player1.CurrentLocation.Left, Player1.CurrentLocation.Top - 1)
 
-                Case ConsoleKey.LeftArrow
+                Case ConsoleKey.LeftArrow, ConsoleKey.NumPad4
                     TargetLocation = New Coordinate(Player1.CurrentLocation.Left - 1, Player1.CurrentLocation.Top)
 
-                Case ConsoleKey.RightArrow
+                Case ConsoleKey.RightArrow, ConsoleKey.NumPad6
                     TargetLocation = New Coordinate(Player1.CurrentLocation.Left + 1, Player1.CurrentLocation.Top)
+
+                Case ConsoleKey.NumPad7
+                    TargetLocation = New Coordinate(Player1.CurrentLocation.Left - 1, Player1.CurrentLocation.Top - 1)
+
+                Case ConsoleKey.NumPad9
+                    TargetLocation = New Coordinate(Player1.CurrentLocation.Left + 1, Player1.CurrentLocation.Top - 1)
+
+                Case ConsoleKey.NumPad1
+                    TargetLocation = New Coordinate(Player1.CurrentLocation.Left - 1, Player1.CurrentLocation.Top + 1)
+
+                Case ConsoleKey.NumPad3
+                    TargetLocation = New Coordinate(Player1.CurrentLocation.Left + 1, Player1.CurrentLocation.Top + 1)
+            End Select
+
+            Select Case KeyPress.KeyChar
+                Case ">"c  '' go down stairs
+                    If vp.LocationGet(Player1.CurrentLocation) = ">" Then
+                        vp.LevelLoad(vp.MapLevel + 1)
+                        vp.MapDraw()
+                        PlayerMove(vp.StairsUpFind())
+                    End If
+
+                Case "<"c  '' go up stairs
+                    If vp.LocationGet(Player1.CurrentLocation) = "<" Then
+                        vp.LevelLoad(vp.MapLevel - 1)
+                        vp.MapDraw()
+                        PlayerMove(vp.StairsDownFind())
+                    End If
+
             End Select
 
             Select Case Player1.MoveProcess(vp.LocationGet(TargetLocation))
                 Case Player.PlayerMoveResult.Move
-                    vp.LocationClear(Player1.CurrentLocation)
-                    Player1.MoveTo(TargetLocation)
-                    vp.PlayerDraw(Player1)
+                    PlayerMove(TargetLocation)
             End Select
 
         Loop While KeyPress.Key <> ConsoleKey.X
 
     End Sub
+
+    Public Sub PlayerMove(TargetLocation)
+        vp.LocationClear(Player1.CurrentLocation)
+        Player1.MoveTo(TargetLocation)
+        vp.PlayerDraw(Player1)
+    End Sub
+
+
 
 
 End Module

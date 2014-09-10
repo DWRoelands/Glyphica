@@ -5,6 +5,7 @@
     Public Property ViewPortHeight As Integer
     Public Property ViewPortWidth As Integer
     Public Property Origin As New Coordinate  '' this represents the top-left coordinate of the map that is displayed in the viewport
+    Public Property MapLevel As Integer
 
     Public ReadOnly Property MapHeight As Integer
         Get
@@ -43,15 +44,27 @@
         Origin = NewOrigin
     End Sub
 
-    Public Sub MapLoad()
+    Public Sub LevelLoad(Level As Integer)
+
+        Dim Filename As String = String.Empty
+        Select Case Level
+            Case 1
+                Filename = "testmap1.txt"
+            Case 2
+                Filename = "testmap2.txt"
+        End Select
+
         Map = New List(Of String)
-        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap1.txt")
+        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & filename)
             Dim Line As String = sr.ReadLine
             Do While Line IsNot Nothing
                 Map.Add(Line)
                 Line = sr.ReadLine()
             Loop
         End Using
+
+        MapLevel = Level
+
     End Sub
 
     Public Sub BorderDraw()
@@ -85,7 +98,7 @@
 
     Public Sub LocationClear(Location As Coordinate)
         Console.SetCursorPosition(Location.Left - Origin.Left, Location.Top - Origin.Top)
-        Console.Write(" ")
+        Console.Write(LocationGet(Location))
     End Sub
 
     Public Sub PlayerDraw(Player1 As Player)
@@ -150,11 +163,29 @@
 
     End Sub
 
-    Public Sub Scroll()
+    Public Function StairsUpFind() As Coordinate
+        Dim ReturnValue As Coordinate = Nothing
+        For Row = 0 To Map.Count - 1
+            Dim Left As Integer = Map(Row).IndexOf("<")
+            If Left > -1 Then
+                ReturnValue = New Coordinate(Left, Row)
+                Exit For
+            End If
+        Next
+        Return ReturnValue
+    End Function
 
-    End Sub
-
-
+    Public Function StairsDownFind() As Coordinate
+        Dim ReturnValue As Coordinate = Nothing
+        For Row = 0 To Map.Count - 1
+            Dim Left As Integer = Map(Row).IndexOf(">")
+            If Left > -1 Then
+                ReturnValue = New Coordinate(Left, Row)
+                Exit For
+            End If
+        Next
+        Return ReturnValue
+    End Function
 End Class
 
 

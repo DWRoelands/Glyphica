@@ -7,7 +7,6 @@
     End Enum
 
     Public Sub MoveTo(NewLocation As Coordinate)
-        Dim OldLocation As Coordinate = CurrentLocation
         CurrentLocation = NewLocation
     End Sub
 
