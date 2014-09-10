@@ -11,13 +11,13 @@
         Player1 = New Player
         Player1.CurrentLocation = (New Coordinate(3, 3))
 
-        Dim vp As New ViewPort(35, 60)
+        Dim vp As New ViewPort(30, 30)
         vp.MapLoad()
         vp.BorderDraw()
         vp.MapDraw()
         vp.OriginSet(New Coordinate(0, 0))
 
-        Player1.CurrentLocation = New Coordinate(2, 2)
+        Player1.CurrentLocation = New Coordinate(vp.Width / 2, vp.Height / 2)
 
         Console.SetCursorPosition(Player1.CurrentLocation.Left, Player1.CurrentLocation.Top)
         Console.Write("@")

@@ -1,10 +1,24 @@
 ﻿Public Class ViewPort
 
-    Const TESTMAPLOCATION As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
 
     Public Property Height As Integer
     Public Property Width As Integer
     Public Property Origin As New Coordinate  '' this represents the top-left coordinate of the map that is displayed in the viewport
+
+    Private _HorizontalScrollBorder
+    Public ReadOnly Property HorizontalScrollBorder As Integer
+        Get
+            Return Width / 5
+        End Get
+    End Property
+
+    Private _VerticalScrollBorder As Integer
+    Public ReadOnly Property VerticalScrollBorder As Integer
+        Get
+            Return Height / 5
+        End Get
+    End Property
 
     Private Map As List(Of String)
 
@@ -12,7 +26,6 @@
         Height = ViewPortHeight
         Width = ViewPortWidth
     End Sub
-
 
     Public Sub OriginSet(NewOrigin As Coordinate)
         Origin = NewOrigin
@@ -50,7 +63,7 @@
     Public Sub MapDraw()
         For ViewportRow = 0 To Height - 2
             Console.SetCursorPosition(0, ViewportRow)
-            Console.Write(Map(ViewportRow).Substring(Origin.Left, Width))
+            Console.Write(Map(ViewportRow + Origin.Top).Substring(Origin.Left, Width))
         Next
     End Sub
 
@@ -59,15 +72,38 @@
     End Function
 
     Public Sub LocationClear(Location As Coordinate)
-        Console.SetCursorPosition(Location.Left, Location.Top)
+        Console.SetCursorPosition(Location.Left - Origin.Left, Location.Top - Origin.Top)
         Console.Write(" ")
     End Sub
 
     Public Sub PlayerDraw(Player1 As Player)
-        Console.SetCursorPosition(Player1.CurrentLocation.Left, Player1.CurrentLocation.Top)
+
+        If Player1.CurrentLocation.Left >= Origin.Left + Width - VerticalScrollBorder Then
+            Debug.WriteLine("right scroll border hit")
+            Origin.Left += (Width / 2)
+            MapDraw()
+        ElseIf Player1.CurrentLocation.Left <= Origin.Left + VerticalScrollBorder Then
+            Debug.WriteLine("left scroll border hit")
+            Origin.Left -= (Width / 2)
+            MapDraw()
+        ElseIf Player1.CurrentLocation.Top >= Origin.Top + Height - 1 - HorizontalScrollBorder Then
+            Debug.WriteLine("bottom scroll border hit")
+            Origin.Top += (Height / 2)
+            MapDraw()
+        ElseIf Player1.CurrentLocation.Top <= Origin.Top + HorizontalScrollBorder Then
+            Debug.WriteLine("top scroll border hit")
+            Origin.Top -= (Height / 2)
+            MapDraw()
+        End If
+
+        Console.SetCursorPosition(Player1.CurrentLocation.Left - Origin.Left, Player1.CurrentLocation.Top - Origin.Top)
         Console.Write("@")
+
     End Sub
 
+    Public Sub Scroll()
+
+    End Sub
 
 
 End Class
