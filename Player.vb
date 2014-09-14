@@ -1,6 +1,6 @@
 ﻿Imports System.Drawing
 Public Class Player
-    Public Property CurrentLocation As Point  '' the current position of the player on the current level of the map
+    Inherits Creature
 
     Public Enum PlayerMoveResult
         Blocked

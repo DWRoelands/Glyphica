@@ -1,4 +1,6 @@
-﻿Imports System.Drawing
+﻿Imports System.Collections.Generic
+Imports System.Drawing
+Imports System.IO
 Public Class ViewPort
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
