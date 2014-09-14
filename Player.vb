@@ -10,12 +10,12 @@
         CurrentLocation = NewLocation
     End Sub
 
-    Public Function MoveProcess(TargetLocationSymbol As String) As PlayerMoveResult
+    Public Function MoveProcess(TargetLocationTile As ViewPort.MapTile) As PlayerMoveResult
         Dim ReturnValue As PlayerMoveResult
-        Select Case TargetLocationSymbol
-            Case " "
+        Select Case TargetLocationTile
+            Case ViewPort.MapTile.Empty
                 ReturnValue = PlayerMoveResult.Move
-            Case "#"
+            Case ViewPort.MapTile.Solid
                 ReturnValue = PlayerMoveResult.Blocked
             Case Else
                 ReturnValue = PlayerMoveResult.Move

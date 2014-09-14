@@ -12,7 +12,7 @@
         Player1 = New Player
 
         vp = New ViewPort(30, 30)
-        vp.LevelLoad(1)
+        vp.MapLoad()
         vp.BorderDraw()
         vp.MapDraw()
         vp.OriginSet(New Coordinate(0, 0))
@@ -56,14 +56,14 @@
             Select Case KeyPress.KeyChar
                 Case ">"c  '' go down stairs
                     If vp.LocationGet(Player1.CurrentLocation) = ">" Then
-                        vp.LevelLoad(vp.MapLevel + 1)
+                        vp.MapLevel += 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsUpFind())
                     End If
 
                 Case "<"c  '' go up stairs
                     If vp.LocationGet(Player1.CurrentLocation) = "<" Then
-                        vp.LevelLoad(vp.MapLevel - 1)
+                        vp.MapLevel -= 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsDownFind())
                     End If
