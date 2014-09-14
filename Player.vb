@@ -1,12 +1,13 @@
-﻿Public Class Player
-    Public Property CurrentLocation As Coordinate  '' the current position of the player on the current level of the map
+﻿Imports System.Drawing
+Public Class Player
+    Public Property CurrentLocation As Point  '' the current position of the player on the current level of the map
 
     Public Enum PlayerMoveResult
         Blocked
         Move
     End Enum
 
-    Public Sub MoveTo(NewLocation As Coordinate)
+    Public Sub MoveTo(NewLocation As Point)
         CurrentLocation = NewLocation
     End Sub
 
