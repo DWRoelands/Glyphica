@@ -19,9 +19,7 @@ Module Module1
         vp.OriginSet(New point(0, 0))
 
         Player1.Location = New Point(vp.ViewPortSize.Width / 2, vp.ViewPortSize.Height / 2)
-
-        Console.SetCursorPosition(Player1.Location.X, Player1.Location.Y)
-        Console.Write("@")
+        vp.PlayerDraw(Player1)
 
         Dim KeyPress As ConsoleKeyInfo
         Do
@@ -56,14 +54,14 @@ Module Module1
 
             Select Case KeyPress.KeyChar
                 Case ">"c  '' go down stairs
-                    If vp.LocationGet(Player1.Location).Type = MapTile.TileType.StairsDown Then
+                    If vp.LocationGet(Player1.Location).TileType = MapTile.MapTileType.StairsDown Then
                         vp.MapLevel += 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsUpFind())
                     End If
 
                 Case "<"c  '' go up stairs
-                    If vp.LocationGet(Player1.Location).Type = MapTile.TileType.StairsUp Then
+                    If vp.LocationGet(Player1.Location).TileType = MapTile.MapTileType.StairsUp Then
                         vp.MapLevel -= 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsDownFind())

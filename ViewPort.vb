@@ -3,7 +3,7 @@ Imports System.Drawing
 Imports System.IO
 Public Class ViewPort
 
-    Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 
     ' level, x, y
     Private Map(,,) As MapTile
@@ -52,13 +52,13 @@ Public Class ViewPort
             For x As Integer = 0 To MapLine.Length - 1
                 Select Case MapLine.Substring(x, 1)
                     Case " "
-                        Map(0, x, y) = New MapTile(MapTile.TileType.Empty, New Point(x, y))
+                        Map(0, x, y) = New MapTile(MapTile.MapTileType.Empty, New Point(x, y))
                     Case "#"
-                        Map(0, x, y) = New MapTile(MapTile.TileType.Wall, New Point(x, y))
+                        Map(0, x, y) = New MapTile(MapTile.MapTileType.Wall, New Point(x, y))
                     Case ">"
-                        Map(0, x, y) = New MapTile(MapTile.TileType.StairsDown, New Point(x, y))
+                        Map(0, x, y) = New MapTile(MapTile.MapTileType.StairsDown, New Point(x, y))
                     Case "<"
-                        Map(0, x, y) = New MapTile(MapTile.TileType.StairsUp, New Point(x, y))
+                        Map(0, x, y) = New MapTile(MapTile.MapTileType.StairsUp, New Point(x, y))
                 End Select
             Next
             y += 1
@@ -91,8 +91,10 @@ Public Class ViewPort
     Public Sub MapDraw()
         For x As Integer = 0 To ViewPortSize.Width - 1
             For y As Integer = 0 To ViewPortSize.Height - 2
-                Console.SetCursorPosition(x, y)
-                Console.Write(Map(0, Origin.X + x, Origin.Y + y).DisplayCharacter)
+                If Map(0, x, y).IsVisible Then
+                    Console.SetCursorPosition(x, y)
+                    Console.Write(Map(0, Origin.X + x, Origin.Y + y).DisplayCharacter)
+                End If
             Next
         Next
     End Sub
@@ -175,7 +177,12 @@ Public Class ViewPort
 
         Console.SetCursorPosition(Player1.Location.X - Origin.X, Player1.Location.Y - Origin.Y)
         Console.Write("@")
-        Debug.WriteLine(String.Format("LEFT:{0} TOP:{1}", Player1.Location.X, Player1.Location.Y))
+        '        Debug.WriteLine(String.Format("LEFT:{0} TOP:{1}", Player1.Location.X, Player1.Location.Y))
+
+        For Each p As Point In GetVisibleCells(Player1.Location, 5)
+            Console.SetCursorPosition(p.X - Origin.X, p.Y - Origin.Y)
+            LocationClear(p)
+        Next
 
     End Sub
 
@@ -184,7 +191,7 @@ Public Class ViewPort
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(0, x, y).Type = MapTile.TileType.StairsUp Then
+                If Map(0, x, y).TileType = MapTile.MapTileType.StairsUp Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -198,7 +205,7 @@ Public Class ViewPort
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(0, x, y).Type = MapTile.TileType.StairsDown Then
+                If Map(0, x, y).TileType = MapTile.MapTileType.StairsDown Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -210,9 +217,6 @@ Public Class ViewPort
     Public Function PlayerMoveAttempt(Player1 As Player, Target As Point) As Player.PlayerMoveResult
         Return Player1.PlayerMoveAttempt(Map(0, Target.X, Target.Y))
     End Function
-
-
-
 
 #Region "FOV Recurse code"
 
@@ -229,12 +233,13 @@ Public Class ViewPort
         Return pX >= 0 And pX < Map.GetLength(1) And pY >= 0 And pY < Map.GetLength(2)
     End Function
 
-    Private Sub GetVisibleCells(Location As Point, Range As Integer)
+    Private Function GetVisibleCells(Location As Point, Range As Integer) As List(Of Point)
         VisiblePoints = New List(Of Point)()
         For Each o As Integer In VisibleOctants
             ScanOctant(1, o, 1.0, 0.0, Location, Range)
         Next
-    End Sub
+        Return VisiblePoints
+    End Function
 
     Protected Sub ScanOctant(pDepth As Integer, pOctant As Integer, pStartSlope As Double, pEndSlope As Double, Location As Point, Range As Integer)
 
@@ -289,8 +294,8 @@ Public Class ViewPort
                 End If
 
                 x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Map.GetLength(0) Then
-                    x = Map.GetLength(0) - 1
+                If x >= Map.GetLength(1) Then
+                    x = Map.GetLength(1) - 1
                 End If
 
                 While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
@@ -347,27 +352,27 @@ Public Class ViewPort
 
             Case 4
 
-                x = m_player.X + pDepth
-                If x >= Map.GetLength(0) Then
+                x = Location.X + pDepth
+                If x >= Map.GetLength(1) Then
                     Return
                 End If
 
-                y = m_player.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Map.GetLength(1) Then
-                    y = Map.GetLength(1) - 1
+                y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
+                If y >= Map.GetLength(2) Then
+                    y = Map.GetLength(2) - 1
                 End If
 
-                While GetSlope(x, y, m_player.X, m_player.Y, True) >= pEndSlope
+                While GetSlope(x, y, Location.X, Location.Y, True) >= pEndSlope
 
-                    If GetVisDistance(x, y, m_player.X, m_player.Y) <= visrange2 Then
+                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Map(x, y) = 1 Then
-                            If y + 1 < Map.GetLength(1) AndAlso Map(x, y + 1) = 0 Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, m_player.X, m_player.Y, True))
+                        If Map(0, x, y).BlocksVision Then
+                            If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision = False Then
+                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y + 1 < Map.GetLength(1) AndAlso Map(x, y + 1) = 1 Then
-                                pStartSlope = GetSlope(x + 0.5, y + 0.5, m_player.X, m_player.Y, True)
+                            If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision Then
+                                pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True)
                             End If
 
                             VisiblePoints.Add(New Point(x, y))
@@ -380,26 +385,26 @@ Public Class ViewPort
 
             Case 5
 
-                y = m_player.Y + pDepth
-                If y >= Map.GetLength(1) Then
+                y = Location.Y + pDepth
+                If y >= Map.GetLength(2) Then
                     Return
                 End If
 
-                x = m_player.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Map.GetLength(0) Then
-                    x = Map.GetLength(0) - 1
+                x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
+                If x >= Map.GetLength(1) Then
+                    x = Map.GetLength(1) - 1
                 End If
 
-                While GetSlope(x, y, m_player.X, m_player.Y, False) >= pEndSlope
-                    If GetVisDistance(x, y, m_player.X, m_player.Y) <= visrange2 Then
+                While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
+                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Map(x, y) = 1 Then
-                            If x + 1 < Map.GetLength(1) AndAlso Map(x + 1, y) = 0 Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, m_player.X, m_player.Y, False))
+                        If Map(0, x, y).BlocksVision Then
+                            If x + 1 < Map.GetLength(1) AndAlso Map(0, x + 1, y).BlocksVision = False Then
+                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
-                            If x + 1 < Map.GetLength(1) AndAlso Map(x + 1, y) = 1 Then
-                                pStartSlope = GetSlope(x + 0.5, y + 0.5, m_player.X, m_player.Y, False)
+                            If x + 1 < Map.GetLength(1) AndAlso Map(0, x + 1, y).BlocksVision Then
+                                pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False)
                             End If
 
                             VisiblePoints.Add(New Point(x, y))
@@ -412,26 +417,26 @@ Public Class ViewPort
 
             Case 6
 
-                y = m_player.Y + pDepth
-                If y >= Map.GetLength(1) Then
+                y = Location.Y + pDepth
+                If y >= Map.GetLength(2) Then
                     Return
                 End If
 
-                x = m_player.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
+                x = Location.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
                 If x < 0 Then
                     x = 0
                 End If
 
-                While GetSlope(x, y, m_player.X, m_player.Y, False) <= pEndSlope
-                    If GetVisDistance(x, y, m_player.X, m_player.Y) <= visrange2 Then
+                While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
+                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Map(x, y) = 1 Then
-                            If x - 1 >= 0 AndAlso Map(x - 1, y) = 0 Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, m_player.X, m_player.Y, False))
+                        If Map(0, x, y).BlocksVision Then
+                            If x - 1 >= 0 AndAlso Map(0, x - 1, y).BlocksVision = False Then
+                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
-                            If x - 1 >= 0 AndAlso Map(x - 1, y) = 1 Then
-                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, m_player.X, m_player.Y, False)
+                            If x - 1 >= 0 AndAlso Map(0, x - 1, y).BlocksVision Then
+                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, False)
                             End If
 
                             VisiblePoints.Add(New Point(x, y))
@@ -444,27 +449,27 @@ Public Class ViewPort
 
             Case 7
 
-                x = m_player.X - pDepth
+                x = Location.X - pDepth
                 If x < 0 Then
                     Return
                 End If
 
-                y = m_player.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Map.GetLength(1) Then
-                    y = Map.GetLength(1) - 1
+                y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
+                If y >= Map.GetLength(2) Then
+                    y = Map.GetLength(2) - 1
                 End If
 
-                While GetSlope(x, y, m_player.X, m_player.Y, True) <= pEndSlope
+                While GetSlope(x, y, Location.X, Location.Y, True) <= pEndSlope
 
-                    If GetVisDistance(x, y, m_player.X, m_player.Y) <= visrange2 Then
+                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Map(x, y) = 1 Then
-                            If y + 1 < Map.GetLength(1) AndAlso Map(x, y + 1) = 0 Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, m_player.X, m_player.Y, True))
+                        If Map(0, x, y).BlocksVision Then
+                            If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision = False Then
+                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y + 1 < Map.GetLength(1) AndAlso Map(x, y + 1) = 1 Then
-                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, m_player.X, m_player.Y, True)
+                            If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision Then
+                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True)
                             End If
 
                             VisiblePoints.Add(New Point(x, y))
@@ -477,28 +482,28 @@ Public Class ViewPort
 
             Case 8
                 'wnw
-                x = m_player.X - pDepth
+                x = Location.X - pDepth
                 If x < 0 Then
                     Return
                 End If
 
-                y = m_player.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
+                y = Location.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
                 If y < 0 Then
                     y = 0
                 End If
 
-                While GetSlope(x, y, m_player.X, m_player.Y, True) >= pEndSlope
+                While GetSlope(x, y, Location.X, Location.Y, True) >= pEndSlope
 
-                    If GetVisDistance(x, y, m_player.X, m_player.Y) <= visrange2 Then
+                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Map(x, y) = 1 Then
-                            If y - 1 >= 0 AndAlso Map(x, y - 1) = 0 Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, m_player.X, m_player.Y, True))
+                        If Map(0, x, y).BlocksVision Then
+                            If y - 1 >= 0 AndAlso Map(0, x, y - 1).BlocksVision = False Then
+                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
 
                             End If
                         Else
-                            If y - 1 >= 0 AndAlso Map(x, y - 1) = 1 Then
-                                pStartSlope = GetSlope(x - 0.5, y - 0.5, m_player.X, m_player.Y, True)
+                            If y - 1 >= 0 AndAlso Map(0, x, y - 1).BlocksVision Then
+                                pStartSlope = GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True)
                             End If
 
                             VisiblePoints.Add(New Point(x, y))
@@ -513,31 +518,22 @@ Public Class ViewPort
 
         If x < 0 Then
             x = 0
-        ElseIf x >= Map.GetLength(0) Then
+        ElseIf x >= Map.GetLength(1) Then
             x = Map.GetLength(0) - 1
         End If
 
         If y < 0 Then
             y = 0
-        ElseIf y >= Map.GetLength(1) Then
-            y = Map.GetLength(1) - 1
+        ElseIf y >= Map.GetLength(2) Then
+            y = Map.GetLength(2) - 1
         End If
 
-        If pDepth < VisualRange And Map(x, y) = 0 Then
-            ScanOctant(pDepth + 1, pOctant, pStartSlope, pEndSlope)
+        If pDepth < Range And Map(0, x, y).BlocksVision = False Then
+            ScanOctant(pDepth + 1, pOctant, pStartSlope, pEndSlope, Location, Range)
         End If
 
     End Sub
 
-    ''' <summary>
-    ''' Get the gradient of the slope formed by the two points
-    ''' </summary>
-    ''' <param name="pX1"></param>
-    ''' <param name="pY1"></param>
-    ''' <param name="pX2"></param>
-    ''' <param name="pY2"></param>
-    ''' <param name="pInvert">Invert slope</param>
-    ''' <returns></returns>
     Private Function GetSlope(pX1 As Double, pY1 As Double, pX2 As Double, pY2 As Double, pInvert As Boolean) As Double
         If pInvert Then
             Return (pY1 - pY2) / (pX1 - pX2)
@@ -546,21 +542,9 @@ Public Class ViewPort
         End If
     End Function
 
-
-    ''' <summary>
-    ''' Calculate the distance between the two points
-    ''' </summary>
-    ''' <param name="pX1"></param>
-    ''' <param name="pY1"></param>
-    ''' <param name="pX2"></param>
-    ''' <param name="pY2"></param>
-    ''' <returns>Distance</returns>
     Private Function GetVisDistance(pX1 As Integer, pY1 As Integer, pX2 As Integer, pY2 As Integer) As Integer
         Return ((pX1 - pX2) * (pX1 - pX2)) + ((pY1 - pY2) * (pY1 - pY2))
     End Function
-
-
-
 
 #End Region
 

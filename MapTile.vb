@@ -1,25 +1,26 @@
 ﻿Imports System.Drawing
 Public Class MapTile
 
-    Public Enum TileType
+    Public Enum MapTileType
         Empty
         Wall
         StairsDown
         StairsUp
     End Enum
 
-    Public Property Type As TileType
+    Public Property TileType As MapTileType
     Public Property Location As Point
+    Public Property IsVisible As Boolean = False
     Public ReadOnly Property BlocksVision As Boolean
         Get
-            Select Case Type
-                Case TileType.Empty
+            Select Case TileType
+                Case MapTileType.Empty
                     Return False
-                Case TileType.StairsDown
+                Case MapTileType.StairsDown
                     Return False
-                Case TileType.StairsUp
+                Case MapTileType.StairsUp
                     Return False
-                Case TileType.Wall
+                Case MapTileType.Wall
                     Return True
                 Case Else
                     Return False
@@ -28,14 +29,14 @@ Public Class MapTile
     End Property
     Public ReadOnly Property DisplayCharacter As Char
         Get
-            Select Case Type
-                Case TileType.Empty
-                    Return " "c
-                Case TileType.Wall
+            Select Case TileType
+                Case MapTileType.Empty
+                    Return "."c
+                Case MapTileType.Wall
                     Return "#"c
-                Case TileType.StairsDown
+                Case MapTileType.StairsDown
                     Return ">"c
-                Case TileType.StairsUp
+                Case MapTileType.StairsUp
                     Return "<"c
                 Case Else
                     Return String.Empty
@@ -43,8 +44,8 @@ Public Class MapTile
         End Get
     End Property
 
-    Public Sub New(NewType As TileType, NewLocation As Point)
-        Me.Type = NewType
+    Public Sub New(NewType As MapTileType, NewLocation As Point)
+        Me.TileType = NewType
         Me.Location = NewLocation
     End Sub
 
