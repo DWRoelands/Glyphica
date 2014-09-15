@@ -5,13 +5,6 @@ Public Class ViewPort
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
 
-    Public Enum MapTile
-        Empty = 0
-        Solid = 1
-        StairsDown = 2
-        StairsUp = 3
-    End Enum
-
     ' level, x, y
     Private Map(,,) As MapTile
 
@@ -55,13 +48,13 @@ Public Class ViewPort
             For x As Integer = 0 To MapLine.Length - 1
                 Select Case MapLine.Substring(x, 1)
                     Case " "
-                        Map(0, x, y) = MapTile.Empty
+                        Map(0, x, y) = New MapTile(MapTile.TileType.Empty, New Point(x, y))
                     Case "#"
-                        Map(0, x, y) = MapTile.Solid
+                        Map(0, x, y) = New MapTile(MapTile.TileType.Wall, New Point(x, y))
                     Case ">"
-                        Map(0, x, y) = MapTile.StairsDown
+                        Map(0, x, y) = New MapTile(MapTile.TileType.StairsDown, New Point(x, y))
                     Case "<"
-                        Map(0, x, y) = MapTile.StairsUp
+                        Map(0, x, y) = New MapTile(MapTile.TileType.StairsUp, New Point(x, y))
                 End Select
             Next
             y += 1
@@ -98,19 +91,8 @@ Public Class ViewPort
     Public Sub MapDraw()
         For x As Integer = 0 To ViewPortSize.Width - 1
             For y As Integer = 0 To ViewPortSize.Height - 2
-                Dim MapChar As String = String.Empty
-                Select Case Map(0, Origin.X + x, Origin.Y + y)
-                    Case MapTile.Empty
-                        MapChar = " "
-                    Case MapTile.Solid
-                        MapChar = "#"
-                    Case MapTile.StairsDown
-                        MapChar = ">"
-                    Case MapTile.StairsUp
-                        MapChar = "<"
-                End Select
                 Console.SetCursorPosition(x, y)
-                Console.Write(MapChar)
+                Console.Write(Map(0, Origin.X + x, Origin.Y + y).DisplayCharacter)
             Next
         Next
     End Sub
@@ -121,7 +103,7 @@ Public Class ViewPort
 
     Public Sub LocationClear(Location As Point)
         Console.SetCursorPosition(Location.X - Origin.X, Location.Y - Origin.Y)
-        Console.Write(MapCharGet(LocationGet(New Point(Location.X - Origin.X, Location.Y - Origin.Y))))
+        Console.Write(Map(0, Location.X - Origin.X, Location.Y - Origin.Y).DisplayCharacter)
     End Sub
 
     Public Sub OriginSetX(x As Integer)
@@ -135,7 +117,7 @@ Public Class ViewPort
 
     Public Sub PlayerDraw(Player1 As Player)
 
-        If Player1.CurrentLocation.X >= Origin.X + ViewPortSize.Width - VerticalScrollBorder Then
+        If Player1.Location.X >= Origin.X + ViewPortSize.Width - VerticalScrollBorder Then
             Debug.WriteLine("right scroll border hit")
 
             ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
@@ -149,7 +131,7 @@ Public Class ViewPort
 
             MapDraw()
 
-        ElseIf Player1.CurrentLocation.X <= Origin.X + VerticalScrollBorder Then
+        ElseIf Player1.Location.X <= Origin.X + VerticalScrollBorder Then
             Debug.WriteLine("left scroll border hit")
 
             ' If we are too close to the left edge of the map to scroll fully, then scroll just enough
@@ -163,7 +145,7 @@ Public Class ViewPort
 
             MapDraw()
 
-        ElseIf Player1.CurrentLocation.Y >= Origin.Y + ViewPortSize.Height - 1 - HorizontalScrollBorder Then
+        ElseIf Player1.Location.Y >= Origin.Y + ViewPortSize.Height - 1 - HorizontalScrollBorder Then
             Debug.WriteLine("bottom scroll border hit")
 
             ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
@@ -177,7 +159,7 @@ Public Class ViewPort
 
             MapDraw()
 
-        ElseIf Player1.CurrentLocation.Y <= Origin.Y + HorizontalScrollBorder Then
+        ElseIf Player1.Location.Y <= Origin.Y + HorizontalScrollBorder Then
             Debug.WriteLine("top scroll border hit")
 
             ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
@@ -191,9 +173,9 @@ Public Class ViewPort
             MapDraw()
         End If
 
-        Console.SetCursorPosition(Player1.CurrentLocation.X - Origin.X, Player1.CurrentLocation.Y - Origin.Y)
+        Console.SetCursorPosition(Player1.Location.X - Origin.X, Player1.Location.Y - Origin.Y)
         Console.Write("@")
-        Debug.WriteLine(String.Format("LEFT:{0} TOP:{1}", Player1.CurrentLocation.X, Player1.CurrentLocation.Y))
+        Debug.WriteLine(String.Format("LEFT:{0} TOP:{1}", Player1.Location.X, Player1.Location.Y))
 
     End Sub
 
@@ -202,7 +184,7 @@ Public Class ViewPort
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(0, x, y) = MapTile.StairsUp Then
+                If Map(0, x, y).Type = MapTile.TileType.StairsUp Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -216,7 +198,7 @@ Public Class ViewPort
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(0, x, y) = MapTile.StairsDown Then
+                If Map(0, x, y).Type = MapTile.TileType.StairsDown Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -225,20 +207,10 @@ Public Class ViewPort
         Return ReturnValue
     End Function
 
-    Private Function MapCharGet(MapValue As MapTile) As String
-        Dim ReturnValue As String = String.Empty
-        Select Case MapValue
-            Case MapTile.Empty
-                ReturnValue = " "
-            Case MapTile.Solid
-                ReturnValue = "#"
-            Case MapTile.StairsDown
-                ReturnValue = ">"
-            Case MapTile.StairsUp
-                ReturnValue = "<"
-        End Select
-        Return ReturnValue
+    Public Function PlayerMoveAttempt(Player1 As Player, Target As Point) As Player.PlayerMoveResult
+        Return Player1.PlayerMoveAttempt(Map(0, Target.X, Target.Y))
     End Function
+
 End Class
 
 

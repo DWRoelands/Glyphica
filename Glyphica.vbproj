@@ -65,8 +65,6 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Creature.vb" />
-    <Compile Include="Entity.vb" />
     <Compile Include="MapTile.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

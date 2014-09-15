@@ -18,9 +18,9 @@ Module Module1
         vp.MapDraw()
         vp.OriginSet(New point(0, 0))
 
-        Player1.CurrentLocation = New Point(vp.ViewPortSize.Width / 2, vp.ViewPortSize.Height / 2)
+        Player1.Location = New Point(vp.ViewPortSize.Width / 2, vp.ViewPortSize.Height / 2)
 
-        Console.SetCursorPosition(Player1.CurrentLocation.X, Player1.CurrentLocation.Y)
+        Console.SetCursorPosition(Player1.Location.X, Player1.Location.Y)
         Console.Write("@")
 
         Dim KeyPress As ConsoleKeyInfo
@@ -30,40 +30,40 @@ Module Module1
 
             Select Case KeyPress.Key
                 Case ConsoleKey.DownArrow, ConsoleKey.NumPad2
-                    TargetLocation = New Point(Player1.CurrentLocation.X, Player1.CurrentLocation.Y + 1)
+                    TargetLocation = New Point(Player1.Location.X, Player1.Location.Y + 1)
 
                 Case ConsoleKey.UpArrow, ConsoleKey.NumPad8
-                    TargetLocation = New Point(Player1.CurrentLocation.X, Player1.CurrentLocation.Y - 1)
+                    TargetLocation = New Point(Player1.Location.X, Player1.Location.Y - 1)
 
                 Case ConsoleKey.LeftArrow, ConsoleKey.NumPad4
-                    TargetLocation = New Point(Player1.CurrentLocation.X - 1, Player1.CurrentLocation.Y)
+                    TargetLocation = New Point(Player1.Location.X - 1, Player1.Location.Y)
 
                 Case ConsoleKey.RightArrow, ConsoleKey.NumPad6
-                    TargetLocation = New Point(Player1.CurrentLocation.X + 1, Player1.CurrentLocation.Y)
+                    TargetLocation = New Point(Player1.Location.X + 1, Player1.Location.Y)
 
                 Case ConsoleKey.NumPad7
-                    TargetLocation = New Point(Player1.CurrentLocation.X - 1, Player1.CurrentLocation.Y - 1)
+                    TargetLocation = New Point(Player1.Location.X - 1, Player1.Location.Y - 1)
 
                 Case ConsoleKey.NumPad9
-                    TargetLocation = New Point(Player1.CurrentLocation.X + 1, Player1.CurrentLocation.Y - 1)
+                    TargetLocation = New Point(Player1.Location.X + 1, Player1.Location.Y - 1)
 
                 Case ConsoleKey.NumPad1
-                    TargetLocation = New Point(Player1.CurrentLocation.X - 1, Player1.CurrentLocation.Y + 1)
+                    TargetLocation = New Point(Player1.Location.X - 1, Player1.Location.Y + 1)
 
                 Case ConsoleKey.NumPad3
-                    TargetLocation = New Point(Player1.CurrentLocation.X + 1, Player1.CurrentLocation.Y + 1)
+                    TargetLocation = New Point(Player1.Location.X + 1, Player1.Location.Y + 1)
             End Select
 
             Select Case KeyPress.KeyChar
                 Case ">"c  '' go down stairs
-                    If vp.LocationGet(Player1.CurrentLocation) = ">" Then
+                    If vp.LocationGet(Player1.Location).Type = MapTile.TileType.StairsDown Then
                         vp.MapLevel += 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsUpFind())
                     End If
 
                 Case "<"c  '' go up stairs
-                    If vp.LocationGet(Player1.CurrentLocation) = "<" Then
+                    If vp.LocationGet(Player1.Location).Type = MapTile.TileType.StairsUp Then
                         vp.MapLevel -= 1
                         vp.MapDraw()
                         PlayerMove(vp.StairsDownFind())
@@ -71,9 +71,11 @@ Module Module1
 
             End Select
 
-            Select Case Player1.MoveProcess(vp.LocationGet(TargetLocation))
+            Select Case vp.PlayerMoveAttempt(Player1, TargetLocation)
                 Case Player.PlayerMoveResult.Move
                     PlayerMove(TargetLocation)
+                Case Player.PlayerMoveResult.Blocked
+                    '' do nothing
             End Select
 
         Loop While KeyPress.Key <> ConsoleKey.X
@@ -81,7 +83,7 @@ Module Module1
     End Sub
 
     Public Sub PlayerMove(TargetLocation)
-        vp.LocationClear(Player1.CurrentLocation)
+        vp.LocationClear(Player1.Location)
         Player1.MoveTo(TargetLocation)
         vp.PlayerDraw(Player1)
     End Sub
