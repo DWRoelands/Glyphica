@@ -16,9 +16,9 @@ Module Module1
         vp.MapLoad()
         vp.BorderDraw()
         vp.MapDraw()
-        vp.OriginSet(New point(0, 0))
+        vp.Origin = New Point(0, 0)
 
-        Player1.Location = New Point(vp.ViewPortSize.Width / 2, vp.ViewPortSize.Height / 2)
+        Player1.Location = New Point(13, 13)
         vp.PlayerDraw(Player1)
 
         Dim KeyPress As ConsoleKeyInfo

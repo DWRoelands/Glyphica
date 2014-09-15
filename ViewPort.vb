@@ -3,7 +3,7 @@ Imports System.Drawing
 Imports System.IO
 Public Class ViewPort
 
-    Const TESTMAPLOCATION As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
 
     ' level, x, y
     Private Map(,,) As MapTile
@@ -66,10 +66,6 @@ Public Class ViewPort
 
     End Sub
 
-    Public Sub OriginSet(NewOrigin As Point)
-        Origin = NewOrigin
-    End Sub
-
     Public Sub BorderDraw()
         For y = 0 To ViewPortSize.Height - 1
             SolidBlockDraw(New Point(ViewPortSize.Width, y))
@@ -89,14 +85,24 @@ Public Class ViewPort
     End Sub
 
     Public Sub MapDraw()
-        For x As Integer = 0 To ViewPortSize.Width - 1
-            For y As Integer = 0 To ViewPortSize.Height - 2
+        Debug.WriteLine("MapDraw()")
+
+        For x As Integer = Origin.X To Origin.X + ViewPortSize.Width - 1
+            For y As Integer = Origin.Y To Origin.Y + ViewPortSize.Height - 2
+                Console.SetCursorPosition(x - Origin.X, y - Origin.Y)
+                Console.Write(" ")
+            Next
+        Next
+
+        For x As Integer = Origin.X To Origin.X + ViewPortSize.Width - 1
+            For y As Integer = Origin.Y To Origin.Y + ViewPortSize.Height - 2
                 If Map(0, x, y).IsVisible Then
-                    Console.SetCursorPosition(x, y)
-                    Console.Write(Map(0, Origin.X + x, Origin.Y + y).DisplayCharacter)
+                    Console.SetCursorPosition(x - Origin.X, y - Origin.Y)
+                    Console.Write(Map(0, x, y).DisplayCharacter)
                 End If
             Next
         Next
+        Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
     End Sub
 
     Public Function LocationGet(Location As Point) As MapTile
@@ -105,7 +111,11 @@ Public Class ViewPort
 
     Public Sub LocationClear(Location As Point)
         Console.SetCursorPosition(Location.X - Origin.X, Location.Y - Origin.Y)
-        Console.Write(Map(0, Location.X - Origin.X, Location.Y - Origin.Y).DisplayCharacter)
+        If Map(0, Location.X - Origin.X, Location.Y - Origin.Y).IsVisible Then
+            Console.Write(Map(0, Location.X - Origin.X, Location.Y - Origin.Y).DisplayCharacter)
+        Else
+            Console.Write(" ")
+        End If
     End Sub
 
     Public Sub OriginSetX(x As Integer)
@@ -118,72 +128,84 @@ Public Class ViewPort
 
 
     Public Sub PlayerDraw(Player1 As Player)
-
+        Debug.WriteLine(String.Format("PlayerDraw:{0},{1}", Player1.Location.x, Player1.Location.y))
         If Player1.Location.X >= Origin.X + ViewPortSize.Width - VerticalScrollBorder Then
             Debug.WriteLine("right scroll border hit")
 
-            ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
-            Dim NewOriginLeft As Integer = Origin.X + (ViewPortSize.Width / 2)
+            If Origin.X < Map.GetLength(1) - ViewPortSize.Width Then
+                ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
+                Dim NewOriginLeft As Integer = Origin.X + (ViewPortSize.Width / 2)
 
-            If MapSize.Width - NewOriginLeft < ViewPortSize.Width Then
-                OriginSetX(MapSize.Width - (ViewPortSize.Width) + 1)
-            Else
-                OriginSetX(Origin.X + (ViewPortSize.Width / 2))
+                If MapSize.Width - NewOriginLeft < ViewPortSize.Width Then
+                    OriginSetX(MapSize.Width - (ViewPortSize.Width) + 1)
+                Else
+                    OriginSetX(Origin.X + (ViewPortSize.Width / 2))
+                End If
+
+                MapDraw()
             End If
-
-            MapDraw()
 
         ElseIf Player1.Location.X <= Origin.X + VerticalScrollBorder Then
             Debug.WriteLine("left scroll border hit")
 
-            ' If we are too close to the left edge of the map to scroll fully, then scroll just enough
-            Dim NewOriginLeft As Integer = Origin.X - (ViewPortSize.Width / 2)
+            If Origin.X > 0 Then
+                ' If we are too close to the left edge of the map to scroll fully, then scroll just enough
+                Dim NewOriginLeft As Integer = Origin.X - (ViewPortSize.Width / 2)
 
-            If NewOriginLeft < 0 Then
-                OriginSetX(0)
-            Else
-                OriginSetX(Origin.X - (ViewPortSize.Width / 2))
+                If NewOriginLeft < 0 Then
+                    OriginSetX(0)
+                Else
+                    OriginSetX(Origin.X - (ViewPortSize.Width / 2))
+                End If
+
+                MapDraw()
             End If
-
-            MapDraw()
 
         ElseIf Player1.Location.Y >= Origin.Y + ViewPortSize.Height - 1 - HorizontalScrollBorder Then
             Debug.WriteLine("bottom scroll border hit")
 
-            ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
-            Dim NewOriginTop As Integer = Origin.Y + (ViewPortSize.Height / 2)
+            If Origin.Y < Map.GetLength(2) - ViewPortSize.Height Then
+                ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
+                Dim NewOriginTop As Integer = Origin.Y + (ViewPortSize.Height / 2)
 
-            If MapSize.Height - NewOriginTop < ViewPortSize.Height Then
-                OriginSetY(MapSize.Height - ViewPortSize.Height + 1)
-            Else
-                OriginSetY(Origin.Y + (ViewPortSize.Height / 2))
+                If MapSize.Height - NewOriginTop < ViewPortSize.Height Then
+                    OriginSetY(MapSize.Height - ViewPortSize.Height + 1)
+                Else
+                    OriginSetY(Origin.Y + (ViewPortSize.Height / 2))
+                End If
+
+                MapDraw()
             End If
-
-            MapDraw()
 
         ElseIf Player1.Location.Y <= Origin.Y + HorizontalScrollBorder Then
             Debug.WriteLine("top scroll border hit")
 
-            ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
-            Dim NewOriginTop As Integer = Origin.Y - (ViewPortSize.Height / 2)
-            If NewOriginTop < 0 Then
-                OriginSetY(0)
-            Else
-                OriginSetY(Origin.Y - (ViewPortSize.Height / 2))
+            If Origin.Y > 0 Then
+                ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
+                Dim NewOriginTop As Integer = Origin.Y - (ViewPortSize.Height / 2)
+                If NewOriginTop < 0 Then
+                    OriginSetY(0)
+                Else
+                    OriginSetY(Origin.Y - (ViewPortSize.Height / 2))
+                End If
+                MapDraw()
             End If
 
-            MapDraw()
         End If
-
-        Console.SetCursorPosition(Player1.Location.X - Origin.X, Player1.Location.Y - Origin.Y)
-        Console.Write("@")
-        '        Debug.WriteLine(String.Format("LEFT:{0} TOP:{1}", Player1.Location.X, Player1.Location.Y))
 
         For Each p As Point In GetVisibleCells(Player1.Location, 5)
             Console.SetCursorPosition(p.X - Origin.X, p.Y - Origin.Y)
-            LocationClear(p)
+            Console.Write(Map(0, p.X, p.Y).DisplayCharacter)
+            Map(0, p.X, p.Y).IsVisible = True
         Next
 
+        Console.SetCursorPosition(Player1.Location.X - Origin.X, Player1.Location.Y - Origin.Y)
+
+        Dim c As ConsoleColor = Console.ForegroundColor
+        Console.ForegroundColor = ConsoleColor.White
+        Console.Write("@")
+        Console.ForegroundColor = c
+        Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
     End Sub
 
     Public Function StairsUpFind() As Point
@@ -214,6 +236,9 @@ Public Class ViewPort
         Return ReturnValue
     End Function
 
+
+
+
     Public Function PlayerMoveAttempt(Player1 As Player, Target As Point) As Player.PlayerMoveResult
         Return Player1.PlayerMoveAttempt(Map(0, Target.X, Target.Y))
     End Function
@@ -230,7 +255,7 @@ Public Class ViewPort
 
     ' Confirm that a point is within the bounds of the map array
     Private Function Point_Valid(pX As Integer, pY As Integer) As Boolean
-        Return pX >= 0 And pX < Map.GetLength(1) And pY >= 0 And pY < Map.GetLength(2)
+        Return pX >= 0 And pX < Map.GetLength(1) - 1 And pY >= 0 And pY < Map.GetLength(2)
     End Function
 
     Private Function GetVisibleCells(Location As Point, Range As Integer) As List(Of Point)
@@ -264,6 +289,7 @@ Public Class ViewPort
                 While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             'current cell blocked
                             If x - 1 >= 0 AndAlso Map(0, x - 1, y).BlocksVision = False Then
                                 'prior cell within range AND open...
@@ -301,6 +327,7 @@ Public Class ViewPort
                 While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If x + 1 < Map.GetLength(1) AndAlso Map(0, x + 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
@@ -334,6 +361,7 @@ Public Class ViewPort
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If y - 1 >= 0 AndAlso Map(0, x, y - 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
@@ -367,6 +395,7 @@ Public Class ViewPort
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
@@ -399,6 +428,7 @@ Public Class ViewPort
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If x + 1 < Map.GetLength(1) AndAlso Map(0, x + 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
@@ -431,6 +461,7 @@ Public Class ViewPort
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If x - 1 >= 0 AndAlso Map(0, x - 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
@@ -464,6 +495,7 @@ Public Class ViewPort
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(0, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If y + 1 < Map.GetLength(2) AndAlso Map(0, x, y + 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
@@ -498,6 +530,7 @@ Public Class ViewPort
 
                         If Map(0, x, y).BlocksVision Then
                             If y - 1 >= 0 AndAlso Map(0, x, y - 1).BlocksVision = False Then
+                                VisiblePoints.Add(New Point(x, y))   ' testing
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
 
                             End If
