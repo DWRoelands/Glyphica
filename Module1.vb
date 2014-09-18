@@ -467,13 +467,13 @@ Module Module1
                 Debug.WriteLine(x & "," & y)
                 Select Case MapLine.Substring(x, 1)
                     Case " "
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty, New Point(x, y))
+                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty)
                     Case "#"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Wall, New Point(x, y))
+                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Wall)
                     Case ">"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown, New Point(x, y))
+                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown)
                     Case "<"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp, New Point(x, y))
+                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp)
                 End Select
             Next
             y += 1
@@ -547,19 +547,19 @@ Module Module1
 
             End If
 
-            For Each p As Point In GetVisibleCells(Player1.Location, 5)
-                Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
-                Console.Write(Map(MapLevel, p.X, p.Y).DisplayCharacter)
-                Map(MapLevel, p.X, p.Y).IsVisible = True
-            Next
+        For Each p As Point In GetVisibleCells(Player1.Location, Player1.VisualRange)
+            Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
+            Console.Write(Map(MapLevel, p.X, p.Y).DisplayCharacter)
+            Map(MapLevel, p.X, p.Y).IsVisible = True
+        Next
 
-            Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
+        Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
 
-            Dim c As ConsoleColor = Console.ForegroundColor
-            Console.ForegroundColor = ConsoleColor.White
-            Console.Write("@")
-            Console.ForegroundColor = c
-            Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
+        Dim c As ConsoleColor = Console.ForegroundColor
+        Console.ForegroundColor = ConsoleColor.White
+        Console.Write("@")
+        Console.ForegroundColor = c
+        Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
     End Sub
 
     Public Function ViewportXScrollBufferGet() As Integer
