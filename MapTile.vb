@@ -6,6 +6,8 @@ Public Class MapTile
         Wall
         StairsDown
         StairsUp
+        Door
+        DoorLocked
     End Enum
 
     Public Property TileType As MapTileType
@@ -22,24 +24,10 @@ Public Class MapTile
                     Return False
                 Case MapTileType.Wall
                     Return True
+                Case MapTileType.Door, MapTileType.DoorLocked
+                    Return True
                 Case Else
                     Return False
-            End Select
-        End Get
-    End Property
-    Public ReadOnly Property DisplayCharacter As Char
-        Get
-            Select Case TileType
-                Case MapTileType.Empty
-                    Return "."c
-                Case MapTileType.Wall
-                    Return "#"c
-                Case MapTileType.StairsDown
-                    Return ">"c
-                Case MapTileType.StairsUp
-                    Return "<"c
-                Case Else
-                    Return String.Empty
             End Select
         End Get
     End Property

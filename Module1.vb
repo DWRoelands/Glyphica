@@ -10,6 +10,7 @@ Module Module1
     Const LOWERLEFTCORNER As Byte = 200
     Const UPPERRIGHTCORNER As Byte = 187
     Const LOWERRIGHTCORNER As Byte = 188
+    Const DOOR As Byte = 176
 
     Dim Map(,,) As MapTile      ' level, x, y
     Dim MapLevel As Integer
@@ -108,6 +109,13 @@ Module Module1
                 ReturnValue = Player.PlayerMoveResult.Move
             Case MapTile.MapTileType.Wall
                 ReturnValue = Player.PlayerMoveResult.Blocked
+            Case MapTile.MapTileType.Door
+                Map(MapLevel, ToLocation.X, ToLocation.Y).TileType = MapTile.MapTileType.Empty
+                Debug.WriteLine("The door opens")
+                Return Player.PlayerMoveResult.Move
+            Case MapTile.MapTileType.DoorLocked
+                Debug.WriteLine("The door is locked")
+                Return Player.PlayerMoveResult.Blocked
         End Select
         Return ReturnValue
     End Function
@@ -482,6 +490,8 @@ Module Module1
                         Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown)
                     Case "<"
                         Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp)
+                    Case "D"
+                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Door)
                 End Select
             Next
             y += 1
@@ -581,7 +591,8 @@ Module Module1
     Public Sub ViewportLocationClear(Location As Point)
         Console.SetCursorPosition(Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y)
         If Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).IsVisible Then
-            Console.Write(Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).DisplayCharacter)
+            MaptileRender(Location)
+            'Console.Write(Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).DisplayCharacter)
         Else
             Console.Write(" ")
         End If
@@ -684,11 +695,21 @@ Module Module1
                     GraphicsCharacterDraw(LOWERRIGHTCORNER)
                 End If
 
+            Case MapTile.MapTileType.Door
+                Dim c As ConsoleColor = Console.ForegroundColor
+                Console.ForegroundColor = ConsoleColor.DarkYellow
+                GraphicsCharacterDraw(DOOR)
+                Console.ForegroundColor = c
 
+            Case MapTile.MapTileType.Empty
+                Console.Write(".")
 
+            Case MapTile.MapTileType.StairsDown
+                Console.Write(">")
 
-            Case Else
-                Console.Write(Map(MapLevel, Location.X, Location.Y).DisplayCharacter)
+            Case MapTile.MapTileType.StairsUp
+                Console.Write("<")
+
         End Select
     End Sub
 
