@@ -2,7 +2,14 @@
 Module Module1
 
     Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
+
     Const SOLIDBLOCK As Byte = 219
+    Const HORIZONTALWALL As Byte = 205
+    Const VERTICALWALL As Byte = 186
+    Const UPPERLEFTCORNER As Byte = 201
+    Const LOWERLEFTCORNER As Byte = 200
+    Const UPPERRIGHTCORNER As Byte = 187
+    Const LOWERRIGHTCORNER As Byte = 188
 
     Dim Map(,,) As MapTile      ' level, x, y
     Dim MapLevel As Integer
@@ -119,13 +126,14 @@ Module Module1
             For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
                 If Map(MapLevel, x, y).IsVisible Then
                     Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
-                    Console.Write(Map(MapLevel, x, y).DisplayCharacter)
+                    MaptileRender(New Point(x, y))
+                    'Console.Write(Map(MapLevel, x, y).DisplayCharacter)
                 End If
             Next
         Next
     End Sub
 
-    Private Function GetVisibleCells(Location As Point, Range As Integer) As List(Of Point)
+    Private Function VisibleCellsGet(Location As Point, Range As Integer) As List(Of Point)
         VisiblePoints = New List(Of Point)()
         For Each o As Integer In VisibleOctants
             ScanOctant(1, o, 1.0, 0.0, Location, Range)
@@ -464,7 +472,7 @@ Module Module1
         Dim y As Integer = 0
         For Each MapLine As String In MapLines
             For x As Integer = 0 To MapLine.Length - 1
-                Debug.WriteLine(x & "," & y)
+                'Debug.WriteLine(x & "," & y)
                 Select Case MapLine.Substring(x, 1)
                     Case " "
                         Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty)
@@ -531,25 +539,26 @@ Module Module1
                 ViewportMapDraw()
             End If
 
-            ElseIf Player1.Location.Y <= ViewportOrigin.Y + ViewportYScrollBufferGet() Then
-                Debug.WriteLine("top scroll border hit")
+        ElseIf Player1.Location.Y <= ViewportOrigin.Y + ViewportYScrollBufferGet() Then
+            Debug.WriteLine("top scroll border hit")
 
-                If ViewportOrigin.Y > 0 Then
-                    ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
-                    Dim NewOriginTop As Integer = ViewportOrigin.Y - (ViewportSize.Height / 2)
-                    If NewOriginTop < 0 Then
-                        ViewportOriginYSet(0)
-                    Else
-                        ViewportOriginYSet(ViewportOrigin.Y - (ViewportSize.Height / 2))
-                    End If
-                    ViewportMapDraw()
+            If ViewportOrigin.Y > 0 Then
+                ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
+                Dim NewOriginTop As Integer = ViewportOrigin.Y - (ViewportSize.Height / 2)
+                If NewOriginTop < 0 Then
+                    ViewportOriginYSet(0)
+                Else
+                    ViewportOriginYSet(ViewportOrigin.Y - (ViewportSize.Height / 2))
                 End If
-
+                ViewportMapDraw()
             End If
 
-        For Each p As Point In GetVisibleCells(Player1.Location, Player1.VisualRange)
+        End If
+
+        For Each p As Point In VisibleCellsGet(Player1.Location, Player1.VisualRange)
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
-            Console.Write(Map(MapLevel, p.X, p.Y).DisplayCharacter)
+            MaptileRender(New Point(p.X, p.Y))
+            'Console.Write(Map(MapLevel, p.X, p.Y).DisplayCharacter)
             Map(MapLevel, p.X, p.Y).IsVisible = True
         Next
 
@@ -559,7 +568,6 @@ Module Module1
         Console.ForegroundColor = ConsoleColor.White
         Console.Write("@")
         Console.ForegroundColor = c
-        Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
     End Sub
 
     Public Function ViewportXScrollBufferGet() As Integer
@@ -589,17 +597,18 @@ Module Module1
 
     Public Sub ViewportBorderDraw()
         For y = 0 To ViewportSize.Height - 1
-            SolidBlockDraw(New Point(ViewportSize.Width, y))
+            Console.SetCursorPosition(ViewportSize.Width, y)
+            GraphicsCharacterDraw(SOLIDBLOCK)
         Next
 
         For x = 0 To ViewportSize.Width - 1
-            SolidBlockDraw(New Point(x, ViewportSize.Height - 1))
+            Console.SetCursorPosition(x, ViewportSize.Height - 1)
+            GraphicsCharacterDraw(SOLIDBLOCK)
         Next
     End Sub
 
-    Private Sub SolidBlockDraw(Position As Point)
-        Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {SOLIDBLOCK})(0)
-        Console.SetCursorPosition(Position.X, Position.Y)
+    Private Sub GraphicsCharacterDraw(Character As Byte)
+        Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {Character})(0)
         Console.Write(c)
     End Sub
 
@@ -635,86 +644,54 @@ Module Module1
         Return ReturnValue
     End Function
 
-    Public Sub PlayerDraw()
-        Debug.WriteLine(String.Format("PlayerDraw:{0},{1}", Player1.Location.x, Player1.Location.y))
-        If Player1.Location.X >= ViewportOrigin.X + ViewportSize.Width - ViewportXScrollBufferGet() Then
-            Debug.WriteLine("right scroll border hit")
-
-            If ViewportOrigin.X < Map.GetLength(1) - ViewportSize.Width Then
-                ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
-                Dim NewOriginLeft As Integer = ViewportOrigin.X + (ViewportSize.Width / 2)
-
-                If Map.GetLength(1) - NewOriginLeft < ViewportSize.Width Then
-                    ViewportOriginXSet(Map.GetLength(1) - (ViewportSize.Width) + 1)
-                Else
-                    ViewportOriginXSet(ViewportOrigin.X + (ViewportSize.Width / 2))
+    Private Sub MaptileRender(Location As Point)
+        Dim t As MapTile.MapTileType = Map(MapLevel, Location.X, Location.Y).TileType
+        Select Case t
+            Case MapTile.MapTileType.Wall
+                ' vertical wall
+                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(VERTICALWALL)
                 End If
 
-                ViewportMapDraw()
-            End If
-
-        ElseIf Player1.Location.X <= ViewportOrigin.X + ViewportYScrollBufferGet() Then
-            Debug.WriteLine("left scroll border hit")
-
-            If ViewportOrigin.X > 0 Then
-                ' If we are too close to the left edge of the map to scroll fully, then scroll just enough
-                Dim NewOriginLeft As Integer = ViewportOrigin.X - (ViewportSize.Width / 2)
-
-                If NewOriginLeft < 0 Then
-                    ViewportOriginXSet(0)
-                Else
-                    ViewportOriginXSet(ViewportOrigin.X - (ViewportSize.Width / 2))
+                ' horizontal wall
+                If Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(HORIZONTALWALL)
                 End If
 
-                ViewportMapDraw()
-            End If
-
-        ElseIf Player1.Location.Y >= ViewportOrigin.Y + ViewportSize.Height - 1 - ViewportYScrollBufferGet() Then
-            Debug.WriteLine("bottom scroll border hit")
-
-            If ViewportOrigin.Y < Map.GetLength(2) - ViewportSize.Height Then
-                ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
-                Dim NewOriginTop As Integer = ViewportOrigin.Y + (ViewportSize.Height / 2)
-
-                If Map.GetLength(2) - NewOriginTop < ViewportSize.Height Then
-                    ViewportOriginYSet(Map.GetLength(2) - ViewportSize.Height + 1)
-                Else
-                    ViewportOriginYSet(ViewportOrigin.Y + (ViewportSize.Height / 2))
+                ' upper-left corner
+                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(UPPERLEFTCORNER)
                 End If
 
-                ViewportMapDraw()
-            End If
-
-        ElseIf Player1.Location.Y <= ViewportOrigin.Y + ViewportXScrollBufferGet() Then
-            Debug.WriteLine("top scroll border hit")
-
-            If ViewportOrigin.Y > 0 Then
-                ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
-                Dim NewOriginTop As Integer = ViewportOrigin.Y - (ViewportSize.Height / 2)
-                If NewOriginTop < 0 Then
-                    ViewportOriginYSet(0)
-                Else
-                    ViewportOriginYSet(ViewportOrigin.Y - (ViewportSize.Height / 2))
+                ' lower-left corner
+                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(LOWERLEFTCORNER)
                 End If
-                ViewportMapDraw()
-            End If
 
-        End If
+                ' upper-right corner
+                If Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(UPPERRIGHTCORNER)
+                End If
 
-        For Each p As Point In GetVisibleCells(Player1.Location, 5)
-            Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
-            Console.Write(Map(0, p.X, p.Y).DisplayCharacter)
-            Map(0, p.X, p.Y).IsVisible = True
-        Next
+                ' lower-right corner
+                If Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                    GraphicsCharacterDraw(LOWERRIGHTCORNER)
+                End If
 
-        Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
 
-        Dim c As ConsoleColor = Console.ForegroundColor
-        Console.ForegroundColor = ConsoleColor.White
-        Console.Write("@")
-        Console.ForegroundColor = c
-        Debug.WriteLine("7,9:" & Map(0, 7, 9).IsVisible)
+
+
+            Case Else
+                Console.Write(Map(MapLevel, Location.X, Location.Y).DisplayCharacter)
+        End Select
     End Sub
+
 
 
 End Module
