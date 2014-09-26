@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dice.vb" />
+    <Compile Include="MapBuilder.vb" />
     <Compile Include="MapTile.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="Monster.vb" />
