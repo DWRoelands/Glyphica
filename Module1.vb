@@ -23,6 +23,8 @@ Module Module1
 
     Dim Player1 As Player
 
+    Dim Monsters As New List(Of Monster)
+
     Public Sub Main()
         Console.CursorVisible = False
         Console.WindowWidth = 80
@@ -38,6 +40,12 @@ Module Module1
         MapLoad()
 
         Player1.Location = New Point(13, 13)
+
+
+
+
+
+
         ViewportPlayerDraw()
 
         Dim KeyPress As ConsoleKeyInfo

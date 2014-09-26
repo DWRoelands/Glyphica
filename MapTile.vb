@@ -11,7 +11,6 @@ Public Class MapTile
     End Enum
 
     Public Property TileType As MapTileType
-    'Public Property Location As Point
     Public Property IsVisible As Boolean = False
     Public ReadOnly Property BlocksVision As Boolean
         Get
@@ -34,7 +33,6 @@ Public Class MapTile
 
     Public Sub New(NewType As MapTileType)
         Me.TileType = NewType
-        'Me.Location = NewLocation
     End Sub
 
 End Class
