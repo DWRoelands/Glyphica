@@ -51,6 +51,12 @@ Module Module1
         m.DisplayColor = ConsoleColor.Green
         Monsters.Add(m)
 
+        Dim t As New Thing
+        t.Name = "Potion"
+        t.Location = New Point(33, 16)
+
+
+
         ViewportPlayerDraw()
 
         Dim KeyPress As ConsoleKeyInfo

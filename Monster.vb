@@ -5,8 +5,8 @@ Public Class Monster
     End Enum
 
     Public Property Name As String
-    Public Property MapLevel As Integer
     Public Property Location As Point
+    Public Property MapLevel As Integer
 
     Private _HitDice As String
     Public Property HitDice As String
