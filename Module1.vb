@@ -122,30 +122,41 @@ Module Module1
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
         For Each m As Monster In Monsters
-            Dim MonsterIsVisible As Boolean = False
-            For Each p As Point In VisibleCells
-                If p.X = m.Location.X And p.Y = m.Location.Y Then
-                    MonsterIsVisible = True
-                    Exit For
-                End If
-            Next
+            ' Is the monster's location even on the screen?
+            If IsLocationInViewport(m.Location) Then
+                Dim MonsterIsVisible As Boolean = False
+                ' is the monster in the list of cells visible to the player?
+                For Each p As Point In VisibleCells
+                    If p.X = m.Location.X And p.Y = m.Location.Y Then
+                        MonsterIsVisible = True
+                        Exit For
+                    End If
+                Next
 
-            ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
-            Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
-            If MonsterIsVisible Then
-                Dim c As ConsoleColor = Console.ForegroundColor
-                Console.ForegroundColor = m.DisplayColor
-                Console.Write(m.DisplayCharacter)
-                Console.ForegroundColor = c
-            Else
-                MaptileRender(m.Location)
+                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
+                Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
+                If MonsterIsVisible Then
+                    Dim c As ConsoleColor = Console.ForegroundColor
+                    Console.ForegroundColor = m.DisplayColor
+                    Console.Write(m.DisplayCharacter)
+                    Console.ForegroundColor = c
+                Else
+                    MaptileRender(m.Location)
+                End If
             End If
         Next
-
-
-
-
     End Sub
+
+    Public Function IsLocationInViewport(Location) As Boolean
+        Dim ReturnValue As Boolean = False
+        If Location.x >= ViewportOrigin.X AndAlso Location.x <= ViewportOrigin.X + ViewportSize.Width Then
+            If Location.y >= ViewportOrigin.Y AndAlso Location.y <= ViewportOrigin.Y + ViewportSize.Height Then
+                ReturnValue = True
+            End If
+        End If
+        Return ReturnValue
+    End Function
+
 
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
         Dim ReturnValue As Player.PlayerMoveResult
