@@ -7,7 +7,17 @@ Public Class Monster
     Public Property Name As String
     Public Property MapLevel As Integer
     Public Property Location As Point
+
+    Private _HitDice As String
     Public Property HitDice As String
+        Get
+            Return _HitDice
+        End Get
+        Set(value As String)
+            HitPoints = Dice.RollDice(value)
+        End Set
+    End Property
+
     Public Property HitPoints As Integer
     Public Property DamageDice As String
     Public Property ArmorClass As Integer

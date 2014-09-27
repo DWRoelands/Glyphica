@@ -1,7 +1,7 @@
 ﻿Imports System.Drawing
 Module Module1
 
-    Const TESTMAPLOCATION As String = "C:\Users\Duane\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 
     Const SOLIDBLOCK As Byte = 219
     Const HORIZONTALWALL As Byte = 205
@@ -24,6 +24,7 @@ Module Module1
     Dim Player1 As Player
 
     Dim Monsters As New List(Of Monster)
+    Dim Things As New List(Of Thing)
 
     Public Sub Main()
         Console.CursorVisible = False
@@ -41,10 +42,14 @@ Module Module1
 
         Player1.Location = New Point(13, 13)
 
-
-
-
-
+        Dim m As New Monster
+        m.HitDice = "1d8"
+        m.MapLevel = 0
+        m.Location = New Point(33, 18)
+        m.Name = "kobold"
+        m.DisplayCharacter = "k"
+        m.DisplayColor = ConsoleColor.Green
+        Monsters.Add(m)
 
         ViewportPlayerDraw()
 
@@ -105,8 +110,40 @@ Module Module1
             End Select
 
             ViewportPlayerDraw()
+            ViewportMonstersDraw()
 
         Loop While KeyPress.Key <> ConsoleKey.X
+
+    End Sub
+
+    Public Sub ViewportMonstersDraw()
+
+        ' get the list of visible cells once so we don't have to recalculate repeatedly
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+
+        For Each m As Monster In Monsters
+            Dim MonsterIsVisible As Boolean = False
+            For Each p As Point In VisibleCells
+                If p.X = m.Location.X And p.Y = m.Location.Y Then
+                    MonsterIsVisible = True
+                    Exit For
+                End If
+            Next
+
+            ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
+            Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
+            If MonsterIsVisible Then
+                Dim c As ConsoleColor = Console.ForegroundColor
+                Console.ForegroundColor = m.DisplayColor
+                Console.Write(m.DisplayCharacter)
+                Console.ForegroundColor = c
+            Else
+                MaptileRender(m.Location)
+            End If
+        Next
+
+
+
 
     End Sub
 
@@ -575,9 +612,8 @@ Module Module1
 
         For Each p As Point In VisibleCellsGet(Player1.Location, Player1.VisualRange)
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
-            MaptileRender(New Point(p.X, p.Y))
-            'Console.Write(Map(MapLevel, p.X, p.Y).DisplayCharacter)
             Map(MapLevel, p.X, p.Y).IsVisible = True
+            MaptileRender(New Point(p.X, p.Y))
         Next
 
         Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
@@ -664,7 +700,11 @@ Module Module1
     End Function
 
     Private Sub MaptileRender(Location As Point)
+
         Dim t As MapTile.MapTileType = Map(MapLevel, Location.X, Location.Y).TileType
+        If Not MapTileGet(Location).IsVisible Then
+            Exit Sub
+        End If
         Select Case t
             Case MapTile.MapTileType.Wall
                 ' vertical wall
