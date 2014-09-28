@@ -1,9 +1,10 @@
 ﻿Imports System.Drawing
-Public Class Thing
-    Public MapLevel As Integer
+Public MustInherit Class Thing
+    Public Property MapLevel As Integer
     Public Property Location As Point
-    Public Name As String
-    Public Description As String
-    Public DisplayColor As ConsoleColor
-    Public DisplayCharacter As String
+    Public Property Name As String = String.Empty
+    Public Property Description As String = String.Empty
+    Public Property DisplayColor As ConsoleColor
+    Public Property DisplayCharacter As String = String.Empty
+
 End Class

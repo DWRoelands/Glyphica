@@ -9,7 +9,7 @@
     </SchemaVersion>
     <ProjectGuid>{B62CDC06-0F71-4963-8D2E-6692A3D882A0}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <StartupObject>Glyphica.Module1</StartupObject>
+    <StartupObject>Glyphica.GlyphicaMain</StartupObject>
     <RootNamespace>Glyphica</RootNamespace>
     <AssemblyName>Glyphica</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -69,7 +69,7 @@
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="MapBuilder.vb" />
     <Compile Include="MapTile.vb" />
-    <Compile Include="Module1.vb" />
+    <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Monster.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -87,6 +87,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Player.vb" />
+    <Compile Include="Artifact.vb" />
     <Compile Include="Thing.vb" />
   </ItemGroup>
   <ItemGroup>

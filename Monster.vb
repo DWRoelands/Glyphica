@@ -1,12 +1,10 @@
 ﻿Imports System.Drawing
 Public Class Monster
-    Public Enum MonsterType As Integer
-        Kobold
-    End Enum
+    Inherits Thing
 
-    Public Property Name As String
-    Public Property Location As Point
-    Public Property MapLevel As Integer
+    Public Property HitPoints As Integer
+    Public Property DamageDice As String
+    Public Property ArmorClass As Integer
 
     Private _HitDice As String
     Public Property HitDice As String
@@ -18,10 +16,8 @@ Public Class Monster
         End Set
     End Property
 
-    Public Property HitPoints As Integer
-    Public Property DamageDice As String
-    Public Property ArmorClass As Integer
-    Public Property Description As String
-    Public Property DisplayCharacter As String
-    Public Property DisplayColor As ConsoleColor
+    Public Enum MonsterType As Integer
+        Kobold
+    End Enum
+
 End Class

@@ -1,7 +1,8 @@
 ﻿Imports System.Drawing
-Module Module1
+Module GlyphicaMain
 
-    Const TESTMAPLOCATION As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 
     Const SOLIDBLOCK As Byte = 219
     Const HORIZONTALWALL As Byte = 205
@@ -22,7 +23,7 @@ Module Module1
     Public Player1 As Player
 
     Dim Monsters As New List(Of Monster)
-    Dim Things As New List(Of Thing)
+    Dim Things As New List(Of Artifact)
 
     Public Sub Main()
         Console.CursorVisible = False
@@ -51,7 +52,7 @@ Module Module1
         m.DisplayColor = ConsoleColor.Green
         Monsters.Add(m)
 
-        Dim t As New Thing
+        Dim t As New Artifact
         t.Name = "Potion"
         t.Location = New Point(33, 16)
         t.DisplayColor = ConsoleColor.Red
@@ -251,7 +252,7 @@ Module Module1
         ' get the list of visible cells once so we don't have to recalculate repeatedly
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each t As Thing In Things
+        For Each t As Artifact In Things
             ' Is the monster's location even on the screen?
             If IsLocationInViewport(t.Location) Then
                 Dim ThingIsVisible As Boolean = False
@@ -359,7 +360,7 @@ Module Module1
         ' No monster.  Is there a thing here?
         Dim ThingFound As Boolean = False
         If Not MonsterFound Then
-            For Each t As Thing In Things
+            For Each t As Artifact In Things
                 If t.MapLevel = Player1.MapLevel AndAlso t.Location.X = ToLocation.X AndAlso t.Location.Y = ToLocation.Y Then
                     ReturnValue = Player.PlayerMoveResult.Thing
                     ThingFound = True
@@ -393,9 +394,16 @@ Module Module1
     Public Sub MapLoad()
 
         ' this is temporary code which loads a text file map into the integer-based array which is the live map
+        Dim MapLocation As String
+        If System.IO.Directory.Exists(TESTMAPLOCATION1) Then
+            MapLocation = TESTMAPLOCATION1
+        Else
+            MapLocation = TESTMAPLOCATION2
+        End If
+
 
         Dim MapLines As New List(Of String)
-        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap3.txt")
+        Using sr As New System.IO.StreamReader(MapLocation & "testmap3.txt")
             Dim line As String = sr.ReadLine
             Do While line IsNot Nothing
                 MapLines.Add(line)
