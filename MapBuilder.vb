@@ -481,9 +481,8 @@ Class MapBuilder
     ''' <summary>
     ''' Randomly get a point on the edge of a randomly selected room
     ''' </summary>
-    ''' <param name="Location">Out: Location of point on room edge</param>
-    ''' <param name="Location">Out: Direction of point</param>
-    ''' <returns>If Location is legal</returns>
+    ''' <param name="pLocation">Out: Location of point on room edge</param>
+    ''' <param name="pDirection">Out: Direction of point</param>
     Private Sub Room_GetEdge(ByRef pLocation As Point, ByRef pDirection As Point)
 
         rctCurrentRoom = rctBuiltRooms(rnd.[Next](0, rctBuiltRooms.Count()))
@@ -516,8 +515,7 @@ Class MapBuilder
     ''' <summary>
     ''' Randomly get a point on an existing corridor
     ''' </summary>
-    ''' <param name="Location">Out: location of point</param>
-    ''' <returns>Bool indicating success</returns>
+    ''' <param name="pLocation">Out: location of point</param>
     Private Sub Corridor_GetEdge(ByRef pLocation As Point, ByRef pDirection As Point)
         Dim validdirections As New List(Of Point)()
 
@@ -559,8 +557,7 @@ Class MapBuilder
     ''' <summary>
     ''' Get a starting point for a corridor, randomly choosing between a room and a corridor.
     ''' </summary>
-    ''' <param name="Location">Out: pLocation of point</param>
-    ''' <param name="Location">Out: pDirection of point</param>
+    ''' <param name="pLocation">Out: pLocation of point</param>
     ''' <returns>Bool indicating if location found is OK</returns>
     Private Function Corridor_GetStart(ByRef pLocation As Point, ByRef pDirection As Point) As Boolean
         rctCurrentRoom = New Rectangle()
@@ -692,7 +689,7 @@ Class MapBuilder
     ''' Get a random direction, excluding the opposite of the provided direction to
     ''' prevent a corridor going back on it's Build
     ''' </summary>
-    ''' <param name="dir">Current direction</param>
+    ''' <param name="pdir">Current direction</param>
     ''' <returns></returns>
     Private Function Direction_Get(pDir As Point) As Point
         Dim NewDir As Point
@@ -711,8 +708,7 @@ Class MapBuilder
     ''' to prevent it from being used will prevent a corridor from going back on 
     ''' it'self
     ''' </summary>
-    ''' <param name="dir">Current direction</param>
-    ''' <param name="pDirectionList">Direction to exclude</param>
+    ''' <param name="pdir">Current direction</param>
     ''' <param name="pDirExclude">Direction to exclude</param>
     ''' <returns></returns>
     Private Function Direction_Get(pDir As Point, pDirExclude As Point) As Point

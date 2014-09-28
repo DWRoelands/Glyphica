@@ -1,7 +1,7 @@
 ﻿Imports System.Drawing
 Module Module1
 
-    Const TESTMAPLOCATION As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
+    Const TESTMAPLOCATION As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
 
     Const SOLIDBLOCK As Byte = 219
     Const HORIZONTALWALL As Byte = 205
@@ -12,16 +12,14 @@ Module Module1
     Const LOWERRIGHTCORNER As Byte = 188
     Const DOOR As Byte = 176
 
-    Dim Map(,,) As MapTile      ' level, x, y
-    Dim MapLevel As Integer
+    Public Map(,,) As MapTile      ' level, x, y
 
     Dim ViewportSize As Size
     Dim ViewportOrigin As Point
 
-    Private VisibleOctants As New List(Of Integer)() From {1, 2, 3, 4, 5, 6, 7, 8}
-    Private VisiblePoints As List(Of Point)
 
-    Dim Player1 As Player
+
+    Public Player1 As Player
 
     Dim Monsters As New List(Of Monster)
     Dim Things As New List(Of Thing)
@@ -33,6 +31,7 @@ Module Module1
         Console.SetBufferSize(80, 40)
 
         Player1 = New Player
+        Player1.MapLevel = 0
 
         ViewportSize = New Size(30, 30)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -42,6 +41,7 @@ Module Module1
 
         Player1.Location = New Point(13, 13)
 
+        ' testing/debugging
         Dim m As New Monster
         m.HitDice = "1d8"
         m.MapLevel = 0
@@ -54,8 +54,9 @@ Module Module1
         Dim t As New Thing
         t.Name = "Potion"
         t.Location = New Point(33, 16)
-
-
+        t.DisplayColor = ConsoleColor.Red
+        t.DisplayCharacter = "p"
+        Things.Add(t)
 
         ViewportPlayerDraw()
 
@@ -93,14 +94,14 @@ Module Module1
             Select Case KeyPress.KeyChar
                 Case ">"c  '' go down stairs
                     If MapTileGet(Player1.Location).TileType = MapTile.MapTileType.StairsDown Then
-                        MapLevel += 1
+                        Player1.MapLevel += 1
                         ViewportMapDraw()
                         Player1.Location = StairsUpFind()
                     End If
 
                 Case "<"c  '' go up stairs
                     If MapTileGet(Player1.Location).TileType = MapTile.MapTileType.StairsUp Then
-                        MapLevel -= 1
+                        Player1.MapLevel -= 1
                         ViewportMapDraw()
                         Player1.Location = StairsDownFind()
                     End If
@@ -113,454 +114,21 @@ Module Module1
                 Case Player.PlayerMoveResult.Blocked
                     '' do nothing - couldn't move the player
                     '' later, we'll display some sort of mesage based on what's in the ToLocation
+                Case Player.PlayerMoveResult.Combat
+                    Debug.WriteLine("COMBAT")
+                Case Player.PlayerMoveResult.Thing
+                    Debug.WriteLine("THING")
             End Select
 
             ViewportPlayerDraw()
             ViewportMonstersDraw()
+            ViewportThingsDraw()
 
         Loop While KeyPress.Key <> ConsoleKey.X
 
     End Sub
 
-    Public Sub ViewportMonstersDraw()
-
-        ' get the list of visible cells once so we don't have to recalculate repeatedly
-        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
-
-        For Each m As Monster In Monsters
-            ' Is the monster's location even on the screen?
-            If IsLocationInViewport(m.Location) Then
-                Dim MonsterIsVisible As Boolean = False
-                ' is the monster in the list of cells visible to the player?
-                For Each p As Point In VisibleCells
-                    If p.X = m.Location.X And p.Y = m.Location.Y Then
-                        MonsterIsVisible = True
-                        Exit For
-                    End If
-                Next
-
-                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
-                Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
-                If MonsterIsVisible Then
-                    Dim c As ConsoleColor = Console.ForegroundColor
-                    Console.ForegroundColor = m.DisplayColor
-                    Console.Write(m.DisplayCharacter)
-                    Console.ForegroundColor = c
-                Else
-                    MaptileRender(m.Location)
-                End If
-            End If
-        Next
-    End Sub
-
-    Public Function IsLocationInViewport(Location) As Boolean
-        Dim ReturnValue As Boolean = False
-        If Location.x >= ViewportOrigin.X AndAlso Location.x <= ViewportOrigin.X + ViewportSize.Width Then
-            If Location.y >= ViewportOrigin.Y AndAlso Location.y <= ViewportOrigin.Y + ViewportSize.Height Then
-                ReturnValue = True
-            End If
-        End If
-        Return ReturnValue
-    End Function
-
-
-    Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
-        Dim ReturnValue As Player.PlayerMoveResult
-        Select Case MapTileGet(ToLocation).TileType
-            Case MapTile.MapTileType.Empty
-                ReturnValue = Player.PlayerMoveResult.Move
-            Case MapTile.MapTileType.Wall
-                ReturnValue = Player.PlayerMoveResult.Blocked
-            Case MapTile.MapTileType.Door
-                Map(MapLevel, ToLocation.X, ToLocation.Y).TileType = MapTile.MapTileType.Empty
-                Debug.WriteLine("The door opens")
-                Return Player.PlayerMoveResult.Move
-            Case MapTile.MapTileType.DoorLocked
-                Debug.WriteLine("The door is locked")
-                Return Player.PlayerMoveResult.Blocked
-        End Select
-        Return ReturnValue
-    End Function
-
-    Public Sub ViewportMapDraw()
-        Debug.WriteLine("ViewportMapDraw()")
-
-        For x As Integer = ViewportOrigin.X To ViewportOrigin.X + ViewportSize.Width - 1
-            For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
-                Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
-                Console.Write(" ")
-            Next
-        Next
-
-        For x As Integer = ViewportOrigin.X To ViewportOrigin.X + ViewportSize.Width - 1
-            For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
-                If Map(MapLevel, x, y).IsVisible Then
-                    Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
-                    MaptileRender(New Point(x, y))
-                    'Console.Write(Map(MapLevel, x, y).DisplayCharacter)
-                End If
-            Next
-        Next
-    End Sub
-
-    Private Function VisibleCellsGet(Location As Point, Range As Integer) As List(Of Point)
-        VisiblePoints = New List(Of Point)()
-        For Each o As Integer In VisibleOctants
-            ScanOctant(1, o, 1.0, 0.0, Location, Range)
-        Next
-        Return VisiblePoints
-    End Function
-
-    Private Sub ScanOctant(pDepth As Integer, pOctant As Integer, pStartSlope As Double, pEndSlope As Double, Location As Point, Range As Integer)
-
-        Dim visrange2 As Integer = Range * Range
-        Dim x As Integer = 0
-        Dim y As Integer = 0
-
-        Select Case pOctant
-
-            Case 1
-                'nnw
-                y = Location.Y - pDepth
-                If y < 0 Then
-                    Return
-                End If
-
-                x = Location.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x < 0 Then
-                    x = 0
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            'current cell blocked
-                            If x - 1 >= 0 AndAlso Map(MapLevel, x - 1, y).BlocksVision = False Then
-                                'prior cell within range AND open...
-                                '...incremenet the depth, adjust the endslope and recurse
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, False), Location, Range)
-                            End If
-                        Else
-
-                            If x - 1 >= 0 AndAlso Map(MapLevel, x - 1, y).BlocksVision Then
-                                'prior cell within range AND open...
-                                '..adjust the startslope
-                                pStartSlope = GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    x += 1
-                End While
-                x -= 1
-                Exit Select
-
-            Case 2
-                'nne
-                y = Location.Y - pDepth
-                If y < 0 Then
-                    Return
-                End If
-
-                x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Map.GetLength(1) Then
-                    x = Map.GetLength(1) - 1
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x + 1 < Map.GetLength(1) AndAlso Map(MapLevel, x + 1, y).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False), Location, Range)
-                            End If
-                        Else
-                            If x + 1 < Map.GetLength(1) AndAlso Map(MapLevel, x + 1, y).BlocksVision Then
-                                pStartSlope = -GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    x -= 1
-                End While
-                x += 1
-                Exit Select
-
-            Case 3
-
-                x = Location.X + pDepth
-                If x >= Map.GetLength(1) Then
-                    Return
-                End If
-
-                y = Location.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y < 0 Then
-                    y = 0
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, True) <= pEndSlope
-
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y - 1 >= 0 AndAlso Map(MapLevel, x, y - 1).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
-                            End If
-                        Else
-                            If y - 1 >= 0 AndAlso Map(MapLevel, x, y - 1).BlocksVision Then
-                                pStartSlope = -GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    y += 1
-                End While
-                y -= 1
-                Exit Select
-
-            Case 4
-
-                x = Location.X + pDepth
-                If x >= Map.GetLength(1) Then
-                    Return
-                End If
-
-                y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Map.GetLength(2) Then
-                    y = Map.GetLength(2) - 1
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, True) >= pEndSlope
-
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y + 1 < Map.GetLength(2) AndAlso Map(MapLevel, x, y + 1).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
-                            End If
-                        Else
-                            If y + 1 < Map.GetLength(2) AndAlso Map(MapLevel, x, y + 1).BlocksVision Then
-                                pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    y -= 1
-                End While
-                y += 1
-                Exit Select
-
-            Case 5
-
-                y = Location.Y + pDepth
-                If y >= Map.GetLength(2) Then
-                    Return
-                End If
-
-                x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Map.GetLength(1) Then
-                    x = Map.GetLength(1) - 1
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x + 1 < Map.GetLength(1) AndAlso Map(MapLevel, x + 1, y).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
-                            End If
-                        Else
-                            If x + 1 < Map.GetLength(1) AndAlso Map(MapLevel, x + 1, y).BlocksVision Then
-                                pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    x -= 1
-                End While
-                x += 1
-                Exit Select
-
-            Case 6
-
-                y = Location.Y + pDepth
-                If y >= Map.GetLength(2) Then
-                    Return
-                End If
-
-                x = Location.X - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x < 0 Then
-                    x = 0
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x - 1 >= 0 AndAlso Map(MapLevel, x - 1, y).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
-                            End If
-                        Else
-                            If x - 1 >= 0 AndAlso Map(MapLevel, x - 1, y).BlocksVision Then
-                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, False)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    x += 1
-                End While
-                x -= 1
-                Exit Select
-
-            Case 7
-
-                x = Location.X - pDepth
-                If x < 0 Then
-                    Return
-                End If
-
-                y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Map.GetLength(2) Then
-                    y = Map.GetLength(2) - 1
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, True) <= pEndSlope
-
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y + 1 < Map.GetLength(2) AndAlso Map(MapLevel, x, y + 1).BlocksVision = False Then
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
-                            End If
-                        Else
-                            If y + 1 < Map.GetLength(2) AndAlso Map(MapLevel, x, y + 1).BlocksVision Then
-                                pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    y -= 1
-                End While
-                y += 1
-                Exit Select
-
-            Case 8
-                'wnw
-                x = Location.X - pDepth
-                If x < 0 Then
-                    Return
-                End If
-
-                y = Location.Y - Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y < 0 Then
-                    y = 0
-                End If
-
-                While GetSlope(x, y, Location.X, Location.Y, True) >= pEndSlope
-
-                    If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-
-                        If Map(MapLevel, x, y).BlocksVision Then
-                            If y - 1 >= 0 AndAlso Map(MapLevel, x, y - 1).BlocksVision = False Then
-                                VisiblePoints.Add(New Point(x, y))   ' testing
-                                ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
-
-                            End If
-                        Else
-                            If y - 1 >= 0 AndAlso Map(MapLevel, x, y - 1).BlocksVision Then
-                                pStartSlope = GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True)
-                            End If
-
-                            VisiblePoints.Add(New Point(x, y))
-                        End If
-                    End If
-                    y += 1
-                End While
-                y -= 1
-                Exit Select
-        End Select
-
-
-        If x < 0 Then
-            x = 0
-        ElseIf x >= Map.GetLength(1) Then
-            x = Map.GetLength(1) - 1
-        End If
-
-        If y < 0 Then
-            y = 0
-        ElseIf y >= Map.GetLength(2) Then
-            y = Map.GetLength(2) - 1
-        End If
-
-        If pDepth < Range And Map(MapLevel, x, y).BlocksVision = False Then
-            ScanOctant(pDepth + 1, pOctant, pStartSlope, pEndSlope, Location, Range)
-        End If
-
-    End Sub
-
-    Private Function GetSlope(pX1 As Double, pY1 As Double, pX2 As Double, pY2 As Double, pInvert As Boolean) As Double
-        If pInvert Then
-            Return (pY1 - pY2) / (pX1 - pX2)
-        Else
-            Return (pX1 - pX2) / (pY1 - pY2)
-        End If
-    End Function
-
-    Private Function GetVisDistance(pX1 As Integer, pY1 As Integer, pX2 As Integer, pY2 As Integer) As Integer
-        Return ((pX1 - pX2) * (pX1 - pX2)) + ((pY1 - pY2) * (pY1 - pY2))
-    End Function
-
-    Public Sub MapLoad()
-
-        ' this is temporary code which loads a text file map into the integer-based array which is the live map
-
-        Dim MapLines As New List(Of String)
-        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap3.txt")
-            Dim line As String = sr.ReadLine
-            Do While line IsNot Nothing
-                MapLines.Add(line)
-                line = sr.ReadLine
-            Loop
-        End Using
-
-        ReDim Map(MapLevel, MapLines(0).Length - 1, MapLines.Count - 1)
-
-        Dim y As Integer = 0
-        For Each MapLine As String In MapLines
-            For x As Integer = 0 To MapLine.Length - 1
-                'Debug.WriteLine(x & "," & y)
-                Select Case MapLine.Substring(x, 1)
-                    Case " "
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty)
-                    Case "#"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Wall)
-                    Case ">"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown)
-                    Case "<"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp)
-                    Case "D"
-                        Map(MapLevel, x, y) = New MapTile(MapTile.MapTileType.Door)
-                End Select
-            Next
-            y += 1
-        Next
-
-    End Sub
-
+#Region "Viewport Methods"
 
     Public Sub ViewportPlayerDraw()
         Debug.WriteLine(String.Format("PlayerDraw:{0},{1}", Player1.Location.x, Player1.Location.y))
@@ -629,7 +197,7 @@ Module Module1
 
         For Each p As Point In VisibleCellsGet(Player1.Location, Player1.VisualRange)
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
-            Map(MapLevel, p.X, p.Y).IsVisible = True
+            Map(Player1.MapLevel, p.X, p.Y).IsVisible = True
             MaptileRender(New Point(p.X, p.Y))
         Next
 
@@ -679,13 +247,193 @@ Module Module1
         Next
     End Sub
 
+    Public Sub ViewportThingsDraw()
+        ' get the list of visible cells once so we don't have to recalculate repeatedly
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+
+        For Each t As Thing In Things
+            ' Is the monster's location even on the screen?
+            If IsLocationInViewport(t.Location) Then
+                Dim ThingIsVisible As Boolean = False
+                ' is the monster in the list of cells visible to the player?
+                For Each p As Point In VisibleCells
+                    If p.X = t.Location.X And p.Y = t.Location.Y Then
+                        ThingIsVisible = True
+                        Exit For
+                    End If
+                Next
+
+                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
+                Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
+                If ThingIsVisible Then
+                    Dim c As ConsoleColor = Console.ForegroundColor
+                    Console.ForegroundColor = t.DisplayColor
+                    Console.Write(t.DisplayCharacter)
+                    Console.ForegroundColor = c
+                Else
+                    MaptileRender(t.Location)
+                End If
+            End If
+        Next
+    End Sub
+
+    Public Sub ViewportMonstersDraw()
+
+        ' get the list of visible cells once so we don't have to recalculate repeatedly
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+
+        For Each m As Monster In Monsters
+            ' Is the monster's location even on the screen?
+            If IsLocationInViewport(m.Location) Then
+                Dim MonsterIsVisible As Boolean = False
+                ' is the monster in the list of cells visible to the player?
+                For Each p As Point In VisibleCells
+                    If p.X = m.Location.X And p.Y = m.Location.Y Then
+                        MonsterIsVisible = True
+                        Exit For
+                    End If
+                Next
+
+                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
+                Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
+                If MonsterIsVisible Then
+                    Dim c As ConsoleColor = Console.ForegroundColor
+                    Console.ForegroundColor = m.DisplayColor
+                    Console.Write(m.DisplayCharacter)
+                    Console.ForegroundColor = c
+                Else
+                    MaptileRender(m.Location)
+                End If
+            End If
+        Next
+    End Sub
+
+    Public Function IsLocationInViewport(Location) As Boolean
+        Dim ReturnValue As Boolean = False
+        If Location.x >= ViewportOrigin.X AndAlso Location.x <= ViewportOrigin.X + ViewportSize.Width Then
+            If Location.y >= ViewportOrigin.Y AndAlso Location.y <= ViewportOrigin.Y + ViewportSize.Height Then
+                ReturnValue = True
+            End If
+        End If
+        Return ReturnValue
+    End Function
+
+    Public Sub ViewportMapDraw()
+        Debug.WriteLine("ViewportMapDraw()")
+
+        For x As Integer = ViewportOrigin.X To ViewportOrigin.X + ViewportSize.Width - 1
+            For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
+                Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
+                Console.Write(" ")
+            Next
+        Next
+
+        For x As Integer = ViewportOrigin.X To ViewportOrigin.X + ViewportSize.Width - 1
+            For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
+                If Map(Player1.MapLevel, x, y).IsVisible Then
+                    Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
+                    MaptileRender(New Point(x, y))
+                    'Console.Write(Map(MapLevel, x, y).DisplayCharacter)
+                End If
+            Next
+        Next
+    End Sub
+
+#End Region
+
+
+    Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
+        Dim ReturnValue As Player.PlayerMoveResult = Nothing
+
+        ' First, is there a monster here?  If so, the result is combat
+        Dim MonsterFound As Boolean = False
+        For Each m As Monster In Monsters
+            If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
+                ReturnValue = Player.PlayerMoveResult.Combat
+                MonsterFound = True
+                Debug.WriteLine("Monster here")
+                Exit For
+            End If
+        Next
+
+        ' No monster.  Is there a thing here?
+        Dim ThingFound As Boolean = False
+        If Not MonsterFound Then
+            For Each t As Thing In Things
+                If t.MapLevel = Player1.MapLevel AndAlso t.Location.X = ToLocation.X AndAlso t.Location.Y = ToLocation.Y Then
+                    ReturnValue = Player.PlayerMoveResult.Thing
+                    ThingFound = True
+                    Debug.WriteLine("Thing here")
+                    Exit For
+                End If
+            Next
+        End If
+
+        ' No monster and no things
+        ' Check for collision with map feature
+        If (Not MonsterFound) And (Not ThingFound) Then
+            Select Case MapTileGet(ToLocation).TileType
+                Case MapTile.MapTileType.Empty
+                    ReturnValue = Player.PlayerMoveResult.Move
+                Case MapTile.MapTileType.Wall
+                    ReturnValue = Player.PlayerMoveResult.Blocked
+                Case MapTile.MapTileType.Door
+                    Map(Player1.MapLevel, ToLocation.X, ToLocation.Y).TileType = MapTile.MapTileType.Empty
+                    Debug.WriteLine("The door opens")
+                    Return Player.PlayerMoveResult.Move
+                Case MapTile.MapTileType.DoorLocked
+                    Debug.WriteLine("The door is locked")
+                    Return Player.PlayerMoveResult.Blocked
+            End Select
+        End If
+
+        Return ReturnValue
+    End Function
+
+    Public Sub MapLoad()
+
+        ' this is temporary code which loads a text file map into the integer-based array which is the live map
+
+        Dim MapLines As New List(Of String)
+        Using sr As New System.IO.StreamReader(TESTMAPLOCATION & "testmap3.txt")
+            Dim line As String = sr.ReadLine
+            Do While line IsNot Nothing
+                MapLines.Add(line)
+                line = sr.ReadLine
+            Loop
+        End Using
+
+        ReDim Map(Player1.MapLevel, MapLines(0).Length - 1, MapLines.Count - 1)
+
+        Dim y As Integer = 0
+        For Each MapLine As String In MapLines
+            For x As Integer = 0 To MapLine.Length - 1
+                'Debug.WriteLine(x & "," & y)
+                Select Case MapLine.Substring(x, 1)
+                    Case " "
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty)
+                    Case "#"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Wall)
+                    Case ">"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown)
+                    Case "<"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp)
+                    Case "D"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Door)
+                End Select
+            Next
+            y += 1
+        Next
+
+    End Sub
+
     Private Sub GraphicsCharacterDraw(Character As Byte)
         Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {Character})(0)
         Console.Write(c)
     End Sub
 
     Public Function MapTileGet(Location As Point) As MapTile
-        Return Map(MapLevel, Location.X, Location.Y)
+        Return Map(Player1.MapLevel, Location.X, Location.Y)
     End Function
 
     Public Function StairsUpFind() As Point
@@ -693,7 +441,7 @@ Module Module1
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(MapLevel, x, y).TileType = MapTile.MapTileType.StairsUp Then
+                If Map(Player1.MapLevel, x, y).TileType = MapTile.MapTileType.StairsUp Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -707,7 +455,7 @@ Module Module1
 
         For x As Integer = 0 To Map.GetUpperBound(1)
             For y As Integer = 0 To Map.GetUpperBound(2)
-                If Map(MapLevel, x, y).TileType = MapTile.MapTileType.StairsDown Then
+                If Map(Player1.MapLevel, x, y).TileType = MapTile.MapTileType.StairsDown Then
                     ReturnValue = New Point(y, x)
                 End If
             Next
@@ -718,45 +466,45 @@ Module Module1
 
     Private Sub MaptileRender(Location As Point)
 
-        Dim t As MapTile.MapTileType = Map(MapLevel, Location.X, Location.Y).TileType
+        Dim t As MapTile.MapTileType = Map(Player1.MapLevel, Location.X, Location.Y).TileType
         If Not MapTileGet(Location).IsVisible Then
             Exit Sub
         End If
         Select Case t
             Case MapTile.MapTileType.Wall
                 ' vertical wall
-                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(VERTICALWALL)
                 End If
 
                 ' horizontal wall
-                If Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(HORIZONTALWALL)
                 End If
 
                 ' upper-left corner
-                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(UPPERLEFTCORNER)
                 End If
 
                 ' lower-left corner
-                If Map(MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(LOWERLEFTCORNER)
                 End If
 
                 ' upper-right corner
-                If Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X, Location.Y - 1).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(UPPERRIGHTCORNER)
                 End If
 
                 ' lower-right corner
-                If Map(MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
-                    Map(MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
+                If Map(Player1.MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
+                    Map(Player1.MapLevel, Location.X, Location.Y + 1).TileType = MapTile.MapTileType.Empty Then
                     GraphicsCharacterDraw(LOWERRIGHTCORNER)
                 End If
 

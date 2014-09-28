@@ -1,6 +1,6 @@
-﻿'
-' This method for evaluating D20 dice formulas comes from Jason Dean's "VB Magic" blog: http://blog.vbmagic.net/2011/04/19/rolling-the-dice/
-' I am grateful to him for sharing this code with the community
+﻿' The code in this module comes from Jason Dean.
+' http://blog.vbmagic.net/2011/04/19/rolling-the-dice/
+
 Module Dice
     Public Function RollDice(value As String) As Integer
         ' setup working variables to make things easier
