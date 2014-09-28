@@ -13,6 +13,7 @@ Public Class Monster
             Return _HitDice
         End Get
         Set(value As String)
+            _HitDice = value
             HitPoints = Dice.RollDice(value)
         End Set
     End Property

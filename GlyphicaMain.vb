@@ -33,6 +33,8 @@ Module GlyphicaMain
 
         Player1 = New Player
         Player1.MapLevel = 0
+        Player1.HitDice = "1d8"
+        Player1.ArmorClass = 10
 
         ViewportSize = New Size(30, 30)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -112,6 +114,7 @@ Module GlyphicaMain
                 Case Player.PlayerMoveResult.Combat
                     Debug.WriteLine("COMBAT")
                     Dim Enemy As Monster = Monster.Find(ToLocation)
+                    CombatResolve(Enemy)
                 Case Player.PlayerMoveResult.Thing
                     Debug.WriteLine("THING")
             End Select
@@ -126,23 +129,49 @@ Module GlyphicaMain
 
     Public Sub CombatResolve(Enemy As Monster)
 
-        Dim PlayerInitiative As Integer = Dice.RollDice("d20") + Player1.Initiative
-        Dim EnemyInitiative As Integer = Dice.RollDice("d20") + Enemy.Initiative
+        Debug.WriteLine("Player hp:" & Player1.HitPoints)
+        Debug.WriteLine(Enemy.Name & " hp:" & Enemy.HitPoints)
+
+        Dim PlayerInitiative As Integer = Dice.RollDice("1d20") + Player1.Initiative
+        Dim EnemyInitiative As Integer = Dice.RollDice("1d20") + Enemy.Initiative
 
         ' Assign attacker and defender based on initiative rolls
         ' Attacker goes first
         Dim Attacker As Monster = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
-        Dim Defender As Monster = IIf(PlayerInitiative < EnemyInitiative, Enemy, Player1)
+        Dim Defender As Monster = IIf(PlayerInitiative < EnemyInitiative, Player1, Enemy)
 
-        Dim AttackerRoll As Integer = Dice.RollDice("d20")
+        Debug.WriteLine("attacker hitdice:" & Attacker.HitDice)
+        Debug.WriteLine("defender hitdice:" & Defender.HitDice)
+
+        Dim AttackerRoll As Integer = Dice.RollDice("1d20")
         If AttackerRoll >= Defender.ArmorClass Then
-            Debug.WriteLine("attacker hits")
+            Dim Damage As Integer = Dice.RollDice(Attacker.HitDice)
+            Debug.WriteLine("attacker hits for " & Damage)
+            Defender.HitPoints -= Damage
         Else
             Debug.WriteLine("attacker misses")
         End If
 
+        If Defender.HitPoints <= 0 Then
+            Debug.WriteLine("defender dies")
+        Else
+            Debug.WriteLine("combat continues - defender's turn")
+        End If
 
+        Dim DefenderRoll As Integer = Dice.RollDice("1d20")
+        If DefenderRoll >= Attacker.ArmorClass Then
+            Dim Damage As Integer = Dice.RollDice(Defender.HitDice)
+            Debug.WriteLine("defender hits for " & Damage)
+            Attacker.HitPoints -= Damage
+        Else
+            Debug.WriteLine("defender misses")
+        End If
 
+        If Attacker.HitPoints <= 0 Then
+            Debug.WriteLine("attacker dies")
+        Else
+            Debug.WriteLine("combat round ends")
+        End If
 
 
 
