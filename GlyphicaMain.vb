@@ -22,8 +22,8 @@ Module GlyphicaMain
 
     Public Player1 As Player
 
-    Dim Monsters As New List(Of Monster)
-    Dim Things As New List(Of Artifact)
+    Public Monsters As New List(Of Monster)
+    Public Things As New List(Of Artifact)
 
     Public Sub Main()
         Console.CursorVisible = False
@@ -43,14 +43,7 @@ Module GlyphicaMain
         Player1.Location = New Point(13, 13)
 
         ' testing/debugging
-        Dim m As New Monster
-        m.HitDice = "1d8"
-        m.MapLevel = 0
-        m.Location = New Point(33, 18)
-        m.Name = "kobold"
-        m.DisplayCharacter = "k"
-        m.DisplayColor = ConsoleColor.Green
-        Monsters.Add(m)
+        Monsters.Add(New Kobold(0, New Point(33, 18)))
 
         Dim t As New Artifact
         t.Name = "Potion"
@@ -61,6 +54,7 @@ Module GlyphicaMain
 
         ViewportPlayerDraw()
 
+        ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
         Do
             Dim ToLocation As New Point
@@ -117,6 +111,7 @@ Module GlyphicaMain
                     '' later, we'll display some sort of mesage based on what's in the ToLocation
                 Case Player.PlayerMoveResult.Combat
                     Debug.WriteLine("COMBAT")
+                    Dim Enemy As Monster = Monster.Find(ToLocation)
                 Case Player.PlayerMoveResult.Thing
                     Debug.WriteLine("THING")
             End Select
@@ -128,6 +123,39 @@ Module GlyphicaMain
         Loop While KeyPress.Key <> ConsoleKey.X
 
     End Sub
+
+    Public Sub CombatResolve(Enemy As Monster)
+
+        Dim PlayerInitiative As Integer = Dice.RollDice("d20") + Player1.Initiative
+        Dim EnemyInitiative As Integer = Dice.RollDice("d20") + Enemy.Initiative
+
+        ' Assign attacker and defender based on initiative rolls
+        ' Attacker goes first
+        Dim Attacker As Monster = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
+        Dim Defender As Monster = IIf(PlayerInitiative < EnemyInitiative, Enemy, Player1)
+
+        Dim AttackerRoll As Integer = Dice.RollDice("d20")
+        If AttackerRoll >= Defender.ArmorClass Then
+            Debug.WriteLine("attacker hits")
+        Else
+            Debug.WriteLine("attacker misses")
+        End If
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    End Sub
+
 
 #Region "Viewport Methods"
 

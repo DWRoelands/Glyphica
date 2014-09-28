@@ -65,12 +65,14 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bestiary.vb" />
     <Compile Include="Dice.vb" />
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="MapBuilder.vb" />
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Monster.vb" />
+    <Compile Include="Monsters\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
