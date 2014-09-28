@@ -196,11 +196,25 @@ Module GlyphicaMain
 
         End If
 
-        For Each p As Point In VisibleCellsGet(Player1.Location, Player1.VisualRange)
+        ' Light the cells that are visible as a result of the player move
+        Dim NewlyVisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+        For Each p As Point In NewlyVisibleCells
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
+            Map(Player1.MapLevel, p.X, p.Y).IsRevealed = True
             Map(Player1.MapLevel, p.X, p.Y).IsVisible = True
             MaptileRender(New Point(p.X, p.Y))
         Next
+
+        ' dim the cells that are no longer visible as a result of the player move
+        For Each p As Point In Player1.VisibleCells
+            If Not NewlyVisibleCells.Contains(p) Then
+                Map(Player1.MapLevel, p.X, p.Y).IsVisible = False
+                Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
+                MaptileRender(p)
+            End If
+        Next
+
+        Player1.VisibleCells = NewlyVisibleCells
 
         Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
 
@@ -220,7 +234,7 @@ Module GlyphicaMain
 
     Public Sub ViewportLocationClear(Location As Point)
         Console.SetCursorPosition(Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y)
-        If Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).IsVisible Then
+        If Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).IsRevealed Then
             MaptileRender(Location)
             'Console.Write(Map(0, Location.X - ViewportOrigin.X, Location.Y - ViewportOrigin.Y).DisplayCharacter)
         Else
@@ -331,7 +345,7 @@ Module GlyphicaMain
 
         For x As Integer = ViewportOrigin.X To ViewportOrigin.X + ViewportSize.Width - 1
             For y As Integer = ViewportOrigin.Y To ViewportOrigin.Y + ViewportSize.Height - 2
-                If Map(Player1.MapLevel, x, y).IsVisible Then
+                If Map(Player1.MapLevel, x, y).IsRevealed Then
                     Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
                     MaptileRender(New Point(x, y))
                     'Console.Write(Map(MapLevel, x, y).DisplayCharacter)
@@ -475,7 +489,7 @@ Module GlyphicaMain
     Private Sub MaptileRender(Location As Point)
 
         Dim t As MapTile.MapTileType = Map(Player1.MapLevel, Location.X, Location.Y).TileType
-        If Not MapTileGet(Location).IsVisible Then
+        If Not MapTileGet(Location).IsRevealed Then
             Exit Sub
         End If
         Select Case t
@@ -523,7 +537,14 @@ Module GlyphicaMain
                 Console.ForegroundColor = c
 
             Case MapTile.MapTileType.Empty
+                Dim c As ConsoleColor = Console.ForegroundColor
+                If Map(Player1.MapLevel, Location.X, Location.Y).IsVisible Then
+                    Console.ForegroundColor = ConsoleColor.White
+                Else
+                    Console.ForegroundColor = ConsoleColor.DarkGray
+                End If
                 Console.Write(".")
+                Console.ForegroundColor = c
 
             Case MapTile.MapTileType.StairsDown
                 Console.Write(">")

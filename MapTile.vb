@@ -11,7 +11,8 @@ Public Class MapTile
     End Enum
 
     Public Property TileType As MapTileType
-    Public Property IsVisible As Boolean = False
+    Public Property IsRevealed As Boolean = False
+    Public Property IsVisible As Boolean = True
     Public ReadOnly Property BlocksVision As Boolean
         Get
             Select Case TileType
