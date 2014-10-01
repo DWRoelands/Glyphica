@@ -15,7 +15,8 @@
     <FileAlignment>512</FileAlignment>
     <MyType>Console</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -68,9 +69,11 @@
     <Compile Include="Bestiary.vb" />
     <Compile Include="Dice.vb" />
     <Compile Include="FOVRecurse.vb" />
+    <Compile Include="GlyphicaTraceLilstener.vb" />
     <Compile Include="MapBuilder.vb" />
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
+    <Compile Include="Message.vb" />
     <Compile Include="Monster.vb" />
     <Compile Include="Monsters\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -101,6 +104,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

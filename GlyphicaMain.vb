@@ -11,7 +11,12 @@ Module GlyphicaMain
     Const LOWERLEFTCORNER As Byte = 200
     Const UPPERRIGHTCORNER As Byte = 187
     Const LOWERRIGHTCORNER As Byte = 188
+    Const SINGLEHORIZONTALLINE As Byte = 196
     Const DOOR As Byte = 176
+
+    Const MESSAGEAREAHEIGHT As Integer = 5
+    Const STATUSAREAHEIGHT As Integer = 5
+
 
     Public Map(,,) As MapTile      ' level, x, y
 
@@ -24,8 +29,10 @@ Module GlyphicaMain
 
     Public Monsters As New List(Of Monster)
     Public Things As New List(Of Artifact)
+    Public Messages As New List(Of Message)
 
     Public Sub Main()
+
         Console.CursorVisible = False
         Console.WindowWidth = 80
         Console.WindowHeight = 40
@@ -36,7 +43,7 @@ Module GlyphicaMain
         Player1.HitDice = "1d8"
         Player1.ArmorClass = 10
 
-        ViewportSize = New Size(30, 30)
+        ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
         ViewportBorderDraw()
 
@@ -55,6 +62,8 @@ Module GlyphicaMain
         Things.Add(t)
 
         ViewportPlayerDraw()
+
+        Trace.Listeners.Add(New GlyphicaTraceLilstener)
 
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
@@ -109,8 +118,10 @@ Module GlyphicaMain
                 Case Player.PlayerMoveResult.Move
                     Player1.Location = ToLocation
                 Case Player.PlayerMoveResult.Blocked
-                    '' do nothing - couldn't move the player
-                    '' later, we'll display some sort of mesage based on what's in the ToLocation
+                    Select Case MapTileGet(ToLocation).TileType
+                        Case MapTile.MapTileType.Wall
+                            MessageWrite("You bump your head.")
+                    End Select
                 Case Player.PlayerMoveResult.Combat
                     Debug.WriteLine("COMBAT")
                     Dim Enemy As Monster = Monster.Find(ToLocation)
@@ -127,13 +138,35 @@ Module GlyphicaMain
 
     End Sub
 
+    ' This overload of MessageWrite allows us to specify White as the default color without using an optional parameter.
+    ' Overloads > optional parameters
+    Public Sub MessageWrite(Message As String)
+        MessageWrite(Message, ConsoleColor.White)
+    End Sub
+
+    Public Sub MessageWrite(NewMessage As String, NewMessageColor As ConsoleColor)
+        Messages.Add(New Message(NewMessage, NewMessageColor))
+        Dim FirstMessageLine As Integer = IIf(Messages.Count <= MESSAGEAREAHEIGHT, 0, Messages.Count - MESSAGEAREAHEIGHT)
+        Dim LastMessageLine As Integer = Messages.Count - 1
+
+        Dim c As ConsoleColor = Console.ForegroundColor
+        For y = FirstMessageLine To LastMessageLine
+            Console.SetCursorPosition(0, y - FirstMessageLine)
+            Console.ForegroundColor = Messages(y).Color
+            Console.Write(Messages(y).Text & Space(Console.WindowWidth - Messages(y).Text.Length))
+        Next
+        Console.ForegroundColor = c
+    End Sub
+
     Public Sub CombatResolve(Enemy As Monster)
 
         Debug.WriteLine("Player hp:" & Player1.HitPoints)
         Debug.WriteLine(Enemy.Name & " hp:" & Enemy.HitPoints)
 
-        Dim PlayerInitiative As Integer = Dice.RollDice("1d20") + Player1.Initiative
+        Dim PlayerInitiative As Integer = Dice.RollDice("1d20") + Player1.Initiative + 20
         Dim EnemyInitiative As Integer = Dice.RollDice("1d20") + Enemy.Initiative
+        Trace.Write(String.Format("Initiative P:{0} E:{1}", PlayerInitiative, EnemyInitiative))
+
 
         ' Assign attacker and defender based on initiative rolls
         ' Attacker goes first
@@ -144,12 +177,22 @@ Module GlyphicaMain
         Debug.WriteLine("defender hitdice:" & Defender.HitDice)
 
         Dim AttackerRoll As Integer = Dice.RollDice("1d20")
+        Trace.Write(String.Format("Attack H:{0} AC:{1}", AttackerRoll, Defender.ArmorClass))
         If AttackerRoll >= Defender.ArmorClass Then
             Dim Damage As Integer = Dice.RollDice(Attacker.HitDice)
+            If Attacker Is Player1 Then
+                MessageWrite(String.Format("You hit the {0} for {1} damage!", Defender.Name, Damage))
+            Else
+                MessageWrite(String.Format("The {0} hit you for {1} damage!", Attacker.Name, Damage))
+            End If
             Debug.WriteLine("attacker hits for " & Damage)
             Defender.HitPoints -= Damage
         Else
-            Debug.WriteLine("attacker misses")
+            If Attacker Is Player1 Then
+                MessageWrite(String.Format("You missed!", Defender.Name))
+            Else
+                MessageWrite(String.Format("The {0} missed!", Attacker.Name))
+            End If
         End If
 
         If Defender.HitPoints <= 0 Then
@@ -172,16 +215,6 @@ Module GlyphicaMain
         Else
             Debug.WriteLine("combat round ends")
         End If
-
-
-
-
-
-
-
-
-
-
 
     End Sub
 
@@ -308,14 +341,11 @@ Module GlyphicaMain
     End Sub
 
     Public Sub ViewportBorderDraw()
-        For y = 0 To ViewportSize.Height - 1
-            Console.SetCursorPosition(ViewportSize.Width, y)
-            GraphicsCharacterDraw(SOLIDBLOCK)
-        Next
-
         For x = 0 To ViewportSize.Width - 1
             Console.SetCursorPosition(x, ViewportSize.Height - 1)
-            GraphicsCharacterDraw(SOLIDBLOCK)
+            GraphicsCharacterDraw(SINGLEHORIZONTALLINE)
+            Console.SetCursorPosition(x, 5)
+            GraphicsCharacterDraw(SINGLEHORIZONTALLINE)
         Next
     End Sub
 
