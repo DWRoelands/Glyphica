@@ -53,13 +53,7 @@ Module GlyphicaMain
 
         ' testing/debugging
         Monsters.Add(New Kobold(0, New Point(33, 18)))
-
-        Dim t As New Artifact
-        t.Name = "Potion"
-        t.Location = New Point(33, 16)
-        t.DisplayColor = ConsoleColor.Red
-        t.DisplayCharacter = "p"
-        'Artifacts.Add(t)
+        Artifacts.Add(New potion(0, New Point(33, 20)))
 
         ViewportPlayerDraw()
 
@@ -142,7 +136,7 @@ Module GlyphicaMain
 
             ViewportPlayerDraw()
             ViewportMonstersDraw()
-            'ViewportArtifactsDraw()
+            ViewportArtifactsDraw()
 
         Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPoints > 0
 
@@ -244,8 +238,6 @@ Module GlyphicaMain
         Artifacts.Add(New Corpse(DeadMonster.MapLevel, DeadMonster.Location, DeadMonster.Name))
         Monsters.Remove(DeadMonster)
     End Sub
-
-
 
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
         Dim ReturnValue As Player.PlayerMoveResult = Nothing
@@ -603,35 +595,26 @@ Module GlyphicaMain
         Next
     End Sub
 
-    'Public Sub ViewportArtifactsDraw()
-    '    ' get the list of visible cells once so we don't have to recalculate repeatedly
-    '    Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+    Public Sub ViewportArtifactsDraw()
 
-    '    For Each t As Artifact In Artifacts
-    '        ' Is the artifact's location even on the screen?
-    '        If IsLocationInViewport(t.Location) Then
-    '            Dim ArtifactIsVisible As Boolean = False
-    '            ' is the monster in the list of cells visible to the player?
-    '            For Each p As Point In VisibleCells
-    '                If p.X = t.Location.X And p.Y = t.Location.Y Then
-    '                    ArtifactIsVisible = True
-    '                    Exit For
-    '                End If
-    '            Next
+        ' get the list of visible cells once so we don't have to recalculate repeatedly
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-    '            ' If the artifact is visible, draw it, otherwise draw the map location as it should be displayed
-    '            Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
-    '            If ArtifactIsVisible Then
-    '                Dim c As ConsoleColor = Console.ForegroundColor
-    '                Console.ForegroundColor = t.DisplayColor
-    '                Console.Write(t.DisplayCharacter)
-    '                Console.ForegroundColor = c
-    '            Else
-    '                MaptileRender(t.Location)
-    '            End If
-    '        End If
-    '    Next
-    'End Sub
+        For Each a As Artifact In Artifacts
+            ' Is the artifact's location even on the screen?
+            If IsLocationInViewport(a.Location) Then
+
+                ' make the artifact invisible, and only make it visible if it's in the list of visible cells
+                a.Visible = False
+                If VisibleCells.Contains(a.Location) Then
+                    a.Draw()
+                Else
+                    MaptileRender(a.Location)
+                End If
+            End If
+        Next
+
+    End Sub
 
     Public Sub ViewportMonstersDraw()
 

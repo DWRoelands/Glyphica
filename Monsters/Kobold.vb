@@ -7,7 +7,7 @@ Public Class Kobold
             .DamageDice = "1d6-1"
             .Description = "a kobold"
             .DisplayCharacter = "k"
-            .DisplayColor = ConsoleColor.Green
+            '.DisplayColor = ConsoleColor.Green
             .HitDice = "1d8"
             .Initiative = 1
             .Location = _Location

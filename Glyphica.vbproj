@@ -66,6 +66,7 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\potion.vb" />
     <Compile Include="Bestiary.vb" />
     <Compile Include="Dice.vb" />
     <Compile Include="FOVRecurse.vb" />
@@ -95,7 +96,6 @@
     <Compile Include="Artifact.vb" />
     <Compile Include="Thing.vb" />
     <Compile Include="Artifacts\Corpse.vb" />
-    <Compile Include="Artifacts\Pile.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

@@ -4,7 +4,7 @@ Public MustInherit Class Thing
     Public Property Location As Point
     Public Property Name As String = String.Empty
     Public Property Description As String = String.Empty
-    Public Property DisplayColor As ConsoleColor
+    Public Property DisplayColor As ConsoleColor = ConsoleColor.White
     Public Property DisplayCharacter As String = String.Empty
     Public Property Seen As Boolean = False
     Public Property Visible As Boolean = False
