@@ -127,11 +127,9 @@ Module GlyphicaMain
                             MessageWrite("You bump your head.")
                     End Select
                 Case Player.PlayerMoveResult.Combat
-                    Debug.WriteLine("COMBAT")
                     Dim Enemy As Monster = Monster.Find(ToLocation)
                     CombatResolve(Enemy)
-                Case Player.PlayerMoveResult.Thing
-                    Debug.WriteLine("THING")
+
             End Select
 
             ViewportPlayerDraw()
@@ -246,29 +244,15 @@ Module GlyphicaMain
         Dim MonsterFound As Boolean = False
         For Each m As Monster In Monsters
             If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
-                ReturnValue = Player.PlayerMoveResult.Combat
                 MonsterFound = True
-                Debug.WriteLine("Monster here")
+                ReturnValue = Player.PlayerMoveResult.Combat
                 Exit For
             End If
         Next
 
-        ' No monster.  Is there a thing here?
-        Dim ThingFound As Boolean = False
-        If Not MonsterFound Then
-            For Each t As Artifact In Artifacts
-                If t.MapLevel = Player1.MapLevel AndAlso t.Location.X = ToLocation.X AndAlso t.Location.Y = ToLocation.Y Then
-                    ReturnValue = Player.PlayerMoveResult.Thing
-                    ThingFound = True
-                    Debug.WriteLine("Thing here")
-                    Exit For
-                End If
-            Next
-        End If
-
-        ' No monster and no things
+        ' No monster 
         ' Check for collision with map feature
-        If (Not MonsterFound) And (Not ThingFound) Then
+        If Not MonsterFound Then
             Select Case MapTileGet(ToLocation).TileType
                 Case MapTile.MapTileType.Empty
                     ReturnValue = Player.PlayerMoveResult.Move

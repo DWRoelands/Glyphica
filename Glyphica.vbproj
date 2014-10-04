@@ -75,7 +75,7 @@
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Message.vb" />
-    <Compile Include="Monster.vb" />
+    <Compile Include="Monsters\Monster.vb" />
     <Compile Include="Monsters\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -93,7 +93,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Player.vb" />
-    <Compile Include="Artifact.vb" />
+    <Compile Include="Artifacts\Artifact.vb" />
     <Compile Include="Thing.vb" />
     <Compile Include="Artifacts\Corpse.vb" />
   </ItemGroup>
