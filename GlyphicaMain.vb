@@ -28,7 +28,7 @@ Module GlyphicaMain
     Public Player1 As Player
 
     Public Monsters As New List(Of Monster)
-    Public Things As New List(Of Artifact)
+    Public Artifacts As New List(Of Artifact)
     Public Messages As New List(Of Message)
 
     Public Sub Main()
@@ -59,7 +59,7 @@ Module GlyphicaMain
         t.Location = New Point(33, 16)
         t.DisplayColor = ConsoleColor.Red
         t.DisplayCharacter = "p"
-        Things.Add(t)
+        'Artifacts.Add(t)
 
         ViewportPlayerDraw()
 
@@ -95,6 +95,16 @@ Module GlyphicaMain
 
                 Case ConsoleKey.NumPad3
                     ToLocation = New Point(Player1.Location.X + 1, Player1.Location.Y + 1)
+
+                Case ConsoleKey.L
+                    For Each p As Point In Player1.VisibleCells
+                        Console.SetCursorPosition(p.X, p.Y)
+                        Console.ForegroundColor = ConsoleColor.Yellow
+                        Console.Write("x")
+                    Next
+
+                Case ConsoleKey.K
+                    ViewportMapDraw()
             End Select
 
             Select Case KeyPress.KeyChar
@@ -132,7 +142,7 @@ Module GlyphicaMain
 
             ViewportPlayerDraw()
             ViewportMonstersDraw()
-            ViewportThingsDraw()
+            'ViewportArtifactsDraw()
 
         Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPoints > 0
 
@@ -182,10 +192,18 @@ Module GlyphicaMain
         End If
 
         If Defender.HitPoints <= 0 Then
-            Debug.WriteLine("defender dies")
-        Else
-            Debug.WriteLine("combat continues - defender's turn")
+            If Defender Is Player1 Then
+                MessageWrite("You have died.  Press any key...")
+                WaitForKeypress()
+                End
+            Else
+                MessageWrite(String.Format("You killed the {0}!", Defender.Name))
+                MonsterKill(Defender)
+                Exit Sub
+            End If
         End If
+
+        ' If the defender is still alive, combat continues
 
         Dim DefenderRoll As Integer = Dice.RollDice("1d20")
         Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.ArmorClass))
@@ -206,12 +224,28 @@ Module GlyphicaMain
         End If
 
         If Attacker.HitPoints <= 0 Then
-            Debug.WriteLine("attacker dies")
-        Else
-            Debug.WriteLine("combat round ends")
+            If Attacker Is Player1 Then
+                MessageWrite("You have died.  Press any key...")
+                WaitForKeypress()
+                End
+            Else
+                MessageWrite(String.Format("You killed the {0}!", Defender.Name))
+                MonsterKill(Attacker)
+                Exit Sub
+            End If
         End If
-
     End Sub
+
+    Public Sub WaitForKeypress()
+        Console.ReadKey()
+    End Sub
+
+    Public Sub MonsterKill(DeadMonster As Monster)
+        Artifacts.Add(New Corpse(DeadMonster.MapLevel, DeadMonster.Location, DeadMonster.Name))
+        Monsters.Remove(DeadMonster)
+    End Sub
+
+
 
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
         Dim ReturnValue As Player.PlayerMoveResult = Nothing
@@ -230,7 +264,7 @@ Module GlyphicaMain
         ' No monster.  Is there a thing here?
         Dim ThingFound As Boolean = False
         If Not MonsterFound Then
-            For Each t As Artifact In Things
+            For Each t As Artifact In Artifacts
                 If t.MapLevel = Player1.MapLevel AndAlso t.Location.X = ToLocation.X AndAlso t.Location.Y = ToLocation.Y Then
                     ReturnValue = Player.PlayerMoveResult.Thing
                     ThingFound = True
@@ -348,8 +382,17 @@ Module GlyphicaMain
         If Not MapTileGet(Location).IsRevealed Then
             Exit Sub
         End If
+
+        Console.SetCursorPosition(Location.X, Location.Y)
+
         Select Case t
             Case MapTile.MapTileType.Wall
+                If Map(Player1.MapLevel, Location.X, Location.Y).IsVisible Then
+                    Console.ForegroundColor = ConsoleColor.White
+                Else
+                    Console.ForegroundColor = ConsoleColor.DarkGray
+                End If
+
                 ' vertical wall
                 If Map(Player1.MapLevel, Location.X - 1, Location.Y).TileType = MapTile.MapTileType.Empty And _
                     Map(Player1.MapLevel, Location.X + 1, Location.Y).TileType = MapTile.MapTileType.Empty Then
@@ -393,14 +436,12 @@ Module GlyphicaMain
                 Console.ForegroundColor = c
 
             Case MapTile.MapTileType.Empty
-                Dim c As ConsoleColor = Console.ForegroundColor
                 If Map(Player1.MapLevel, Location.X, Location.Y).IsVisible Then
                     Console.ForegroundColor = ConsoleColor.White
                 Else
                     Console.ForegroundColor = ConsoleColor.DarkGray
                 End If
                 Console.Write(".")
-                Console.ForegroundColor = c
 
             Case MapTile.MapTileType.StairsDown
                 Console.Write(">")
@@ -506,7 +547,7 @@ Module GlyphicaMain
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
             Map(Player1.MapLevel, p.X, p.Y).IsRevealed = True
             Map(Player1.MapLevel, p.X, p.Y).IsVisible = True
-            MaptileRender(New Point(p.X, p.Y))
+            MaptileRender(p)
         Next
 
         ' dim the cells that are no longer visible as a result of the player move
@@ -525,7 +566,6 @@ Module GlyphicaMain
         Dim c As ConsoleColor = Console.ForegroundColor
         Console.ForegroundColor = ConsoleColor.White
         Console.Write("@")
-        Console.ForegroundColor = c
     End Sub
 
     Public Function ViewportXScrollBufferGet() As Integer
@@ -563,35 +603,35 @@ Module GlyphicaMain
         Next
     End Sub
 
-    Public Sub ViewportThingsDraw()
-        ' get the list of visible cells once so we don't have to recalculate repeatedly
-        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+    'Public Sub ViewportArtifactsDraw()
+    '    ' get the list of visible cells once so we don't have to recalculate repeatedly
+    '    Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each t As Artifact In Things
-            ' Is the monster's location even on the screen?
-            If IsLocationInViewport(t.Location) Then
-                Dim ThingIsVisible As Boolean = False
-                ' is the monster in the list of cells visible to the player?
-                For Each p As Point In VisibleCells
-                    If p.X = t.Location.X And p.Y = t.Location.Y Then
-                        ThingIsVisible = True
-                        Exit For
-                    End If
-                Next
+    '    For Each t As Artifact In Artifacts
+    '        ' Is the artifact's location even on the screen?
+    '        If IsLocationInViewport(t.Location) Then
+    '            Dim ArtifactIsVisible As Boolean = False
+    '            ' is the monster in the list of cells visible to the player?
+    '            For Each p As Point In VisibleCells
+    '                If p.X = t.Location.X And p.Y = t.Location.Y Then
+    '                    ArtifactIsVisible = True
+    '                    Exit For
+    '                End If
+    '            Next
 
-                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
-                Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
-                If ThingIsVisible Then
-                    Dim c As ConsoleColor = Console.ForegroundColor
-                    Console.ForegroundColor = t.DisplayColor
-                    Console.Write(t.DisplayCharacter)
-                    Console.ForegroundColor = c
-                Else
-                    MaptileRender(t.Location)
-                End If
-            End If
-        Next
-    End Sub
+    '            ' If the artifact is visible, draw it, otherwise draw the map location as it should be displayed
+    '            Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
+    '            If ArtifactIsVisible Then
+    '                Dim c As ConsoleColor = Console.ForegroundColor
+    '                Console.ForegroundColor = t.DisplayColor
+    '                Console.Write(t.DisplayCharacter)
+    '                Console.ForegroundColor = c
+    '            Else
+    '                MaptileRender(t.Location)
+    '            End If
+    '        End If
+    '    Next
+    'End Sub
 
     Public Sub ViewportMonstersDraw()
 
@@ -601,22 +641,11 @@ Module GlyphicaMain
         For Each m As Monster In Monsters
             ' Is the monster's location even on the screen?
             If IsLocationInViewport(m.Location) Then
-                Dim MonsterIsVisible As Boolean = False
-                ' is the monster in the list of cells visible to the player?
-                For Each p As Point In VisibleCells
-                    If p.X = m.Location.X And p.Y = m.Location.Y Then
-                        MonsterIsVisible = True
-                        Exit For
-                    End If
-                Next
 
-                ' If the monster is visible, draw it, otherwise draw the map location as it should be displayed
-                Console.SetCursorPosition(m.Location.X - ViewportOrigin.X, m.Location.Y - ViewportOrigin.Y)
-                If MonsterIsVisible Then
-                    Dim c As ConsoleColor = Console.ForegroundColor
-                    Console.ForegroundColor = m.DisplayColor
-                    Console.Write(m.DisplayCharacter)
-                    Console.ForegroundColor = c
+                ' make the monster invisible, and only make it visible if it's in the list of visible cells
+                m.Visible = False
+                If VisibleCells.Contains(m.Location) Then
+                    m.Draw()
                 Else
                     MaptileRender(m.Location)
                 End If
@@ -649,7 +678,6 @@ Module GlyphicaMain
                 If Map(Player1.MapLevel, x, y).IsRevealed Then
                     Console.SetCursorPosition(x - ViewportOrigin.X, y - ViewportOrigin.Y)
                     MaptileRender(New Point(x, y))
-                    'Console.Write(Map(MapLevel, x, y).DisplayCharacter)
                 End If
             Next
         Next

@@ -5,7 +5,7 @@ Public Class Kobold
         With Me
             .ArmorClass = 15
             .DamageDice = "1d6-1"
-            .Description = "A short reptilian humanoid"
+            .Description = "a kobold"
             .DisplayCharacter = "k"
             .DisplayColor = ConsoleColor.Green
             .HitDice = "1d8"
@@ -15,4 +15,6 @@ Public Class Kobold
             .Name = "Kobold"
         End With
     End Sub
+
+
 End Class

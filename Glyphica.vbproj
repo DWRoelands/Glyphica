@@ -94,6 +94,8 @@
     <Compile Include="Player.vb" />
     <Compile Include="Artifact.vb" />
     <Compile Include="Thing.vb" />
+    <Compile Include="Artifacts\Corpse.vb" />
+    <Compile Include="Artifacts\Pile.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

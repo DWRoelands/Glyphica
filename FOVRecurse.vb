@@ -279,10 +279,9 @@ Module FOVRecurse
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
                         If Map(Player1.MapLevel, x, y).BlocksVision Then
+                            VisiblePoints.Add(New Point(x, y))   ' testing
                             If y - 1 >= 0 AndAlso Map(Player1.MapLevel, x, y - 1).BlocksVision = False Then
-                                VisiblePoints.Add(New Point(x, y))   ' testing
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
-
                             End If
                         Else
                             If y - 1 >= 0 AndAlso Map(Player1.MapLevel, x, y - 1).BlocksVision Then
