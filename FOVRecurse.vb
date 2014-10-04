@@ -2,7 +2,6 @@
 ' http://www.evilscience.co.uk/field-of-vision-using-recursive-shadow-casting-c-3-5-implementation/
 ' https://github.com/AndyStobirski/RogueLike/blob/master/FOVRecurse.cs
 '
-Imports System.Drawing
 Module FOVRecurse
 
     Public VisibleOctants As New List(Of Integer)() From {1, 2, 3, 4, 5, 6, 7, 8}

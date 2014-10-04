@@ -1,5 +1,4 @@
-﻿Imports System.Drawing
-Public Class MapTile
+﻿Public Class MapTile
 
     Public Enum MapTileType
         Empty

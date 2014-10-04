@@ -1,8 +1,7 @@
-﻿Imports System.Drawing
-Public Class Player
+﻿Public Class Player
     Inherits Monster
 
-    Public Property VisualRange As Integer = 5
+    Public Property VisualRange As Integer = 8
     Public Property VisibleCells As New List(Of Point)
 
     Public Enum PlayerMoveResult As Integer

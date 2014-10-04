@@ -1,5 +1,4 @@
-﻿Imports System.Drawing
-Module GlyphicaMain
+﻿Module GlyphicaMain
 
     Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
     Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
@@ -61,7 +60,8 @@ Module GlyphicaMain
         Player1.Draw()
 
         ' testing/debugging
-        Monsters.Add(New Kobold(0, New Point(33, 18)))
+        Monsters.Add(New Kobold(0, New Point(19, 13)))
+        Monsters.Add(New GlyphSpider(0, New Point(22, 13)))
 
         ViewportPlayerMoveProcess()
 
@@ -99,7 +99,28 @@ Module GlyphicaMain
                     ToLocation = New Point(Player1.Location.X + 1, Player1.Location.Y + 1)
 
                 Case ConsoleKey.S  ' shoot ranged weapon
+                    If KeyPress.Modifiers And ConsoleModifiers.Shift Then
+                        ' allow player to choose target
+                        Dim Target As Monster = TargetSelect(Player1.Location)
+                        If Target IsNot Nothing Then
+                            CombatResolve(Target, CombatType.Ranged)
+                        Else
+                            ViewportMonstersDraw()
+                            ViewportArtifactsDraw()
+                            Player1.Draw()
+                            Continue Do
+                        End If
+                    Else
+                        ' lowercase "s" automatically target the closest monster
+                        CombatResolve(Monster.FindClosest(Player1.Location), CombatType.Ranged)
+                    End If
 
+                    ViewportMonstersDraw()
+                    ViewportArtifactsDraw()
+                    Player1.Draw()
+
+                    ' jump to the bottom of the loop as there is no "move" to process
+                    Continue Do
 
             End Select
 
@@ -155,9 +176,60 @@ Module GlyphicaMain
             Console.ReadLine()
         End If
 
-
-
     End Sub
+
+    Public Function TargetSelect(Location As Point)
+        ' give the player a way to select a target monster when more than one monster is visible
+
+        Dim VisibleMonsters As New List(Of Monster)
+        For Each m As Monster In Monsters
+            If Player1.VisibleCells.Contains(m.Location) Then
+                VisibleMonsters.Add(m)
+            End If
+        Next
+        ' If there's only one visible monster, just select that one
+        If VisibleMonsters.Count = 1 Then
+            Return VisibleMonsters(0)
+        End If
+
+        ' label targets
+        Dim TargetNumber As Integer = 1
+        For Each t As Monster In VisibleMonsters
+            Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
+            Console.ForegroundColor = ConsoleColor.Yellow
+            Console.Write(TargetNumber.ToString.Trim)
+            TargetNumber += 1
+        Next
+
+        TargetNumber = 1
+        MessageWrite("Target which monster?  (ESC to cancel)")
+        For Each m As Monster In VisibleMonsters
+            MessageWrite(String.Format("{0} - {1}", TargetNumber, m.Name))
+            TargetNumber += 1
+        Next
+
+        Dim TargetKey As ConsoleKeyInfo
+        TargetNumber = 0
+        Do
+            TargetKey = Console.ReadKey(True)
+        Loop Until TargetKey.Key = ConsoleKey.Escape Or Integer.TryParse(TargetKey.KeyChar, TargetNumber)
+
+        ' ESC - user has cancelled
+        If TargetKey.Key = ConsoleKey.Escape Then
+            MessageWrite("Cancelled")
+            Return Nothing
+        End If
+
+        If TargetNumber > VisibleMonsters.Count Then
+            MessageWrite("Invalid target")
+            Return Nothing
+        End If
+
+        Return VisibleMonsters(TargetNumber - 1)
+
+    End Function
+
+
 
     Public Sub CombatResolve(Enemy As Monster, Type As CombatType)
         Select Case Type
@@ -186,7 +258,7 @@ Module GlyphicaMain
             Attacker = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
             Defender = IIf(PlayerInitiative < EnemyInitiative, Player1, Enemy)
         Else
-            ' ranged combat - attacker is the "shooter"
+            ' ranged combat - attacker is the "shooter", i.e. whoever initiated combat
             Defender = IIf(Player1 Is Enemy, Player1, Enemy)
             Attacker = IIf(Player1 IsNot Enemy, Player1, Enemy)
         End If
@@ -198,16 +270,16 @@ Module GlyphicaMain
         If AttackerRoll >= Defender.ArmorClass Then
             Dim Damage As Integer = Dice.RollDice(Attacker.DamageDice)
             If Attacker Is Player1 Then
-                MessageWrite(String.Format("You hit the {0} for {1} damage!", Defender.Name, Damage))
+                MessageWrite(String.Format("You hit the {0} for {1} damage.", Defender.Name, Damage))
             Else
-                MessageWrite(String.Format("The {0} hit you for {1} damage!", Attacker.Name, Damage))
+                MessageWrite(String.Format("The {0} hit you for {1} damage.", Attacker.Name, Damage))
             End If
             Defender.HitPoints -= Damage
         Else
             If Attacker Is Player1 Then
-                MessageWrite("You missed!")
+                MessageWrite(String.Format("You missed the {0}.", Defender.Name))
             Else
-                MessageWrite(String.Format("The {0} missed!", Attacker.Name))
+                MessageWrite(String.Format("The {0} missed.", Attacker.Name))
             End If
         End If
 
@@ -233,16 +305,16 @@ Module GlyphicaMain
             If DefenderRoll >= Attacker.ArmorClass Then
                 Dim Damage As Integer = Dice.RollDice(Defender.HitDice)
                 If Defender Is Player1 Then
-                    MessageWrite(String.Format("You hit the {0} for {1} damage!", Attacker.Name, Damage))
+                    MessageWrite(String.Format("You hit the {0} for {1} damage.", Attacker.Name, Damage))
                 Else
-                    MessageWrite(String.Format("The {0} hit you for {1} damage!", Defender.Name, Damage))
+                    MessageWrite(String.Format("The {0} hit you for {1} damage.", Defender.Name, Damage))
                 End If
                 Attacker.HitPoints -= Damage
             Else
                 If Defender Is Player1 Then
-                    MessageWrite("You missed!")
+                    MessageWrite(String.Format("You missed the {0}.", Attacker.Name))
                 Else
-                    MessageWrite(String.Format("The {0} missed!", Defender.Name))
+                    MessageWrite(String.Format("The {0} missed.", Defender.Name))
                 End If
             End If
 

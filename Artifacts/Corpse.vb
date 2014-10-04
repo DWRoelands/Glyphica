@@ -1,5 +1,4 @@
-﻿Imports System.Drawing
-Public Class Corpse
+﻿Public Class Corpse
     Inherits Artifact
     Public Sub New(_MapLevel As Integer, _Location As Point, MonsterName As String)
         With Me

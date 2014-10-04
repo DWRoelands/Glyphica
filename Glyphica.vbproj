@@ -63,6 +63,7 @@
     <Import Include="System.Collections.Generic" />
     <Import Include="System.Data" />
     <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +75,7 @@
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Message.vb" />
+    <Compile Include="Monsters\GlyphSpider.vb" />
     <Compile Include="Monsters\Monster.vb" />
     <Compile Include="Monsters\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
