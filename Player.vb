@@ -13,4 +13,12 @@ Public Class Player
         Thing
     End Enum
 
+    Public Overrides Sub Draw()
+        'MyBase.Draw()
+
+        Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
+        Console.ForegroundColor = ConsoleColor.White
+        Console.Write("@")
+    End Sub
+
 End Class

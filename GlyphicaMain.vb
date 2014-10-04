@@ -20,8 +20,8 @@ Module GlyphicaMain
 
     Public Map(,,) As MapTile      ' level, x, y
 
-    Dim ViewportSize As Size
-    Dim ViewportOrigin As Point
+    Public ViewportSize As Size
+    Public ViewportOrigin As Point
 
 
 
@@ -31,17 +31,25 @@ Module GlyphicaMain
     Public Artifacts As New List(Of Artifact)
     Public Messages As New List(Of Message)
 
+    Public Enum CombatType
+        Melee
+        Ranged
+        Magic
+    End Enum
+
+
     Public Sub Main()
 
         Console.CursorVisible = False
-        Console.WindowWidth = 80
-        Console.WindowHeight = 40
-        Console.SetBufferSize(80, 40)
+        Console.WindowWidth = 120
+        Console.WindowHeight = 50
+        Console.SetBufferSize(120, 50)
 
         Player1 = New Player
         Player1.MapLevel = 0
         Player1.HitDice = "4d8"
         Player1.ArmorClass = 10
+        Player1.DamageDice = "1d8"
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -50,12 +58,12 @@ Module GlyphicaMain
         MapLoad()
 
         Player1.Location = New Point(13, 13)
+        Player1.Draw()
 
         ' testing/debugging
         Monsters.Add(New Kobold(0, New Point(33, 18)))
-        Artifacts.Add(New potion(0, New Point(33, 20)))
 
-        ViewportPlayerDraw()
+        ViewportPlayerMoveProcess()
 
         Trace.Listeners.Add(New GlyphicaTraceLilstener)
 
@@ -90,15 +98,9 @@ Module GlyphicaMain
                 Case ConsoleKey.NumPad3
                     ToLocation = New Point(Player1.Location.X + 1, Player1.Location.Y + 1)
 
-                Case ConsoleKey.L
-                    For Each p As Point In Player1.VisibleCells
-                        Console.SetCursorPosition(p.X, p.Y)
-                        Console.ForegroundColor = ConsoleColor.Yellow
-                        Console.Write("x")
-                    Next
+                Case ConsoleKey.S  ' shoot ranged weapon
 
-                Case ConsoleKey.K
-                    ViewportMapDraw()
+
             End Select
 
             Select Case KeyPress.KeyChar
@@ -128,13 +130,22 @@ Module GlyphicaMain
                     End Select
                 Case Player.PlayerMoveResult.Combat
                     Dim Enemy As Monster = Monster.Find(ToLocation)
-                    CombatResolve(Enemy)
+                    CombatResolve(Enemy, CombatType.Melee)
 
             End Select
 
-            ViewportPlayerDraw()
+            ViewportPlayerMoveProcess()
             ViewportMonstersDraw()
             ViewportArtifactsDraw()
+            Player1.Draw()
+
+            ' Is the player in the same square as an artifact?  If so, search the artifact for anything it contains
+            For Each a As Artifact In Artifacts
+                If a.Location = Player1.Location Then
+                    MessageWrite("searching")
+                    Exit For
+                End If
+            Next
 
         Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPoints > 0
 
@@ -142,33 +153,50 @@ Module GlyphicaMain
             MessageWrite("You have died.")
             MessageWrite("Press [ENTER] to exit.")
             Console.ReadLine()
-
         End If
 
 
 
     End Sub
 
+    Public Sub CombatResolve(Enemy As Monster, Type As CombatType)
+        Select Case Type
+            Case CombatType.Melee, CombatType.Ranged
+                CombatResolvePhysical(Enemy, Type)
+            Case CombatType.Magic
+                CombatResolveMagical(Enemy)
+        End Select
 
-    Public Sub CombatResolve(Enemy As Monster)
+    End Sub
 
-        Debug.WriteLine("Player hp:" & Player1.HitPoints)
-        Debug.WriteLine(Enemy.Name & " hp:" & Enemy.HitPoints)
+    Public Sub CombatResolvePhysical(Enemy As Monster, Type As CombatType)
 
-        Dim PlayerInitiative As Integer = Dice.RollDice("1d20") + Player1.Initiative + 20
-        Dim EnemyInitiative As Integer = Dice.RollDice("1d20") + Enemy.Initiative
-        Trace.Write(String.Format("Initiative P:{0} E:{1}", PlayerInitiative, EnemyInitiative))
+        Dim Defender As Monster = Nothing
+        Dim Attacker As Monster = Nothing
 
+        ' roll initiative
+        ' Only matters for melee combat
+        Dim PlayerInitiative As Integer
+        Dim EnemyInitiative As Integer
 
-        ' Assign attacker and defender based on initiative rolls
-        Dim Attacker As Monster = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
-        Dim Defender As Monster = IIf(PlayerInitiative < EnemyInitiative, Player1, Enemy)
+        If Type = CombatType.Melee Then
+            ' do initiative roll
+            PlayerInitiative = Dice.RollDice("1d20") + Player1.Initiative + 20
+            EnemyInitiative = Dice.RollDice("1d20") + Enemy.Initiative
+            Attacker = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
+            Defender = IIf(PlayerInitiative < EnemyInitiative, Player1, Enemy)
+        Else
+            ' ranged combat - attacker is the "shooter"
+            Defender = IIf(Player1 Is Enemy, Player1, Enemy)
+            Attacker = IIf(Player1 IsNot Enemy, Player1, Enemy)
+        End If
 
         ' Attacker goes first
+        ' TODO: implement "20 aleays hits" and "1 always misses"
         Dim AttackerRoll As Integer = Dice.RollDice("1d20")
         Trace.Write(String.Format("Attacker H:{0} AC:{1}", AttackerRoll, Defender.ArmorClass))
         If AttackerRoll >= Defender.ArmorClass Then
-            Dim Damage As Integer = Dice.RollDice(Attacker.HitDice)
+            Dim Damage As Integer = Dice.RollDice(Attacker.DamageDice)
             If Attacker Is Player1 Then
                 MessageWrite(String.Format("You hit the {0} for {1} damage!", Defender.Name, Damage))
             Else
@@ -183,6 +211,7 @@ Module GlyphicaMain
             End If
         End If
 
+        ' did the defender die?
         If Defender.HitPoints <= 0 Then
             If Defender Is Player1 Then
                 MessageWrite("You have died.  Press any key...")
@@ -195,37 +224,46 @@ Module GlyphicaMain
             End If
         End If
 
+        ' Defender only gets to participate if this is melee combat
         ' If the defender is still alive, combat continues
-
-        Dim DefenderRoll As Integer = Dice.RollDice("1d20")
-        Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.ArmorClass))
-        If DefenderRoll >= Attacker.ArmorClass Then
-            Dim Damage As Integer = Dice.RollDice(Defender.HitDice)
-            If Defender Is Player1 Then
-                MessageWrite(String.Format("You hit the {0} for {1} damage!", Attacker.Name, Damage))
+        ' TODO: implement "20 aleays hits" and "1 always misses"
+        If Type = CombatType.Melee Then
+            Dim DefenderRoll As Integer = Dice.RollDice("1d20")
+            Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.ArmorClass))
+            If DefenderRoll >= Attacker.ArmorClass Then
+                Dim Damage As Integer = Dice.RollDice(Defender.HitDice)
+                If Defender Is Player1 Then
+                    MessageWrite(String.Format("You hit the {0} for {1} damage!", Attacker.Name, Damage))
+                Else
+                    MessageWrite(String.Format("The {0} hit you for {1} damage!", Defender.Name, Damage))
+                End If
+                Attacker.HitPoints -= Damage
             Else
-                MessageWrite(String.Format("The {0} hit you for {1} damage!", Defender.Name, Damage))
+                If Defender Is Player1 Then
+                    MessageWrite("You missed!")
+                Else
+                    MessageWrite(String.Format("The {0} missed!", Defender.Name))
+                End If
             End If
-            Attacker.HitPoints -= Damage
-        Else
-            If Defender Is Player1 Then
-                MessageWrite("You missed!")
-            Else
-                MessageWrite(String.Format("The {0} missed!", Defender.Name))
+
+            ' did the attacker die
+            If Attacker.HitPoints <= 0 Then
+                If Attacker Is Player1 Then
+                    MessageWrite("You have died.  Press any key...")
+                    WaitForKeypress()
+                    End
+                Else
+                    MessageWrite(String.Format("You killed the {0}!", Defender.Name))
+                    MonsterKill(Attacker)
+                    Exit Sub
+                End If
             End If
         End If
 
-        If Attacker.HitPoints <= 0 Then
-            If Attacker Is Player1 Then
-                MessageWrite("You have died.  Press any key...")
-                WaitForKeypress()
-                End
-            Else
-                MessageWrite(String.Format("You killed the {0}!", Defender.Name))
-                MonsterKill(Attacker)
-                Exit Sub
-            End If
-        End If
+    End Sub
+
+    Public Sub CombatResolveMagical(Enemy As Monster)
+
     End Sub
 
     Public Sub WaitForKeypress()
@@ -452,8 +490,8 @@ Module GlyphicaMain
 
 #Region "Viewport Methods"
 
-    Public Sub ViewportPlayerDraw()
-        Debug.WriteLine(String.Format("PlayerDraw:{0},{1}", Player1.Location.x, Player1.Location.y))
+    Public Sub ViewportPlayerMoveProcess()
+        Debug.WriteLine(String.Format("PlayerDraw:{0},{1}", Player1.Location.X, Player1.Location.Y))
         If Player1.Location.X >= ViewportOrigin.X + ViewportSize.Width - ViewportXScrollBufferGet() Then
             Debug.WriteLine("right scroll border hit")
 
@@ -537,11 +575,7 @@ Module GlyphicaMain
 
         Player1.VisibleCells = NewlyVisibleCells
 
-        Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
 
-        Dim c As ConsoleColor = Console.ForegroundColor
-        Console.ForegroundColor = ConsoleColor.White
-        Console.Write("@")
     End Sub
 
     Public Function ViewportXScrollBufferGet() As Integer

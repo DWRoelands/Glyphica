@@ -13,7 +13,7 @@ Public MustInherit Class Thing
         Return System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {bvalue})(0)
     End Function
 
-    Public Sub Draw()
+    Public Overridable Sub Draw()
         Console.ForegroundColor = Me.DisplayColor
         Console.SetCursorPosition(Me.Location.X, Me.Location.Y)
         Console.Write(Me.DisplayCharacter)
