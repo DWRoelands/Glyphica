@@ -67,7 +67,11 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bestiary.vb" />
+    <Compile Include="Armor\Armor.vb" />
+    <Compile Include="Armor\ArmorChainShirt.vb" />
+    <Compile Include="Armor\ArmorLeather.vb" />
+    <Compile Include="Armor\ArmorPadded.vb" />
+    <Compile Include="Armor\ArmorStudded.vb" />
     <Compile Include="Dice.vb" />
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="GlyphicaTraceLilstener.vb" />
@@ -75,9 +79,9 @@
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Message.vb" />
-    <Compile Include="Monsters\GlyphSpider.vb" />
-    <Compile Include="Monsters\Monster.vb" />
-    <Compile Include="Monsters\Kobold.vb" />
+    <Compile Include="Creatures\GlyphSpider.vb" />
+    <Compile Include="Creatures\Creature.vb" />
+    <Compile Include="Creatures\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

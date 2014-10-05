@@ -1,11 +1,24 @@
 ﻿Imports System.Math
-Public Class Monster
+Public Class Creature
     Inherits Thing
 
     Public Property HitPoints As Integer
     Public Property DamageDice As String
     Public Property ArmorClass As Integer
     Public Property Initiative As Integer
+    Public Property VisualRange As Integer
+    Public Property VisibleCells As New List(Of Point)
+
+    Public Property Strength As Integer
+    Public Property Dexterity As Integer
+    Public Property Constitution As Integer
+    Public Property Intelligence As Integer
+    Public Property Wisdom As Integer
+    Public Property Charisma As Integer
+
+
+
+
 
     Private _HitDice As String
     Public Property HitDice As String
@@ -22,28 +35,28 @@ Public Class Monster
         Kobold
     End Enum
 
-    Public Shared Function Find(Location As Point) As Monster
-        Dim ReturnValue As Monster = Nothing
-        For Each m As Monster In Monsters
-            If m.Location.X = Location.X AndAlso m.Location.Y = Location.Y Then
-                ReturnValue = m
+    Public Shared Function Find(Location As Point) As Creature
+        Dim ReturnValue As Creature = Nothing
+        For Each c As Creature In Creatures
+            If c.Location.X = Location.X AndAlso c.Location.Y = Location.Y Then
+                ReturnValue = c
                 Exit For
             End If
         Next
         Return ReturnValue
     End Function
 
-    Public Shared Function FindClosest(Location As Point) As Monster
+    Public Shared Function FindClosest(Location As Point) As Creature
 
-        Dim ReturnValue As Monster = Nothing
+        Dim ReturnValue As Creature = Nothing
         Dim ClosestDistance As Decimal = 0
-        For Each m As Monster In Monsters
+        For Each c As Creature In Creatures
             If ReturnValue Is Nothing Then
-                ReturnValue = m
+                ReturnValue = c
             Else
-                If m.Location <> Location Then
-                    If DistanceGet(Location, m.Location) < DistanceGet(Location, ReturnValue.Location) Then
-                        ReturnValue = m
+                If c.Location <> Location Then
+                    If DistanceGet(Location, c.Location) < DistanceGet(Location, ReturnValue.Location) Then
+                        ReturnValue = c
                     End If
                 End If
             End If
@@ -59,6 +72,12 @@ Public Class Monster
         Return ReturnValue
 
     End Function
+
+    Public Shared Sub Kill(DeadCreature As Creature)
+        Artifacts.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
+        Creatures.Remove(DeadCreature)
+    End Sub
+
 
     ' TODO: Maybe put this into a "Utility" module
     Public Shared Function DistanceGet(Location1 As Point, Location2 As Point) As Decimal

@@ -6,7 +6,6 @@
             .Location = _Location
             .Description = String.Format("the corpse of {0} {1}", If("AEIOU".Contains(MonsterName.Substring(0, 1).ToUpper), "an", "a"), MonsterName)
             .DisplayCharacter = GraphicsCharacterGet(15)
-            '.DisplayColor = ConsoleColor.DarkGreen
         End With
     End Sub
 

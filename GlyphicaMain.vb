@@ -26,7 +26,7 @@
 
     Public Player1 As Player
 
-    Public Monsters As New List(Of Monster)
+    Public Creatures As New List(Of Creature)
     Public Artifacts As New List(Of Artifact)
     Public Messages As New List(Of Message)
 
@@ -60,8 +60,8 @@
         Player1.Draw()
 
         ' testing/debugging
-        Monsters.Add(New Kobold(0, New Point(19, 13)))
-        Monsters.Add(New GlyphSpider(0, New Point(22, 13)))
+        Creatures.Add(New Kobold(0, New Point(19, 13)))
+        Creatures.Add(New GlyphSpider(0, New Point(22, 13)))
 
         ViewportPlayerMoveProcess()
 
@@ -101,21 +101,21 @@
                 Case ConsoleKey.S  ' shoot ranged weapon
                     If KeyPress.Modifiers And ConsoleModifiers.Shift Then
                         ' allow player to choose target
-                        Dim Target As Monster = TargetSelect(Player1.Location)
+                        Dim Target As Creature = TargetSelect(Player1.Location)
                         If Target IsNot Nothing Then
                             CombatResolve(Target, CombatType.Ranged)
                         Else
-                            ViewportMonstersDraw()
+                            ViewportCreaturesDraw()
                             ViewportArtifactsDraw()
                             Player1.Draw()
                             Continue Do
                         End If
                     Else
-                        ' lowercase "s" automatically target the closest monster
-                        CombatResolve(Monster.FindClosest(Player1.Location), CombatType.Ranged)
+                        ' lowercase "s" automatically target the closest creature
+                        CombatResolve(Creature.FindClosest(Player1.Location), CombatType.Ranged)
                     End If
 
-                    ViewportMonstersDraw()
+                    ViewportCreaturesDraw()
                     ViewportArtifactsDraw()
                     Player1.Draw()
 
@@ -150,13 +150,13 @@
                             MessageWrite("You bump your head.")
                     End Select
                 Case Player.PlayerMoveResult.Combat
-                    Dim Enemy As Monster = Monster.Find(ToLocation)
+                    Dim Enemy As Creature = Creature.Find(ToLocation)
                     CombatResolve(Enemy, CombatType.Melee)
 
             End Select
 
             ViewportPlayerMoveProcess()
-            ViewportMonstersDraw()
+            ViewportCreaturesDraw()
             ViewportArtifactsDraw()
             Player1.Draw()
 
@@ -179,22 +179,22 @@
     End Sub
 
     Public Function TargetSelect(Location As Point)
-        ' give the player a way to select a target monster when more than one monster is visible
+        ' give the player a way to select a target creature when more than one creature is visible
 
-        Dim VisibleMonsters As New List(Of Monster)
-        For Each m As Monster In Monsters
+        Dim VisibleCreatures As New List(Of Creature)
+        For Each m As Creature In Creatures
             If Player1.VisibleCells.Contains(m.Location) Then
-                VisibleMonsters.Add(m)
+                VisibleCreatures.Add(m)
             End If
         Next
         ' If there's only one visible monster, just select that one
-        If VisibleMonsters.Count = 1 Then
-            Return VisibleMonsters(0)
+        If VisibleCreatures.Count = 1 Then
+            Return VisibleCreatures(0)
         End If
 
         ' label targets
         Dim TargetNumber As Integer = 1
-        For Each t As Monster In VisibleMonsters
+        For Each t As Creature In VisibleCreatures
             Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
             Console.ForegroundColor = ConsoleColor.Yellow
             Console.Write(TargetNumber.ToString.Trim)
@@ -202,8 +202,8 @@
         Next
 
         TargetNumber = 1
-        MessageWrite("Target which monster?  (ESC to cancel)")
-        For Each m As Monster In VisibleMonsters
+        MessageWrite("Target which creature?  (ESC to cancel)")
+        For Each m As Creature In VisibleCreatures
             MessageWrite(String.Format("{0} - {1}", TargetNumber, m.Name))
             TargetNumber += 1
         Next
@@ -220,18 +220,16 @@
             Return Nothing
         End If
 
-        If TargetNumber > VisibleMonsters.Count Then
+        If TargetNumber > VisibleCreatures.Count Then
             MessageWrite("Invalid target")
             Return Nothing
         End If
 
-        Return VisibleMonsters(TargetNumber - 1)
+        Return VisibleCreatures(TargetNumber - 1)
 
     End Function
 
-
-
-    Public Sub CombatResolve(Enemy As Monster, Type As CombatType)
+    Public Sub CombatResolve(Enemy As Creature, Type As CombatType)
         Select Case Type
             Case CombatType.Melee, CombatType.Ranged
                 CombatResolvePhysical(Enemy, Type)
@@ -241,10 +239,10 @@
 
     End Sub
 
-    Public Sub CombatResolvePhysical(Enemy As Monster, Type As CombatType)
+    Public Sub CombatResolvePhysical(Enemy As Creature, Type As CombatType)
 
-        Dim Defender As Monster = Nothing
-        Dim Attacker As Monster = Nothing
+        Dim Defender As Creature = Nothing
+        Dim Attacker As Creature = Nothing
 
         ' roll initiative
         ' Only matters for melee combat
@@ -291,7 +289,7 @@
                 End
             Else
                 MessageWrite(String.Format("You killed the {0}!", Defender.Name))
-                MonsterKill(Defender)
+                Creature.Kill(Defender)
                 Exit Sub
             End If
         End If
@@ -326,7 +324,7 @@
                     End
                 Else
                     MessageWrite(String.Format("You killed the {0}!", Defender.Name))
-                    MonsterKill(Attacker)
+                    Creature.Kill(Attacker)
                     Exit Sub
                 End If
             End If
@@ -334,7 +332,7 @@
 
     End Sub
 
-    Public Sub CombatResolveMagical(Enemy As Monster)
+    Public Sub CombatResolveMagical(Enemy As Creature)
 
     End Sub
 
@@ -342,17 +340,17 @@
         Console.ReadKey()
     End Sub
 
-    Public Sub MonsterKill(DeadMonster As Monster)
-        Artifacts.Add(New Corpse(DeadMonster.MapLevel, DeadMonster.Location, DeadMonster.Name))
-        Monsters.Remove(DeadMonster)
-    End Sub
+    'Public Sub CreatureKill(DeadMonster As Creature)
+    '    Artifacts.Add(New Corpse(DeadMonster.MapLevel, DeadMonster.Location, DeadMonster.Name))
+    '    Creatures.Remove(DeadMonster)
+    'End Sub
 
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
         Dim ReturnValue As Player.PlayerMoveResult = Nothing
 
         ' First, is there a monster here?  If so, the result is combat
         Dim MonsterFound As Boolean = False
-        For Each m As Monster In Monsters
+        For Each m As Creature In Creatures
             If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
                 MonsterFound = True
                 ReturnValue = Player.PlayerMoveResult.Combat
@@ -706,16 +704,16 @@
 
     End Sub
 
-    Public Sub ViewportMonstersDraw()
+    Public Sub ViewportCreaturesDraw()
 
         ' get the list of visible cells once so we don't have to recalculate repeatedly
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each m As Monster In Monsters
+        For Each m As Creature In Creatures
             ' Is the monster's location even on the screen?
             If IsLocationInViewport(m.Location) Then
 
-                ' make the monster invisible, and only make it visible if it's in the list of visible cells
+                ' make the creature invisible, and only make it visible if it's in the list of visible cells
                 m.Visible = False
                 If VisibleCells.Contains(m.Location) Then
                     m.Draw()

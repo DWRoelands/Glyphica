@@ -1,0 +1,19 @@
+﻿Public Class ArmorPadded
+    Inherits Armor
+    Public Sub New()
+        Me.New("Padded Armor")
+    End Sub
+    Public Sub New(ArmorName As String)
+        Me.Name = ArmorName
+        With Me
+            .Tier = ArmorTier.Light
+            .Type = ArmorType.Padded
+            .Cost = 5
+            .ArmorBonus = 1
+            .MaxDexterityBonus = 8
+            .ArcaneSpellFailureChance = 0.05
+            .Weight = 10
+        End With
+    End Sub
+
+End Class

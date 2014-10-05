@@ -1,5 +1,5 @@
 ﻿Public Class Kobold
-    Inherits Monster
+    Inherits Creature
     Public Sub New(_MapLevel As Integer, _Location As Point)
         With Me
             .ArmorClass = 15

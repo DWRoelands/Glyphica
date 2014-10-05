@@ -1,8 +1,5 @@
 ﻿Public Class Player
-    Inherits Monster
-
-    Public Property VisualRange As Integer = 8
-    Public Property VisibleCells As New List(Of Point)
+    Inherits Creature
 
     Public Enum PlayerMoveResult As Integer
         Undefined
@@ -11,6 +8,10 @@
         Combat
         Thing
     End Enum
+
+    Public Sub New()
+        Me.VisualRange = 8
+    End Sub
 
     Public Overrides Sub Draw()
         'MyBase.Draw()
