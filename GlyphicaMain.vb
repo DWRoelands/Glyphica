@@ -340,11 +340,6 @@
         Console.ReadKey()
     End Sub
 
-    'Public Sub CreatureKill(DeadMonster As Creature)
-    '    Artifacts.Add(New Corpse(DeadMonster.MapLevel, DeadMonster.Location, DeadMonster.Name))
-    '    Creatures.Remove(DeadMonster)
-    'End Sub
-
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult
         Dim ReturnValue As Player.PlayerMoveResult = Nothing
 

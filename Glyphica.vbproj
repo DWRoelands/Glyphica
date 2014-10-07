@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Armor\Armor.vb" />
     <Compile Include="Armor\ArmorChainShirt.vb" />
+    <Compile Include="Armor\ArmorHide.vb" />
     <Compile Include="Armor\ArmorLeather.vb" />
     <Compile Include="Armor\ArmorPadded.vb" />
     <Compile Include="Armor\ArmorStudded.vb" />

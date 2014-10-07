@@ -1,0 +1,18 @@
+﻿Public Class ArmorFullPlate
+    Inherits Armor
+    Public Sub New()
+        Me.New("Full Plate Armor")
+    End Sub
+    Public Sub New(ArmorName As String)
+        Me.Name = ArmorName
+        With Me
+            .Tier = ArmorTier.Heavy
+            .Type = ArmorType.FullPlate
+            .Cost = 1500
+            .ArmorBonus = 8
+            .MaxDexterityBonus = 1
+            .ArcaneSpellFailureChance = 0.35
+            .Weight = 50
+        End With
+    End Sub
+End Class
