@@ -2,7 +2,21 @@
 Public Class Creature
     Inherits Thing
 
-    Public Property HitPoints As Integer
+    Public Enum CreatureAlignment
+        Lawful
+        Neutral
+        Chaotic
+    End Enum
+
+    Public Enum CreatureClass
+        Fighter
+        Rogue
+        Wizard
+    End Enum
+
+
+    Public Property HitPointsCurrent As Integer
+    Public Property HitPointsMax As Integer
     Public Property DamageDice As String
     Public Property ArmorClass As Integer
     Public Property Initiative As Integer
@@ -16,9 +30,8 @@ Public Class Creature
     Public Property Wisdom As Integer
     Public Property Charisma As Integer
 
-
-
-
+    Public Property Alignment As CreatureAlignment
+    Public Property [Class] As CreatureClass
 
     Private _HitDice As String
     Public Property HitDice As String
@@ -27,13 +40,10 @@ Public Class Creature
         End Get
         Set(value As String)
             _HitDice = value
-            HitPoints = Dice.RollDice(value)
+            HitPointsMax = Dice.RollDice(value)
+            HitPointsCurrent = HitPointsMax
         End Set
     End Property
-
-    Public Enum MonsterType As Integer
-        Kobold
-    End Enum
 
     Public Shared Function Find(Location As Point) As Creature
         Dim ReturnValue As Creature = Nothing

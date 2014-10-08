@@ -49,6 +49,7 @@
         Player1.HitDice = "4d8"
         Player1.ArmorClass = 10
         Player1.DamageDice = "1d8"
+        Player1.Name = "Duane"
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -70,6 +71,8 @@
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
         Do
+            StatusUpdate()
+
             Dim ToLocation As New Point
             KeyPress = Console.ReadKey(True)
 
@@ -168,13 +171,31 @@
                 End If
             Next
 
-        Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPoints > 0
+        Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPointsCurrent > 0
 
-        If Player1.HitPoints <= 0 Then
+        StatusUpdate()
+
+        If Player1.HitPointsCurrent <= 0 Then
             MessageWrite("You have died.")
-            MessageWrite("Press [ENTER] to exit.")
-            Console.ReadLine()
+            MessageWrite("Press any key to exit.")
+            WaitForKeypress()
         End If
+
+    End Sub
+
+    Public Sub StatusUpdate()
+        Dim Anchor As Integer = Console.WindowHeight - MESSAGEAREAHEIGHT
+        Console.SetCursorPosition(0, Anchor)
+        Console.Write("{0}, {1} {2}", Player1.Name, Player1.Alignment, Player1.Class)
+
+        Console.SetCursorPosition(0, Anchor + 1)
+        Console.Write("HP:{0}/{2} AC:{1}", Player1.HitPointsCurrent, Player1.ArmorClass, Player1.HitPointsMax)
+
+        Console.SetCursorPosition(0, Anchor + 2)
+        Console.Write("STR:{0} INT:{1} WIS:{2} DEX:{3} CON:{4} CHA:{5}", Player1.Strength, Player1.Intelligence, Player1.Wisdom, Player1.Dexterity, Player1.Constitution, Player1.Charisma)
+
+
+
 
     End Sub
 
@@ -272,7 +293,7 @@
             Else
                 MessageWrite(String.Format("The {0} hit you for {1} damage.", Attacker.Name, Damage))
             End If
-            Defender.HitPoints -= Damage
+            Defender.HitPointsCurrent -= Damage
         Else
             If Attacker Is Player1 Then
                 MessageWrite(String.Format("You missed the {0}.", Defender.Name))
@@ -282,11 +303,9 @@
         End If
 
         ' did the defender die?
-        If Defender.HitPoints <= 0 Then
+        If Defender.HitPointsCurrent <= 0 Then
             If Defender Is Player1 Then
-                MessageWrite("You have died.  Press any key...")
-                WaitForKeypress()
-                End
+                Exit Sub
             Else
                 MessageWrite(String.Format("You killed the {0}!", Defender.Name))
                 Creature.Kill(Defender)
@@ -307,7 +326,7 @@
                 Else
                     MessageWrite(String.Format("The {0} hit you for {1} damage.", Defender.Name, Damage))
                 End If
-                Attacker.HitPoints -= Damage
+                Attacker.HitPointsCurrent -= Damage
             Else
                 If Defender Is Player1 Then
                     MessageWrite(String.Format("You missed the {0}.", Attacker.Name))
@@ -317,11 +336,9 @@
             End If
 
             ' did the attacker die
-            If Attacker.HitPoints <= 0 Then
+            If Attacker.HitPointsCurrent <= 0 Then
                 If Attacker Is Player1 Then
-                    MessageWrite("You have died.  Press any key...")
-                    WaitForKeypress()
-                    End
+                    Exit Sub
                 Else
                     MessageWrite(String.Format("You killed the {0}!", Defender.Name))
                     Creature.Kill(Attacker)
@@ -337,7 +354,7 @@
     End Sub
 
     Public Sub WaitForKeypress()
-        Console.ReadKey()
+        Console.ReadKey(True)
     End Sub
 
     Public Function PlayerMoveAttempt(ToLocation As Point) As Player.PlayerMoveResult

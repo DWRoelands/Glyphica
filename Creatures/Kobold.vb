@@ -3,7 +3,7 @@
     Public Sub New(_MapLevel As Integer, _Location As Point)
         With Me
             .ArmorClass = 15
-            .DamageDice = "1d6-1"
+            .DamageDice = "3d6-1"
             .Description = "a kobold"
             .DisplayCharacter = "k"
             '.DisplayColor = ConsoleColor.Green
