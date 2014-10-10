@@ -3,18 +3,18 @@
     Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
     Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 
-    Const SOLIDBLOCK As Byte = 219
-    Const HORIZONTALWALL As Byte = 205
-    Const VERTICALWALL As Byte = 186
-    Const UPPERLEFTCORNER As Byte = 201
-    Const LOWERLEFTCORNER As Byte = 200
-    Const UPPERRIGHTCORNER As Byte = 187
-    Const LOWERRIGHTCORNER As Byte = 188
-    Const SINGLEHORIZONTALLINE As Byte = 196
+    Public Const SOLIDBLOCK As Byte = 219
+    Public Const HORIZONTALWALL As Byte = 205
+    Public Const VERTICALWALL As Byte = 186
+    Public Const UPPERLEFTCORNER As Byte = 201
+    Public Const LOWERLEFTCORNER As Byte = 200
+    Public Const UPPERRIGHTCORNER As Byte = 187
+    Public Const LOWERRIGHTCORNER As Byte = 188
+    Public Const SINGLEHORIZONTALLINE As Byte = 196
     Const DOOR As Byte = 176
 
-    Const MESSAGEAREAHEIGHT As Integer = 5
-    Const STATUSAREAHEIGHT As Integer = 5
+    Public Const MESSAGEAREAHEIGHT As Integer = 5
+    Public Const STATUSAREAHEIGHT As Integer = 5
 
 
     Public Map(,,) As MapTile      ' level, x, y
@@ -57,8 +57,12 @@
             .BaseDexterity = 15
             .BaseConstitution = 14
             .BaseCharisma = 13
-
         End With
+
+        Player1.Equipment.Add(New ArmorBreastPlate)
+
+
+
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -86,6 +90,11 @@
             KeyPress = Console.ReadKey(True)
 
             Select Case KeyPress.Key
+
+                Case ConsoleKey.I
+                    InventoryManage()
+                    Console.ReadLine()
+
                 Case ConsoleKey.DownArrow, ConsoleKey.NumPad2
                     ToLocation = New Point(Player1.Location.X, Player1.Location.Y + 1)
 
@@ -138,14 +147,14 @@
 
             Select Case KeyPress.KeyChar
                 Case ">"c  '' go down stairs
-                    If MapTileGet(Player1.Location).TileType = MapTile.MapTileType.StairsDown Then
+                    If MapTile.GetTile(Player1.Location).TileType = MapTile.MapTileType.StairsDown Then
                         Player1.MapLevel += 1
                         ViewportMapDraw()
                         Player1.Location = StairsUpFind()
                     End If
 
                 Case "<"c  '' go up stairs
-                    If MapTileGet(Player1.Location).TileType = MapTile.MapTileType.StairsUp Then
+                    If MapTile.GetTile(Player1.Location).TileType = MapTile.MapTileType.StairsUp Then
                         Player1.MapLevel -= 1
                         ViewportMapDraw()
                         Player1.Location = StairsDownFind()
@@ -157,7 +166,7 @@
                 Case Player.PlayerMoveResult.Move
                     Player1.Location = ToLocation
                 Case Player.PlayerMoveResult.Blocked
-                    Select Case MapTileGet(ToLocation).TileType
+                    Select Case MapTile.GetTile(ToLocation).TileType
                         Case MapTile.MapTileType.Wall
                             MessageWrite("You bump your head.")
                     End Select
@@ -382,7 +391,7 @@
         ' No monster 
         ' Check for collision with map feature
         If Not MonsterFound Then
-            Select Case MapTileGet(ToLocation).TileType
+            Select Case MapTile.GetTile(ToLocation).TileType
                 Case MapTile.MapTileType.Empty
                     ReturnValue = Player.PlayerMoveResult.Move
                 Case MapTile.MapTileType.Wall
@@ -444,14 +453,15 @@
 
     End Sub
 
-    Private Sub GraphicsCharacterDraw(Character As Byte)
+    'TODO: Put this in a "util" module
+    Public Sub GraphicsCharacterDraw(Character As Byte)
         Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {Character})(0)
         Console.Write(c)
     End Sub
 
-    Public Function MapTileGet(Location As Point) As MapTile
-        Return Map(Player1.MapLevel, Location.X, Location.Y)
-    End Function
+    'Public Function MapTileGet(Location As Point) As MapTile
+    '    Return Map(Player1.MapLevel, Location.X, Location.Y)
+    'End Function
 
     Public Function StairsUpFind() As Point
         Dim ReturnValue As Point = Nothing
@@ -484,7 +494,7 @@
     Private Sub MaptileRender(Location As Point)
 
         Dim t As MapTile.MapTileType = Map(Player1.MapLevel, Location.X, Location.Y).TileType
-        If Not MapTileGet(Location).IsRevealed Then
+        If Not MapTile.GetTile(Location).IsRevealed Then
             Exit Sub
         End If
 
@@ -772,6 +782,13 @@
                     MaptileRender(New Point(x, y))
                 End If
             Next
+        Next
+    End Sub
+
+    Public Sub ViewportClear()
+        For row = MESSAGEAREAHEIGHT + 1 To Console.WindowHeight - STATUSAREAHEIGHT - 2
+            Console.SetCursorPosition(0, row)
+            Console.Write(Space(Console.WindowWidth - 1))
         Next
     End Sub
 

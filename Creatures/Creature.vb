@@ -67,26 +67,35 @@ Public Class Creature
 
 #End Region
 
-    Public Property HitPointsCurrent As Integer
-    Public Property HitPointsMax As Integer
-    Public Property DamageDice As String
-    Public Property Initiative As Integer
-    Public Property VisualRange As Integer
-    Public Property VisibleCells As New List(Of Point)
-
-
-
-    Public Property BaseArmorClass As Integer
-    Public Property ArmorClassModifier As Integer
-
-    Public Property ArcaneSpellFailureChance As Decimal
-
+#Region "Equipment Properties"
     Public Property TotalWeightCarried As Integer
+    Public Property Equipment As New List(Of EquippableItem)
+    Public Property EquippedArmor As Armor
+
+#End Region
 
     Public Property Alignment As CreatureAlignment
     Public Property [Class] As CreatureClass
 
-    Public Property Equipment As New List(Of EquippableItem)
+    Public Property VisualRange As Integer
+    Public Property VisibleCells As New List(Of Point)
+
+    Public Property HitPointsCurrent As Integer
+    Public Property HitPointsMax As Integer
+
+    Public Property DamageDice As String
+
+    Public Property Initiative As Integer
+
+    Public Property BaseArmorClass As Integer
+    Public Property ArmorClassModifier As Integer
+    Public ReadOnly Property ArmorClass As Integer
+        Get
+            Return BaseArmorClass + ArmorClassModifier
+        End Get
+    End Property
+
+    Public Property ArcaneSpellFailureChance As Decimal
 
     Private _HitDice As String
     Public Property HitDice As String
@@ -99,13 +108,6 @@ Public Class Creature
             HitPointsCurrent = HitPointsMax
         End Set
     End Property
-
-    Public ReadOnly Property ArmorClass As Integer
-        Get
-            Return BaseArmorClass + ArmorClassModifier
-        End Get
-    End Property
-
 
     Public Shared Function Find(Location As Point) As Creature
         Dim ReturnValue As Creature = Nothing

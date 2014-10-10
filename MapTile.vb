@@ -35,4 +35,8 @@
         Me.TileType = NewType
     End Sub
 
+    Public Shared Function GetTile(Location As Point) As MapTile
+        Return Map(Player1.MapLevel, Location.X, Location.Y)
+    End Function
+
 End Class

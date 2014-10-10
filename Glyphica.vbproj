@@ -84,6 +84,7 @@
     <Compile Include="Equipment\EquippableItem.vb" />
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="GlyphicaTraceLilstener.vb" />
+    <Compile Include="Inventory.vb" />
     <Compile Include="MapBuilder.vb" />
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
