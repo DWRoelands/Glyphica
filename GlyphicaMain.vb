@@ -50,6 +50,15 @@
         Player1.ArmorClass = 10
         Player1.DamageDice = "1d8"
         Player1.Name = "Duane"
+        With Player1
+            .Strength = 18
+            .Intelligence = 17
+            .Wisdom = 16
+            .Dexterity = 15
+            .Constitution = 14
+            .Charisma = 13
+
+        End With
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -192,8 +201,10 @@
         Console.Write("HP:{0}/{2} AC:{1}", Player1.HitPointsCurrent, Player1.ArmorClass, Player1.HitPointsMax)
 
         Console.SetCursorPosition(0, Anchor + 2)
-        Console.Write("STR:{0} INT:{1} WIS:{2} DEX:{3} CON:{4} CHA:{5}", Player1.Strength, Player1.Intelligence, Player1.Wisdom, Player1.Dexterity, Player1.Constitution, Player1.Charisma)
+        Console.Write("STR:{0} INT:{1} WIS:{2}", Player1.Strength, Player1.Intelligence, Player1.Wisdom)
 
+        Console.SetCursorPosition(0, Anchor + 3)
+        Console.Write("DEX:{0} CON:{1} CHA:{2}", Player1.Dexterity, Player1.Constitution, Player1.Charisma)
 
 
 

@@ -68,10 +68,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Armor\Armor.vb" />
+    <Compile Include="Armor\ArmorBandedMail.vb" />
+    <Compile Include="Armor\ArmorBreastPlate.vb" />
+    <Compile Include="Armor\ArmorChainMail.vb" />
     <Compile Include="Armor\ArmorChainShirt.vb" />
+    <Compile Include="Armor\ArmorFullPlate.vb" />
+    <Compile Include="Armor\ArmorHalfPlate.vb" />
     <Compile Include="Armor\ArmorHide.vb" />
     <Compile Include="Armor\ArmorLeather.vb" />
     <Compile Include="Armor\ArmorPadded.vb" />
+    <Compile Include="Armor\ArmorScaleMail.vb" />
+    <Compile Include="Armor\ArmorSplintMail.vb" />
     <Compile Include="Armor\ArmorStudded.vb" />
     <Compile Include="Dice.vb" />
     <Compile Include="FOVRecurse.vb" />
