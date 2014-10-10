@@ -47,16 +47,16 @@
         Player1 = New Player
         Player1.MapLevel = 0
         Player1.HitDice = "4d8"
-        Player1.ArmorClass = 10
+        Player1.BaseArmorClass = 10
         Player1.DamageDice = "1d8"
         Player1.Name = "Duane"
         With Player1
-            .Strength = 18
-            .Intelligence = 17
-            .Wisdom = 16
-            .Dexterity = 15
-            .Constitution = 14
-            .Charisma = 13
+            .BaseStrength = 18
+            .BaseIntelligence = 17
+            .BaseWisdom = 16
+            .BaseDexterity = 15
+            .BaseConstitution = 14
+            .BaseCharisma = 13
 
         End With
 
@@ -205,8 +205,6 @@
 
         Console.SetCursorPosition(0, Anchor + 3)
         Console.Write("DEX:{0} CON:{1} CHA:{2}", Player1.Dexterity, Player1.Constitution, Player1.Charisma)
-
-
 
     End Sub
 

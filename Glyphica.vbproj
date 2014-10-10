@@ -67,20 +67,21 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Armor\Armor.vb" />
-    <Compile Include="Armor\ArmorBandedMail.vb" />
-    <Compile Include="Armor\ArmorBreastPlate.vb" />
-    <Compile Include="Armor\ArmorChainMail.vb" />
-    <Compile Include="Armor\ArmorChainShirt.vb" />
-    <Compile Include="Armor\ArmorFullPlate.vb" />
-    <Compile Include="Armor\ArmorHalfPlate.vb" />
-    <Compile Include="Armor\ArmorHide.vb" />
-    <Compile Include="Armor\ArmorLeather.vb" />
-    <Compile Include="Armor\ArmorPadded.vb" />
-    <Compile Include="Armor\ArmorScaleMail.vb" />
-    <Compile Include="Armor\ArmorSplintMail.vb" />
-    <Compile Include="Armor\ArmorStudded.vb" />
+    <Compile Include="Equipment\Armor\Armor.vb" />
+    <Compile Include="Equipment\Armor\ArmorBandedMail.vb" />
+    <Compile Include="Equipment\Armor\ArmorBreastPlate.vb" />
+    <Compile Include="Equipment\Armor\ArmorChainMail.vb" />
+    <Compile Include="Equipment\Armor\ArmorChainShirt.vb" />
+    <Compile Include="Equipment\Armor\ArmorFullPlate.vb" />
+    <Compile Include="Equipment\Armor\ArmorHalfPlate.vb" />
+    <Compile Include="Equipment\Armor\ArmorHide.vb" />
+    <Compile Include="Equipment\Armor\ArmorLeather.vb" />
+    <Compile Include="Equipment\Armor\ArmorPadded.vb" />
+    <Compile Include="Equipment\Armor\ArmorScaleMail.vb" />
+    <Compile Include="Equipment\Armor\ArmorSplintMail.vb" />
+    <Compile Include="Equipment\Armor\ArmorStudded.vb" />
     <Compile Include="Dice.vb" />
+    <Compile Include="Equipment\EquippableItem.vb" />
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="GlyphicaTraceLilstener.vb" />
     <Compile Include="MapBuilder.vb" />
@@ -105,7 +106,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Player.vb" />
+    <Compile Include="Creatures\Player.vb" />
     <Compile Include="Artifacts\Artifact.vb" />
     <Compile Include="Thing.vb" />
     <Compile Include="Artifacts\Corpse.vb" />

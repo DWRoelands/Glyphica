@@ -14,24 +14,79 @@ Public Class Creature
         Wizard
     End Enum
 
+#Region "Ability Score Properties"
+    Public Property BaseStrength As Integer
+    Public Property BaseDexterity As Integer
+    Public Property BaseConstitution As Integer
+    Public Property BaseIntelligence As Integer
+    Public Property BaseWisdom As Integer
+    Public Property BaseCharisma As Integer
+
+    Public Property StrengthModifier As Integer
+    Public Property DexterityModifier As Integer
+    Public Property ConstitutionModifier As Integer
+    Public Property IntelligenceModifier As Integer
+    Public Property WisdonModifier As Integer
+    Public Property CharismaModifier As Integer
+
+    Public ReadOnly Property Strength As Integer
+        Get
+            Return BaseStrength + StrengthModifier
+        End Get
+    End Property
+
+    Public ReadOnly Property Intelligence As Integer
+        Get
+            Return BaseIntelligence + IntelligenceModifier
+        End Get
+    End Property
+
+    Public ReadOnly Property Wisdom As Integer
+        Get
+            Return BaseWisdom + WisdonModifier
+        End Get
+    End Property
+
+    Public ReadOnly Property Dexterity As Integer
+        Get
+            Return BaseDexterity + DexterityModifier
+        End Get
+    End Property
+
+    Public ReadOnly Property Constitution As Integer
+        Get
+            Return BaseConstitution + ConstitutionModifier
+        End Get
+    End Property
+
+    Public ReadOnly Property Charisma As Integer
+        Get
+            Return BaseCharisma + CharismaModifier
+        End Get
+    End Property
+
+#End Region
 
     Public Property HitPointsCurrent As Integer
     Public Property HitPointsMax As Integer
     Public Property DamageDice As String
-    Public Property ArmorClass As Integer
     Public Property Initiative As Integer
     Public Property VisualRange As Integer
     Public Property VisibleCells As New List(Of Point)
 
-    Public Property Strength As Integer
-    Public Property Dexterity As Integer
-    Public Property Constitution As Integer
-    Public Property Intelligence As Integer
-    Public Property Wisdom As Integer
-    Public Property Charisma As Integer
+
+
+    Public Property BaseArmorClass As Integer
+    Public Property ArmorClassModifier As Integer
+
+    Public Property ArcaneSpellFailureChance As Decimal
+
+    Public Property TotalWeightCarried As Integer
 
     Public Property Alignment As CreatureAlignment
     Public Property [Class] As CreatureClass
+
+    Public Property Equipment As New List(Of EquippableItem)
 
     Private _HitDice As String
     Public Property HitDice As String
@@ -45,6 +100,13 @@ Public Class Creature
         End Set
     End Property
 
+    Public ReadOnly Property ArmorClass As Integer
+        Get
+            Return BaseArmorClass + ArmorClassModifier
+        End Get
+    End Property
+
+
     Public Shared Function Find(Location As Point) As Creature
         Dim ReturnValue As Creature = Nothing
         For Each c As Creature In Creatures
@@ -55,6 +117,15 @@ Public Class Creature
         Next
         Return ReturnValue
     End Function
+
+    Public Sub EquipmentEffectsProcess()
+        For Each item As EquippableItem In Equipment
+            item.Process(Me)
+        Next
+    End Sub
+
+
+
 
     Public Shared Function FindClosest(Location As Point) As Creature
 
@@ -83,11 +154,11 @@ Public Class Creature
 
     End Function
 
+
     Public Shared Sub Kill(DeadCreature As Creature)
         Artifacts.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
         Creatures.Remove(DeadCreature)
     End Sub
-
 
     ' TODO: Maybe put this into a "Utility" module
     Public Shared Function DistanceGet(Location1 As Point, Location2 As Point) As Decimal
