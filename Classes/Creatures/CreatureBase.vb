@@ -120,7 +120,7 @@ Public Class CreatureBase
         Return ReturnValue
     End Function
 
-    Public Sub EquipmentEffectsProcess()
+    Public Sub ItemEffectsProcess()
         For Each item As ItemBase In EquippedItems
             item.Process(Me)
         Next
@@ -152,7 +152,6 @@ Public Class CreatureBase
         Return ReturnValue
 
     End Function
-
 
     Public Shared Sub Kill(DeadCreature As CreatureBase)
         Artifacts.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
