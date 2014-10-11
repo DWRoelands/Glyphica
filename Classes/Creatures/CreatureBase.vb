@@ -69,7 +69,7 @@ Public Class CreatureBase
 
 #Region "Equipment Properties"
     Public Property TotalWeightCarried As Integer
-    Public Property EquippedItems As New List(Of EquippableItem)
+    Public Property EquippedItems As New List(Of ItemBase)
     Public Property EquippedArmor As Armor
 
 #End Region
@@ -121,7 +121,7 @@ Public Class CreatureBase
     End Function
 
     Public Sub EquipmentEffectsProcess()
-        For Each item As EquippableItem In EquippedItems
+        For Each item As ItemBase In EquippedItems
             item.Process(Me)
         Next
     End Sub
