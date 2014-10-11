@@ -59,7 +59,8 @@
             .BaseCharisma = 13
         End With
 
-        Player1.EquippedItems.Add(New ArmorBreastPlate)
+        Dim abp As New ArmorBreastPlate
+        Player1.Inventory.Add(New ArmorBreastPlate)
 
 
 

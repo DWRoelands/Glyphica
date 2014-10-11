@@ -23,9 +23,9 @@
     End Sub
 
     Private Sub EquippedItemsList()
-        For x = 0 To Player1.EquippedItems.Count - 1
+        For x = 0 To Player1.Inventory.Count - 1
             Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + 2 + x)
-            Console.Write(Player1.EquippedItems(x).Name)
+            Console.Write(Player1.Inventory(x).Name)
         Next
     End Sub
 
