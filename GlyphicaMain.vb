@@ -27,7 +27,7 @@
     Public Player1 As Player
 
     Public Creatures As New List(Of CreatureBase)
-    Public Artifacts As New List(Of Artifact)
+    Public Artifacts As New List(Of ItemBase)
     Public Messages As New List(Of Message)
 
     Public Enum CombatType
@@ -79,7 +79,7 @@
 
         ViewportPlayerMoveProcess()
 
-        Trace.Listeners.Add(New GlyphicaTraceLilstener)
+        Trace.Listeners.Add(New GlyphicaTraceListener)
 
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
@@ -182,7 +182,7 @@
             Player1.Draw()
 
             ' Is the player in the same square as an artifact?  If so, search the artifact for anything it contains
-            For Each a As Artifact In Artifacts
+            For Each a As ItemBase In Artifacts
                 If a.Location = Player1.Location Then
                     MessageWrite("searching")
                     Exit For
@@ -719,7 +719,7 @@
         ' get the list of visible cells once so we don't have to recalculate repeatedly
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each a As Artifact In Artifacts
+        For Each a As ItemBase In Artifacts
             ' Is the artifact's location even on the screen?
             If IsLocationInViewport(a.Location) Then
 

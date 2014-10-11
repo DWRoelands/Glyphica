@@ -1,5 +1,5 @@
 ﻿Public Class Corpse
-    Inherits Artifact
+    Inherits ItemBase
     Public Sub New(_MapLevel As Integer, _Location As Point, MonsterName As String)
         With Me
             .MapLevel = _MapLevel

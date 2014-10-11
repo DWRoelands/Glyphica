@@ -3,7 +3,7 @@
     Public Property Color As ConsoleColor
 
     Public Sub New(Message As String, MessageColor As ConsoleColor)
-        _Text = Message
-        _Color = MessageColor
+        Text = Message
+        Color = MessageColor
     End Sub
 End Class

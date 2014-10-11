@@ -1,4 +1,4 @@
-﻿Public Class GlyphicaTraceLilstener
+﻿Public Class GlyphicaTraceListener
     Inherits TraceListener
 
     Public Overloads Overrides Sub Write(message As String)

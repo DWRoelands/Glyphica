@@ -1,5 +1,5 @@
 ﻿Public Class Armor
-    Inherits EquippableItem
+    Inherits ItemBase
     Public Enum ArmorTier
         Light
         Medium
