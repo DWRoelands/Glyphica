@@ -12,21 +12,21 @@
         Console.SetCursorPosition(SECONDCOLUMNX, MESSAGEAREAHEIGHT + 1)
         Console.Write("CARRIED ITEMS")
 
-        For x = 0 To Player1.Equipment.Count - 1
-            Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + 2 + x)
-            Console.Write(Player1.Equipment(x).Name)
+        EquippedItemsList()
+    End Sub
+
+    Private Sub EquippedItemsClear()
+        For y = MESSAGEAREAHEIGHT + 2 To Console.WindowHeight - STATUSAREAHEIGHT - 2
+            Console.SetCursorPosition(FIRSTCOLUMNX, y)
+            Console.Write(Space(SECONDCOLUMNX - FIRSTCOLUMNX))
         Next
-
-
-
-
-
-
-
     End Sub
 
     Private Sub EquippedItemsList()
-
+        For x = 0 To Player1.EquippedItems.Count - 1
+            Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + 2 + x)
+            Console.Write(Player1.EquippedItems(x).Name)
+        Next
     End Sub
 
 

@@ -1,5 +1,5 @@
 ﻿Public Class Player
-    Inherits Creature
+    Inherits CreatureBase
 
     Public Enum PlayerMoveResult As Integer
         Undefined

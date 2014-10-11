@@ -1,4 +1,4 @@
 ﻿Public Class Artifact
-    Inherits Thing
+    Inherits Base
     Public Property CanBeCarried As Boolean = True
 End Class

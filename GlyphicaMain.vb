@@ -26,7 +26,7 @@
 
     Public Player1 As Player
 
-    Public Creatures As New List(Of Creature)
+    Public Creatures As New List(Of CreatureBase)
     Public Artifacts As New List(Of Artifact)
     Public Messages As New List(Of Message)
 
@@ -59,7 +59,7 @@
             .BaseCharisma = 13
         End With
 
-        Player1.Equipment.Add(New ArmorBreastPlate)
+        Player1.EquippedItems.Add(New ArmorBreastPlate)
 
 
 
@@ -122,7 +122,7 @@
                 Case ConsoleKey.S  ' shoot ranged weapon
                     If KeyPress.Modifiers And ConsoleModifiers.Shift Then
                         ' allow player to choose target
-                        Dim Target As Creature = TargetSelect(Player1.Location)
+                        Dim Target As CreatureBase = TargetSelect(Player1.Location)
                         If Target IsNot Nothing Then
                             CombatResolve(Target, CombatType.Ranged)
                         Else
@@ -133,7 +133,7 @@
                         End If
                     Else
                         ' lowercase "s" automatically target the closest creature
-                        CombatResolve(Creature.FindClosest(Player1.Location), CombatType.Ranged)
+                        CombatResolve(CreatureBase.FindClosest(Player1.Location), CombatType.Ranged)
                     End If
 
                     ViewportCreaturesDraw()
@@ -171,7 +171,7 @@
                             MessageWrite("You bump your head.")
                     End Select
                 Case Player.PlayerMoveResult.Combat
-                    Dim Enemy As Creature = Creature.Find(ToLocation)
+                    Dim Enemy As CreatureBase = CreatureBase.Find(ToLocation)
                     CombatResolve(Enemy, CombatType.Melee)
 
             End Select
@@ -220,8 +220,8 @@
     Public Function TargetSelect(Location As Point)
         ' give the player a way to select a target creature when more than one creature is visible
 
-        Dim VisibleCreatures As New List(Of Creature)
-        For Each m As Creature In Creatures
+        Dim VisibleCreatures As New List(Of CreatureBase)
+        For Each m As CreatureBase In Creatures
             If Player1.VisibleCells.Contains(m.Location) Then
                 VisibleCreatures.Add(m)
             End If
@@ -233,7 +233,7 @@
 
         ' label targets
         Dim TargetNumber As Integer = 1
-        For Each t As Creature In VisibleCreatures
+        For Each t As CreatureBase In VisibleCreatures
             Console.SetCursorPosition(t.Location.X - ViewportOrigin.X, t.Location.Y - ViewportOrigin.Y)
             Console.ForegroundColor = ConsoleColor.Yellow
             Console.Write(TargetNumber.ToString.Trim)
@@ -242,7 +242,7 @@
 
         TargetNumber = 1
         MessageWrite("Target which creature?  (ESC to cancel)")
-        For Each m As Creature In VisibleCreatures
+        For Each m As CreatureBase In VisibleCreatures
             MessageWrite(String.Format("{0} - {1}", TargetNumber, m.Name))
             TargetNumber += 1
         Next
@@ -268,7 +268,7 @@
 
     End Function
 
-    Public Sub CombatResolve(Enemy As Creature, Type As CombatType)
+    Public Sub CombatResolve(Enemy As CreatureBase, Type As CombatType)
         Select Case Type
             Case CombatType.Melee, CombatType.Ranged
                 CombatResolvePhysical(Enemy, Type)
@@ -278,10 +278,10 @@
 
     End Sub
 
-    Public Sub CombatResolvePhysical(Enemy As Creature, Type As CombatType)
+    Public Sub CombatResolvePhysical(Enemy As CreatureBase, Type As CombatType)
 
-        Dim Defender As Creature = Nothing
-        Dim Attacker As Creature = Nothing
+        Dim Defender As CreatureBase = Nothing
+        Dim Attacker As CreatureBase = Nothing
 
         ' roll initiative
         ' Only matters for melee combat
@@ -326,7 +326,7 @@
                 Exit Sub
             Else
                 MessageWrite(String.Format("You killed the {0}!", Defender.Name))
-                Creature.Kill(Defender)
+                CreatureBase.Kill(Defender)
                 Exit Sub
             End If
         End If
@@ -359,7 +359,7 @@
                     Exit Sub
                 Else
                     MessageWrite(String.Format("You killed the {0}!", Defender.Name))
-                    Creature.Kill(Attacker)
+                    CreatureBase.Kill(Attacker)
                     Exit Sub
                 End If
             End If
@@ -367,7 +367,7 @@
 
     End Sub
 
-    Public Sub CombatResolveMagical(Enemy As Creature)
+    Public Sub CombatResolveMagical(Enemy As CreatureBase)
 
     End Sub
 
@@ -380,7 +380,7 @@
 
         ' First, is there a monster here?  If so, the result is combat
         Dim MonsterFound As Boolean = False
-        For Each m As Creature In Creatures
+        For Each m As CreatureBase In Creatures
             If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
                 MonsterFound = True
                 ReturnValue = Player.PlayerMoveResult.Combat
@@ -740,7 +740,7 @@
         ' get the list of visible cells once so we don't have to recalculate repeatedly
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each m As Creature In Creatures
+        For Each m As CreatureBase In Creatures
             ' Is the monster's location even on the screen?
             If IsLocationInViewport(m.Location) Then
 

@@ -1,6 +1,6 @@
 ﻿Imports System.Math
-Public Class Creature
-    Inherits Thing
+Public Class CreatureBase
+    Inherits Base
 
     Public Enum CreatureAlignment
         Lawful
@@ -69,7 +69,7 @@ Public Class Creature
 
 #Region "Equipment Properties"
     Public Property TotalWeightCarried As Integer
-    Public Property Equipment As New List(Of EquippableItem)
+    Public Property EquippedItems As New List(Of EquippableItem)
     Public Property EquippedArmor As Armor
 
 #End Region
@@ -109,9 +109,9 @@ Public Class Creature
         End Set
     End Property
 
-    Public Shared Function Find(Location As Point) As Creature
-        Dim ReturnValue As Creature = Nothing
-        For Each c As Creature In Creatures
+    Public Shared Function Find(Location As Point) As CreatureBase
+        Dim ReturnValue As CreatureBase = Nothing
+        For Each c As CreatureBase In Creatures
             If c.Location.X = Location.X AndAlso c.Location.Y = Location.Y Then
                 ReturnValue = c
                 Exit For
@@ -121,19 +121,16 @@ Public Class Creature
     End Function
 
     Public Sub EquipmentEffectsProcess()
-        For Each item As EquippableItem In Equipment
+        For Each item As EquippableItem In EquippedItems
             item.Process(Me)
         Next
     End Sub
 
+    Public Shared Function FindClosest(Location As Point) As CreatureBase
 
-
-
-    Public Shared Function FindClosest(Location As Point) As Creature
-
-        Dim ReturnValue As Creature = Nothing
+        Dim ReturnValue As CreatureBase = Nothing
         Dim ClosestDistance As Decimal = 0
-        For Each c As Creature In Creatures
+        For Each c As CreatureBase In Creatures
             If ReturnValue Is Nothing Then
                 ReturnValue = c
             Else
@@ -157,7 +154,7 @@ Public Class Creature
     End Function
 
 
-    Public Shared Sub Kill(DeadCreature As Creature)
+    Public Shared Sub Kill(DeadCreature As CreatureBase)
         Artifacts.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
         Creatures.Remove(DeadCreature)
     End Sub

@@ -67,21 +67,21 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Equipment\Armor\Armor.vb" />
-    <Compile Include="Equipment\Armor\ArmorBandedMail.vb" />
-    <Compile Include="Equipment\Armor\ArmorBreastPlate.vb" />
-    <Compile Include="Equipment\Armor\ArmorChainMail.vb" />
-    <Compile Include="Equipment\Armor\ArmorChainShirt.vb" />
-    <Compile Include="Equipment\Armor\ArmorFullPlate.vb" />
-    <Compile Include="Equipment\Armor\ArmorHalfPlate.vb" />
-    <Compile Include="Equipment\Armor\ArmorHide.vb" />
-    <Compile Include="Equipment\Armor\ArmorLeather.vb" />
-    <Compile Include="Equipment\Armor\ArmorPadded.vb" />
-    <Compile Include="Equipment\Armor\ArmorScaleMail.vb" />
-    <Compile Include="Equipment\Armor\ArmorSplintMail.vb" />
-    <Compile Include="Equipment\Armor\ArmorStudded.vb" />
+    <Compile Include="Classes\Equipment\Armor\Armor.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorBandedMail.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorBreastPlate.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorChainMail.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorChainShirt.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorFullPlate.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorHalfPlate.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorHide.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorLeather.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorPadded.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorScaleMail.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorSplintMail.vb" />
+    <Compile Include="Classes\Equipment\Armor\ArmorStudded.vb" />
     <Compile Include="Dice.vb" />
-    <Compile Include="Equipment\EquippableItem.vb" />
+    <Compile Include="Classes\Equipment\EquippableItem.vb" />
     <Compile Include="FOVRecurse.vb" />
     <Compile Include="GlyphicaTraceLilstener.vb" />
     <Compile Include="Inventory.vb" />
@@ -89,9 +89,9 @@
     <Compile Include="MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Message.vb" />
-    <Compile Include="Creatures\GlyphSpider.vb" />
-    <Compile Include="Creatures\Creature.vb" />
-    <Compile Include="Creatures\Kobold.vb" />
+    <Compile Include="Classes\Creatures\GlyphSpider.vb" />
+    <Compile Include="Classes\Creatures\CreatureBase.vb" />
+    <Compile Include="Classes\Creatures\Kobold.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -107,10 +107,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Creatures\Player.vb" />
-    <Compile Include="Artifacts\Artifact.vb" />
-    <Compile Include="Thing.vb" />
-    <Compile Include="Artifacts\Corpse.vb" />
+    <Compile Include="Classes\Creatures\Player.vb" />
+    <Compile Include="Classes\Artifacts\Artifact.vb" />
+    <Compile Include="Classes\Base.vb" />
+    <Compile Include="Classes\Artifacts\Corpse.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -138,7 +138,9 @@
     <Content Include="Map Files\testmap2.txt" />
     <Content Include="Map Files\testmap3.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Classes\Equipment\Weapons\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

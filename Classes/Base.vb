@@ -1,4 +1,4 @@
-﻿Public MustInherit Class Thing
+﻿Public MustInherit Class Base
     Public Property MapLevel As Integer
     Public Property Location As Point
     Public Property Name As String = String.Empty

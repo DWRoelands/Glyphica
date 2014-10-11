@@ -28,7 +28,7 @@
     Public Property ArmorBonus As Integer
 
     ' Armor that has other effects on the wearer shoud overide this method and then call MyBase.Process()
-    Public Overrides Sub Process(Wearer As Creature)
+    Public Overrides Sub Process(Wearer As CreatureBase)
         Wearer.ArmorClassModifier += Me.ArmorBonus
         Wearer.TotalWeightCarried += Me.Weight
         Wearer.ArcaneSpellFailureChance = IIf(Wearer.ArcaneSpellFailureChance < Me.ArcaneSpellFailureChance, Me.ArcaneSpellFailureChance, Wearer.ArcaneSpellFailureChance)

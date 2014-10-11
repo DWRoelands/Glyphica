@@ -1,5 +1,5 @@
 ﻿Public Class Kobold
-    Inherits Creature
+    Inherits CreatureBase
     Public Sub New(_MapLevel As Integer, _Location As Point)
         With Me
             .BaseArmorClass = 15
