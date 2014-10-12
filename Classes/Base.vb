@@ -5,8 +5,8 @@
     Public Property Description As String = String.Empty
     Public Property DisplayColor As ConsoleColor = ConsoleColor.White
     Public Property DisplayCharacter As String = String.Empty
-    Public Property Seen As Boolean = False
-    Public Property Visible As Boolean = False
+    Public Property HasBeenSeen As Boolean = False
+    Public Property IsVisible As Boolean = False
 
     Protected Function GraphicsCharacterGet(bvalue As Byte) As Char
         Return System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {bvalue})(0)
@@ -17,12 +17,12 @@
         Console.SetCursorPosition(Me.Location.X, Me.Location.Y)
         Console.Write(Me.DisplayCharacter)
 
-        If Not Me.Seen Then
+        If Not Me.HasBeenSeen Then
             MessageWrite(String.Format("There is {0} here.", Me.Description))
-            Me.Seen = True
+            Me.HasBeenSeen = True
         End If
 
-        Me.Visible = True
+        Me.IsVisible = True
     End Sub
 
 

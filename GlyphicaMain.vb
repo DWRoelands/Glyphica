@@ -45,7 +45,11 @@
         End With
 
         Dim abp As New ArmorBreastPlate
-        Player1.Inventory.Add(New ArmorBreastPlate)
+        Player1.Inventory.Add(abp)
+        Player1.Equip(abp)
+
+        Dim mace As New MaceMedium
+        Player1.Inventory.Add(mace)
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -116,7 +120,12 @@
                         End If
                     Else
                         ' lowercase "s" automatically target the closest creature
-                        CombatResolve(CreatureBase.FindClosest(Player1.Location), CombatType.Ranged)
+                        Dim ClosestCreature As CreatureBase = Player1.FindClosest
+                        If ClosestCreature IsNot Nothing AndAlso ClosestCreature.IsVisible Then
+                            CombatResolve(Player1.FindClosest(), CombatType.Ranged)
+                        Else
+                            MessageWrite("There is nothing to shoot here.")
+                        End If
                     End If
 
                     ViewportCreaturesDraw()
@@ -703,7 +712,7 @@
             If IsLocationInViewport(a.Location) Then
 
                 ' make the artifact invisible, and only make it visible if it's in the list of visible cells
-                a.Visible = False
+                a.IsVisible = False
                 If VisibleCells.Contains(a.Location) Then
                     a.Draw()
                 Else
@@ -724,7 +733,7 @@
             If IsLocationInViewport(m.Location) Then
 
                 ' make the creature invisible, and only make it visible if it's in the list of visible cells
-                m.Visible = False
+                m.IsVisible = False
                 If VisibleCells.Contains(m.Location) Then
                     m.Draw()
                 Else

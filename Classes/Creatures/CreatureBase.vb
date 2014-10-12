@@ -120,13 +120,13 @@ Public Class CreatureBase
         Return ReturnValue
     End Function
 
-    Public Sub ItemEffectsProcess()
-        For Each item As ItemBase In Inventory
-            item.Process(Me)
+    Public Sub ItemEffectsProcess(Creature As CreatureBase)
+        For Each item As ItemBase In Creature.Inventory
+            item.Process(Creature)
         Next
     End Sub
 
-    Public Shared Function FindClosest(Location As Point) As CreatureBase
+    Public Function FindClosest() As CreatureBase
 
         Dim ReturnValue As CreatureBase = Nothing
         Dim ClosestDistance As Decimal = 0
@@ -134,8 +134,8 @@ Public Class CreatureBase
             If ReturnValue Is Nothing Then
                 ReturnValue = c
             Else
-                If c.Location <> Location Then
-                    If DistanceGet(Location, c.Location) < DistanceGet(Location, ReturnValue.Location) Then
+                If c.Location <> Me.Location Then
+                    If DistanceGet(Me.Location, c.Location) < DistanceGet(Me.Location, ReturnValue.Location) Then
                         ReturnValue = c
                     End If
                 End If
@@ -143,8 +143,8 @@ Public Class CreatureBase
         Next
 
         ' If the specified location isn't the player's location, then this method is being called by a monster looking for a target
-        If Player1.Location <> Location Then
-            If DistanceGet(Location, Player1.Location) < DistanceGet(Location, ReturnValue.Location) Then
+        If Player1.Location <> Me.Location Then
+            If DistanceGet(Me.Location, Player1.Location) < DistanceGet(Me.Location, ReturnValue.Location) Then
                 ReturnValue = Player1
             End If
         End If
@@ -157,6 +157,37 @@ Public Class CreatureBase
         Items.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
         Creatures.Remove(DeadCreature)
     End Sub
+
+    Public Sub Equip(Item As ItemBase)
+
+        Select Case Item.GetType.BaseType
+            Case GetType(ArmorBase)
+                ' only one armor item can be equipped, so we unequip any equipped armor
+                For Each ArmorItem As ArmorBase In Me.Inventory.OfType(Of ArmorBase)()
+                    ArmorItem.IsEquipped = False
+                Next
+                Item.IsEquipped = True
+                Exit Sub
+
+            Case GetType(WeaponBase)
+                ' only one armor item can be equipped, so we unequip any equipped armor
+                ' TODO: support dual-wielding
+                For Each WeaponItem As WeaponBase In Me.Inventory.OfType(Of WeaponBase)()
+                    WeaponItem.IsEquipped = False
+                Next
+                Item.IsEquipped = True
+                Exit Sub
+
+        End Select
+
+        ' if we reach this point in the method, we have attempted to equip an item for which
+        ' there is no "equipping" code.
+        Throw New Exception("Equip() failed because it didn't know how to equip an item: " & Item.Name)
+
+    End Sub
+
+
+
 
     ' TODO: Maybe put this into a "Utility" module
     Public Shared Function DistanceGet(Location1 As Point, Location2 As Point) As Decimal

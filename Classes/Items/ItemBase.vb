@@ -1,7 +1,7 @@
 ﻿Public Class ItemBase
     Inherits Base
     Public Property Equippable As Boolean
-    Public Property Equipped As Boolean
+    Public Property IsEquipped As Boolean
     Public Property Portable As Boolean
     Public Property Sellable As Boolean
     Public Property Weight As Integer

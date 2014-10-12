@@ -23,6 +23,12 @@
     End Sub
 
     Private Sub EquippedItemsList()
+
+        Dim y As Integer = MESSAGEAREAHEIGHT + 2
+        For Each InventoryItem As ItemBase In Player1.Inventory
+
+        Next
+
         For x = 0 To Player1.Inventory.Count - 1
             Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + 2 + x)
             Console.Write(Player1.Inventory(x).Name)
