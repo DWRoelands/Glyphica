@@ -4,6 +4,7 @@
         Me.New("Full Plate Armor")
     End Sub
     Public Sub New(ArmorName As String)
+        MyBase.New()
         Me.Name = ArmorName
         With Me
             .Tier = ArmorTier.Heavy

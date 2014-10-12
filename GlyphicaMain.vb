@@ -1,33 +1,19 @@
 ﻿Module GlyphicaMain
 
-    Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
-    Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
-
-    Public Const SOLIDBLOCK As Byte = 219
-    Public Const HORIZONTALWALL As Byte = 205
-    Public Const VERTICALWALL As Byte = 186
-    Public Const UPPERLEFTCORNER As Byte = 201
-    Public Const LOWERLEFTCORNER As Byte = 200
-    Public Const UPPERRIGHTCORNER As Byte = 187
-    Public Const LOWERRIGHTCORNER As Byte = 188
-    Public Const SINGLEHORIZONTALLINE As Byte = 196
-    Const DOOR As Byte = 176
-
-    Public Const MESSAGEAREAHEIGHT As Integer = 5
-    Public Const STATUSAREAHEIGHT As Integer = 5
-
-
     Public Map(,,) As MapTile      ' level, x, y
 
     Public ViewportSize As Size
     Public ViewportOrigin As Point
 
-
-
     Public Player1 As Player
 
+    ' The monsters and NPCs that inhabit the game
     Public Creatures As New List(Of CreatureBase)
-    Public Artifacts As New List(Of ItemBase)
+
+    ' The objects in the dungeon
+    Public Items As New List(Of ItemBase)
+
+    ' Message buffer
     Public Messages As New List(Of Message)
 
     Public Enum CombatType
@@ -35,7 +21,6 @@
         Ranged
         Magic
     End Enum
-
 
     Public Sub Main()
 
@@ -180,7 +165,7 @@
             Player1.Draw()
 
             ' Is the player in the same square as an artifact?  If so, search the artifact for anything it contains
-            For Each a As ItemBase In Artifacts
+            For Each a As ItemBase In Items
                 If a.Location = Player1.Location Then
                     MessageWrite("searching")
                     Exit For
@@ -457,10 +442,6 @@
         Console.Write(c)
     End Sub
 
-    'Public Function MapTileGet(Location As Point) As MapTile
-    '    Return Map(Player1.MapLevel, Location.X, Location.Y)
-    'End Function
-
     Public Function StairsUpFind() As Point
         Dim ReturnValue As Point = Nothing
 
@@ -717,7 +698,7 @@
         ' get the list of visible cells once so we don't have to recalculate repeatedly
         Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
 
-        For Each a As ItemBase In Artifacts
+        For Each a As ItemBase In Items
             ' Is the artifact's location even on the screen?
             If IsLocationInViewport(a.Location) Then
 

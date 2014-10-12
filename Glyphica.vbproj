@@ -86,6 +86,7 @@
     <Compile Include="Classes\Items\Weapons\MaceMedium.vb" />
     <Compile Include="Classes\Items\Weapons\MaceSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
+    <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />
     <Compile Include="Classes\Map\FOVRecurse.vb" />
     <Compile Include="Classes\GlyphicaTraceListener.vb" />

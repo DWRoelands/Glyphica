@@ -10,4 +10,9 @@
 
     Public Property Damage As String
     Public Property CriticalModifier As Integer
+
+    Public Sub New()
+        Me.DisplayCharacter = "w"
+    End Sub
+
 End Class

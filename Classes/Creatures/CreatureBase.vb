@@ -154,7 +154,7 @@ Public Class CreatureBase
     End Function
 
     Public Shared Sub Kill(DeadCreature As CreatureBase)
-        Artifacts.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
+        Items.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
         Creatures.Remove(DeadCreature)
     End Sub
 

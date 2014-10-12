@@ -5,6 +5,7 @@
     End Sub
 
     Public Sub New(WeaponName As String)
+        MyBase.New()
         Me.Damage = "1d3"
         Me.Cost = 2
         Me.CriticalModifier = 2

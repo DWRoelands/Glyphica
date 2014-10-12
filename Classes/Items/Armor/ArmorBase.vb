@@ -35,4 +35,7 @@
         Wearer.DexterityModifier = IIf(Wearer.DexterityModifier > Me.MaxDexterityBonus, Me.MaxDexterityBonus, Wearer.DexterityModifier)
     End Sub
 
+    Public Sub New()
+        Me.DisplayCharacter = "a"
+    End Sub
 End Class
