@@ -1,5 +1,5 @@
 ﻿Public Class ArmorFullPlate
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Full Plate Armor")
     End Sub

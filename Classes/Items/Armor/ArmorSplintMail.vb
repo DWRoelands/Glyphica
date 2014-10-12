@@ -1,5 +1,5 @@
 ﻿Public Class ArmorSplintMail
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Splintmail Armor")
     End Sub

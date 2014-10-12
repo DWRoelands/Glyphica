@@ -1,4 +1,4 @@
-﻿Public Class Armor
+﻿Public Class ArmorBase
     Inherits ItemBase
     Public Enum ArmorTier
         Light

@@ -1,5 +1,5 @@
 ﻿Public Class ArmorStudded
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Studded Leather Armor")
     End Sub

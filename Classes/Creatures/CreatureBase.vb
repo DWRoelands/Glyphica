@@ -69,7 +69,7 @@ Public Class CreatureBase
 
 #Region "Equipment Properties"
     Public Property TotalWeightCarried As Integer
-    Public Property Inventory As List(Of ItemBase)
+    Public Property Inventory As New List(Of ItemBase)
 
 
 #End Region

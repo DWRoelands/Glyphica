@@ -1,5 +1,5 @@
 ﻿Public Class ArmorScaleMail
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Scale Mail Armor")
     End Sub

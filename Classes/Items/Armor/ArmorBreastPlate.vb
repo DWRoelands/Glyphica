@@ -1,5 +1,5 @@
 ﻿Public Class ArmorBreastPlate
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Breastplate Armor")
     End Sub

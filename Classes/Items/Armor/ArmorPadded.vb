@@ -1,5 +1,5 @@
 ﻿Public Class ArmorPadded
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Padded Armor")
     End Sub

@@ -1,5 +1,5 @@
 ﻿Public Class ArmorChainShirt
-    Inherits Armor
+    Inherits ArmorBase
     Public Sub New()
         Me.New("Chain Shirt Armor")
     End Sub

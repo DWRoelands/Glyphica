@@ -62,9 +62,6 @@
         Dim abp As New ArmorBreastPlate
         Player1.Inventory.Add(New ArmorBreastPlate)
 
-
-
-
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
         ViewportBorderDraw()

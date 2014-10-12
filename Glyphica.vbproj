@@ -67,7 +67,7 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Items\Armor\Armor.vb" />
+    <Compile Include="Classes\Items\Armor\ArmorBase.vb" />
     <Compile Include="Classes\Items\Armor\ArmorBandedMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorBreastPlate.vb" />
     <Compile Include="Classes\Items\Armor\ArmorChainMail.vb" />
@@ -80,6 +80,12 @@
     <Compile Include="Classes\Items\Armor\ArmorScaleMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorSplintMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorStudded.vb" />
+    <Compile Include="Classes\Items\Weapons\DaggerMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\DaggerSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\GauntletSpiked.vb" />
+    <Compile Include="Classes\Items\Weapons\MaceMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\MaceSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
     <Compile Include="Modules\Dice.vb" />
     <Compile Include="Classes\Map\FOVRecurse.vb" />
     <Compile Include="Classes\GlyphicaTraceListener.vb" />
@@ -137,9 +143,7 @@
     <Content Include="Map Files\testmap2.txt" />
     <Content Include="Map Files\testmap3.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\Items\Weapons\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
