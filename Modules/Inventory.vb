@@ -39,7 +39,7 @@
         Console.SetCursorPosition(x, y)
         Console.Write("Press ESCAPE to exit")
 
-        Dim ListRange As New Point(0, Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT)
+        Dim ListRange As New Point(0, Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT - 4)
 
         Dim SortedInventory As List(Of ItemBase) = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
         If SortedInventory.Count > 0 Then
@@ -116,10 +116,17 @@
             Select Case Console.ReadKey(True).Key
 
                 Case ConsoleKey.DownArrow
+
                     For Each InventoryItem In SortedInventory
                         If InventoryItem.IsSelected And SortedInventory.IndexOf(InventoryItem) < SortedInventory.Count - 1 Then
                             InventoryItem.IsSelected = False
                             SortedInventory(SortedInventory.IndexOf(InventoryItem) + 1).IsSelected = True
+
+                            ' scroll the list down if necessary
+                            If SortedInventory.IndexOf(InventoryItem) = ListRange.Y And ListRange.Y < SortedInventory.Count - 1 Then
+                                ListRange.X += 1
+                                ListRange.Y += 1
+                            End If
                             Continue Do
                         End If
                     Next
@@ -129,6 +136,12 @@
                         If InventoryItem.IsSelected And SortedInventory.IndexOf(InventoryItem) > 0 Then
                             InventoryItem.IsSelected = False
                             SortedInventory(SortedInventory.IndexOf(InventoryItem) - 1).IsSelected = True
+
+                            'scroll the list up if necessary
+                            If SortedInventory.IndexOf(InventoryItem) = ListRange.X And ListRange.X > 0 Then
+                                ListRange.X -= 1
+                                ListRange.Y -= 1
+                            End If
                             Continue Do
                         End If
                     Next

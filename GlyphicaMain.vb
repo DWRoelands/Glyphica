@@ -44,8 +44,8 @@
             .BaseCharisma = 13
         End With
 
-        For x = 1 To 3
-            Dim m As New MaceMedium
+        For x = 1 To 55
+            Dim m As New MaceMedium("Mace #" & x)
             Player1.Inventory.Add(m)
         Next
 
