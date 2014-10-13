@@ -1,5 +1,4 @@
-﻿Imports System.Math
-Public Class CreatureBase
+﻿Public Class CreatureBase
     Inherits Base
 
     Public Enum CreatureAlignment
@@ -199,15 +198,5 @@ Public Class CreatureBase
         Throw New Exception("Equip() failed because it didn't know how to equip an item: " & Item.Name)
 
     End Sub
-
-
-
-
-    ' TODO: Maybe put this into a "Utility" module
-    Public Shared Function DistanceGet(Location1 As Point, Location2 As Point) As Decimal
-        Return Sqrt((Abs(Location2.X - Location1.X) ^ 2) + (Abs(Location2.Y - Location1.Y) ^ 2))
-    End Function
-
-
 
 End Class

@@ -450,12 +450,6 @@
 
     End Sub
 
-    'TODO: Put this in a "util" module
-    Public Sub GraphicsCharacterDraw(Character As Byte)
-        Dim c As Char = System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {Character})(0)
-        Console.Write(c)
-    End Sub
-
     Public Function StairsUpFind() As Point
         Dim ReturnValue As Point = Nothing
 

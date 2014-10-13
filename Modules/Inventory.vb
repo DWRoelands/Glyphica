@@ -199,9 +199,4 @@
 
     End Sub
 
-    'TODO: Move to utility module
-    Private Function IsBetween(Value As Integer, RangeStart As Integer, RangeEnd As Integer) As Boolean
-        Return (Value >= RangeStart And Value <= RangeEnd)
-    End Function
-
 End Module
