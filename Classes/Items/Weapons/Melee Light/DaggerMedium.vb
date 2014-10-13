@@ -11,5 +11,6 @@
         Me.Value = 2
         Me.CriticalModifier = 2
         Me.Weight = 1
+        Me.Tier = WeaponType.MeleeLight
     End Sub
 End Class
