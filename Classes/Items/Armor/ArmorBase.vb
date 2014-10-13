@@ -40,5 +40,6 @@
     Public Sub New()
         Me.DisplayCharacter = "a"
         Me.IsEquippable = True
+        Me.IsPortable = True
     End Sub
 End Class

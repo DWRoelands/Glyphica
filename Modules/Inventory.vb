@@ -51,32 +51,49 @@
             For ItemIndex As Integer = 0 To SortedInventory.Count - 1
                 If IsBetween(ItemIndex, ListRange.X, ListRange.Y) Then
 
+                    Dim InventoryItem As ItemBase = SortedInventory(ItemIndex)
+
                     ' Draw or clear the "equipped" indicator
                     Console.SetCursorPosition(ITEMNAMESTART - 1, ScreenRow)
-                    If SortedInventory(ItemIndex).IsEquipped Then
+                    If InventoryItem.IsEquipped Then
                         GraphicsCharacterDraw(EQUIPPEDINDICATOR)
                     Else
                         Console.Write(" ")
                     End If
 
                     ' item name
-                    Dim NameText As String = SortedInventory(ItemIndex).Name & Space(ARMORDAMAGESTART - ITEMNAMESTART - SortedInventory(ItemIndex).Name.Length)
+                    Dim NameText As String = InventoryItem.Name & Space(ARMORDAMAGESTART - ITEMNAMESTART - InventoryItem.Name.Length)
 
                     ' item armor/damage
+                    ' typeof() allows multiple levels of inheritance, so WeaponBase > HeavyCrowwbowMedium > DwarvenCrossbow will still resolve to WeaponBase
                     Dim ArmorDamageText As String = String.Empty
-                    Select Case SortedInventory(ItemIndex).GetType.BaseType
-                        Case GetType(ArmorBase)
-                            ArmorDamageText = CType(SortedInventory(ItemIndex), ArmorBase).ArmorBonus
-                        Case GetType(WeaponBase)
-                            ArmorDamageText = CType(SortedInventory(ItemIndex), WeaponBase).Damage
-                    End Select
+                    If TypeOf (InventoryItem) Is ArmorBase Then
+                        ArmorDamageText = CType(InventoryItem, ArmorBase).ArmorBonus
+                    ElseIf TypeOf (InventoryItem) Is WeaponBase Then
+                        ArmorDamageText = CType(InventoryItem, WeaponBase).Damage
+                    End If
+
+
+                    'Select Case SortedInventory(ItemIndex).GetType.BaseType
+                    '    Case GetType(ArmorBase)
+                    '        ArmorDamageText = CType(SortedInventory(ItemIndex), ArmorBase).ArmorBonus
+                    '    Case GetType(WeaponBase)
+                    '        ArmorDamageText = CType(SortedInventory(ItemIndex), WeaponBase).Damage
+                    'End Select
+
+
+
+
+
+
+
                     ArmorDamageText += Space(WEIGHTSTART - ARMORDAMAGESTART - ArmorDamageText.Length)
 
                     ' item weight
-                    Dim WeightText As String = SortedInventory(ItemIndex).Weight & Space(VALUESTART - WEIGHTSTART - SortedInventory(ItemIndex).Weight.ToString.Length)
+                    Dim WeightText As String = InventoryItem.Weight & Space(VALUESTART - WEIGHTSTART - InventoryItem.Weight.ToString.Length)
 
                     ' item value
-                    Dim ValueText As String = SortedInventory(ItemIndex).Value & Space(DESCSTART - 1 - VALUESTART - SortedInventory(ItemIndex).Value.ToString.Length)
+                    Dim ValueText As String = InventoryItem.Value & Space(DESCSTART - 1 - VALUESTART - InventoryItem.Value.ToString.Length)
 
                     ' Clear the description
                     For DescLine As Integer = MESSAGEAREAHEIGHT + 2 To Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT
@@ -84,7 +101,7 @@
                         Console.Write(Space(DescriptionWidth))
                     Next
 
-                    If SortedInventory(ItemIndex).IsSelected Then
+                    If InventoryItem.IsSelected Then
                         Console.ForegroundColor = ConsoleColor.Black
                         Console.BackgroundColor = ConsoleColor.White
                     End If
@@ -156,16 +173,16 @@
                                 If InventoryItem.IsEquippable Then
                                     ' certain item types only allow you to equip one of that type
                                     ' here, we unequip any other item of that type before equipping the selected item
-                                    Select Case InventoryItem.GetType.BaseType
-                                        Case GetType(ArmorBase)
-                                            For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) a.GetType.BaseType = GetType(ArmorBase))
-                                                ArmorItem.IsEquipped = False
-                                            Next
-                                        Case GetType(WeaponBase)
-                                            For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) w.GetType.BaseType = GetType(WeaponBase))
-                                                WeaponItem.IsEquipped = False
-                                            Next
-                                    End Select
+                                    If TypeOf (InventoryItem) Is ArmorBase Then
+                                        For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) TypeOf (a) Is ArmorBase)
+                                            ArmorItem.IsEquipped = False
+                                        Next
+                                    ElseIf TypeOf (InventoryItem) Is WeaponBase Then
+                                        For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) TypeOf (w) Is WeaponBase)
+                                            WeaponItem.IsEquipped = False
+                                        Next
+                                    End If
+
                                     InventoryItem.IsEquipped = True
                                 End If
                             End If

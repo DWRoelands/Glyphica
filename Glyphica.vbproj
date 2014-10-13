@@ -67,6 +67,10 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Items\Ammunition\AmmunitionBase.vb" />
+    <Compile Include="Classes\Items\Ammunition\Arrow.vb" />
+    <Compile Include="Classes\Items\Ammunition\Bolt.vb" />
+    <Compile Include="Classes\Items\Ammunition\SlingBullet.vb" />
     <Compile Include="Classes\Items\Armor\ArmorBase.vb" />
     <Compile Include="Classes\Items\Armor\ArmorBandedMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorBreastPlate.vb" />
@@ -80,11 +84,25 @@
     <Compile Include="Classes\Items\Armor\ArmorScaleMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorSplintMail.vb" />
     <Compile Include="Classes\Items\Armor\ArmorStudded.vb" />
-    <Compile Include="Classes\Items\Weapons\DaggerMedium.vb" />
-    <Compile Include="Classes\Items\Weapons\DaggerSmall.vb" />
-    <Compile Include="Classes\Items\Weapons\GauntletSpiked.vb" />
-    <Compile Include="Classes\Items\Weapons\MaceMedium.vb" />
-    <Compile Include="Classes\Items\Weapons\MaceSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Light\DaggerMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Light\DaggerSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Light\GauntletSpiked.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Light\MaceMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Light\MaceSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\ClubMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\ClubSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\MaceHeavyMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\MaceHeavySmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\MorningstarMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\MorningstarSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\ShortspearMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee One Handed\ShortspearSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Two Handed\LongspearMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Two Handed\LongspearSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Two Handed\QuarterstaffMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Melee Two Handed\QuarterstaffSmall.vb" />
+    <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowMedium.vb" />
+    <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
     <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />

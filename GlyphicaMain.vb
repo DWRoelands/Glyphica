@@ -44,7 +44,7 @@
             .BaseCharisma = 13
         End With
 
-        For x = 1 To 55
+        For x = 1 To 1
             Dim m As New MaceMedium("Mace #" & x)
             Player1.Inventory.Add(m)
         Next
@@ -52,8 +52,18 @@
         Dim ab As New ArmorBreastPlate
         Player1.Inventory.Add(ab)
 
-        Dim ap As New ArmorPadded
+        Dim ap As New ArmorChainMail
         Player1.Inventory.Add(ap)
+
+        For Each InventoryItem As ItemBase In Player1.Inventory
+            If TypeOf (InventoryItem) Is WeaponBase Then
+                Debug.Write("w")
+            End If
+            If TypeOf (InventoryItem) Is ArmorBase Then
+                Debug.Write("a")
+            End If
+        Next
+
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
