@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Medium
             .Type = ArmorType.ScaleMail
-            .Cost = 50
+            .Value = 50
             .ArmorBonus = 4
             .MaxDexterityBonus = 3
             .ArcaneSpellFailureChance = 0.25

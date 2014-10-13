@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Heavy
             .Type = ArmorType.BandedMail
-            .Cost = 250
+            .Value = 250
             .ArmorBonus = 6
             .MaxDexterityBonus = 1
             .ArcaneSpellFailureChance = 0.35

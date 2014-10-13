@@ -9,11 +9,12 @@
         With Me
             .Tier = ArmorTier.Medium
             .Type = ArmorType.Breastplate
-            .Cost = 200
+            .Value = 200
             .ArmorBonus = 5
             .MaxDexterityBonus = 3
             .ArcaneSpellFailureChance = 0.25
             .Weight = 30
+            .Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec neque leo, faucibus vitae nibh eu, gravida interdum metus. Vestibulum tortor tellus, viverra vel eros a, pretium aliquet lorem. Quisque venenatis neque vel suscipit hendrerit. Aenean."
         End With
     End Sub
 End Class

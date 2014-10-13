@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Light
             .Type = ArmorType.StuddedLeather
-            .Cost = 25
+            .Value = 25
             .ArmorBonus = 3
             .MaxDexterityBonus = 5
             .ArcaneSpellFailureChance = 0.15

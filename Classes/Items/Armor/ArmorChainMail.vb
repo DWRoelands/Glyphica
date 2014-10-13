@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Medium
             .Type = ArmorType.Chainmail
-            .Cost = 150
+            .Value = 150
             .ArmorBonus = 5
             .MaxDexterityBonus = 2
             .ArcaneSpellFailureChance = 0.3

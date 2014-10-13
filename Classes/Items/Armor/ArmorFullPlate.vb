@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Heavy
             .Type = ArmorType.FullPlate
-            .Cost = 1500
+            .Value = 1500
             .ArmorBonus = 8
             .MaxDexterityBonus = 1
             .ArcaneSpellFailureChance = 0.35

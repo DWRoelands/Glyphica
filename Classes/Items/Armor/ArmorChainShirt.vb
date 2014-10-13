@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Light
             .Type = ArmorType.ChainShirt
-            .Cost = 100
+            .Value = 100
             .ArmorBonus = 4
             .MaxDexterityBonus = 4
             .ArcaneSpellFailureChance = 0.2

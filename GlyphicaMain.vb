@@ -44,14 +44,16 @@
             .BaseCharisma = 13
         End With
 
-        For x = 1 To 20
+        For x = 1 To 3
             Dim m As New MaceMedium
             Player1.Inventory.Add(m)
         Next
 
         Dim ab As New ArmorBreastPlate
         Player1.Inventory.Add(ab)
-        Player1.Equip(ab)
+
+        Dim ap As New ArmorPadded
+        Player1.Inventory.Add(ap)
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
@@ -199,6 +201,8 @@
         Console.SetCursorPosition(0, Anchor)
         Console.Write("{0}, {1} {2}", Player1.Name, Player1.Alignment, Player1.Class)
 
+        Console.SetCursorPosition(0, Anchor + 1)
+        Console.Write(Space(20))
         Console.SetCursorPosition(0, Anchor + 1)
         Console.Write("HP:{0}/{2} AC:{1}", Player1.HitPointsCurrent, Player1.ArmorClass, Player1.HitPointsMax)
 

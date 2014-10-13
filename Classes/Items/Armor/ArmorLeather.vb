@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Light
             .Type = ArmorType.Leather
-            .Cost = 10
+            .Value = 10
             .ArmorBonus = 2
             .MaxDexterityBonus = 6
             .ArcaneSpellFailureChance = 0.1

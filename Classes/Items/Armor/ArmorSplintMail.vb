@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Heavy
             .Type = ArmorType.SplintMail
-            .Cost = 200
+            .Value = 200
             .ArmorBonus = 6
             .MaxDexterityBonus = 0
             .ArcaneSpellFailureChance = 0.4

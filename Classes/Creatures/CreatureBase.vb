@@ -26,7 +26,7 @@ Public Class CreatureBase
     Public Property DexterityModifier As Integer
     Public Property ConstitutionModifier As Integer
     Public Property IntelligenceModifier As Integer
-    Public Property WisdonModifier As Integer
+    Public Property WisdomModifier As Integer
     Public Property CharismaModifier As Integer
 
     Public ReadOnly Property Strength As Integer
@@ -43,7 +43,7 @@ Public Class CreatureBase
 
     Public ReadOnly Property Wisdom As Integer
         Get
-            Return BaseWisdom + WisdonModifier
+            Return BaseWisdom + WisdomModifier
         End Get
     End Property
 
@@ -84,6 +84,7 @@ Public Class CreatureBase
     Public Property HitPointsMax As Integer
 
     Public Property DamageDice As String
+    Public Property DamageModifier As Integer
 
     Public Property Initiative As Integer
 
@@ -120,7 +121,20 @@ Public Class CreatureBase
         Return ReturnValue
     End Function
 
-    Public Sub ItemEffectsProcess(Creature As CreatureBase)
+    Public Shared Sub ItemEffectsProcess(Creature As CreatureBase)
+
+        ' reset all modifiers to 0
+        With Creature
+            .ArmorClassModifier = 0
+            .DamageModifier = 0
+            .StrengthModifier = 0
+            .IntelligenceModifier = 0
+            .WisdomModifier = 0
+            .DexterityModifier = 0
+            .ConstitutionModifier = 0
+            .CharismaModifier = 0
+        End With
+
         For Each item As ItemBase In Creature.Inventory
             item.Process(Creature)
         Next

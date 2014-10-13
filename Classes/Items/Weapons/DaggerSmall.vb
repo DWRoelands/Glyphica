@@ -8,7 +8,7 @@
         MyBase.New()
         Me.Name = WeaponName
         Me.Damage = "1d3"
-        Me.Cost = 2
+        Me.Value = 2
         Me.CriticalModifier = 2
         Me.Weight = 1
     End Sub

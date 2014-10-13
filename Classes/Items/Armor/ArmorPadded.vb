@@ -9,11 +9,12 @@
         With Me
             .Tier = ArmorTier.Light
             .Type = ArmorType.Padded
-            .Cost = 5
+            .Value = 5
             .ArmorBonus = 1
             .MaxDexterityBonus = 8
             .ArcaneSpellFailureChance = 0.05
             .Weight = 10
+            .Description = "Unremarkable padded armor"
         End With
     End Sub
 

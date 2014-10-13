@@ -13,6 +13,7 @@
 
     Public Sub New()
         Me.DisplayCharacter = "w"
+        Me.IsEquippable = True
     End Sub
 
 End Class

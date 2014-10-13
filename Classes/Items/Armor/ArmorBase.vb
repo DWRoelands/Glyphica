@@ -29,13 +29,16 @@
 
     ' Armor that has other effects on the wearer should overide this method and then call MyBase.Process()
     Public Overrides Sub Process(Wearer As CreatureBase)
-        Wearer.ArmorClassModifier += Me.ArmorBonus
-        Wearer.TotalWeightCarried += Me.Weight
-        Wearer.ArcaneSpellFailureChance = IIf(Wearer.ArcaneSpellFailureChance < Me.ArcaneSpellFailureChance, Me.ArcaneSpellFailureChance, Wearer.ArcaneSpellFailureChance)
-        Wearer.DexterityModifier = IIf(Wearer.DexterityModifier > Me.MaxDexterityBonus, Me.MaxDexterityBonus, Wearer.DexterityModifier)
+        If Me.IsEquipped Then
+            Wearer.ArmorClassModifier += Me.ArmorBonus
+            Wearer.TotalWeightCarried += Me.Weight
+            Wearer.ArcaneSpellFailureChance = IIf(Wearer.ArcaneSpellFailureChance < Me.ArcaneSpellFailureChance, Me.ArcaneSpellFailureChance, Wearer.ArcaneSpellFailureChance)
+            Wearer.DexterityModifier = IIf(Wearer.DexterityModifier > Me.MaxDexterityBonus, Me.MaxDexterityBonus, Wearer.DexterityModifier)
+        End If
     End Sub
 
     Public Sub New()
         Me.DisplayCharacter = "a"
+        Me.IsEquippable = True
     End Sub
 End Class

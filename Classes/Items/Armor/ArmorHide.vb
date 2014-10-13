@@ -9,7 +9,7 @@
         With Me
             .Tier = ArmorTier.Medium
             .Type = ArmorType.Hide
-            .Cost = 15
+            .Value = 15
             .ArmorBonus = 3
             .MaxDexterityBonus = 4
             .ArcaneSpellFailureChance = 0.2
