@@ -10,6 +10,7 @@
     Public Const LOWERRIGHTCORNER As Byte = 188
     Public Const SINGLEHORIZONTALLINE As Byte = 196
     Public Const DOOR As Byte = 176
+    Public Const EQUIPPEDINDICATOR As Byte = 4
 #End Region
 
 #Region "Screen layout"

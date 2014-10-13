@@ -1,86 +1,62 @@
 ﻿Module Inventory
 
-    Const FIRSTCOLUMNX As Integer = 2
-    Const SECONDCOLUMNX As Integer = 40
-
-    Dim ActiveColumn As InventoryColumn
-
-    Private Enum InventoryColumn
-        Equipped
-        Carried
-    End Enum
-
+    Const ITEMNAMESTART As Integer = 4
 
     Public Sub InventoryManage()
         ViewportClear()
 
-        Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + 1)
-        Console.Write("EQUIPPED ITEMS")
+        Dim ListRange As New Point(0, Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT)
 
-        Console.SetCursorPosition(SECONDCOLUMNX, MESSAGEAREAHEIGHT + 1)
-        Console.Write("CARRIED ITEMS")
+        Dim SortedInventory = From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name
 
-        Dim EquippedItems = (From InventoryItem In Player1.Inventory Where InventoryItem.IsEquipped).Count
-        Dim CarriredItems = (From InventoryItem In Player1.Inventory Where Not InventoryItem.IsEquipped).Count
-        If EquippedItems > 0 Then
-            ActiveColumn = InventoryColumn.Equipped
-        ElseIf CarriredItems > 0 Then
-            ActiveColumn = InventoryColumn.Carried
-        Else
-            CenterMessage("You aren't carrying any items.")
-            Console.ReadKey(True)
-            ViewportClear()
-        End If
+        Dim ListStart As Integer = 0
 
-        EquippedItemsList(0)
-        CarriedItemsList(0)
+        Do
+            Dim ScreenRow As Integer = STATUSAREAHEIGHT + 2
+            For ItemIndex As Integer = 0 To SortedInventory.Count - 1
+                If IsBetween(ItemIndex, ListRange.X, ListRange.Y) Then
+                    If SortedInventory(ItemIndex).IsEquipped Then
+                        Console.SetCursorPosition(ITEMNAMESTART - 1, ScreenRow)
+                        GraphicsCharacterDraw(EQUIPPEDINDICATOR)
+                    End If
+                    Console.SetCursorPosition(ITEMNAMESTART, ScreenRow)
+                    If SortedInventory(ItemIndex).IsSelected Then
+                        Console.ForegroundColor = ConsoleColor.Black
+                        Console.BackgroundColor = ConsoleColor.White
+                    End If
+                    Console.Write(SortedInventory(ItemIndex).Name)
+                    Console.ForegroundColor = ConsoleColor.White
+                    Console.BackgroundColor = ConsoleColor.Black
+                    ScreenRow += 1
+                End If
+            Next
+
+            Select Case Console.ReadKey.Key
+                Case ConsoleKey.DownArrow
+                    For Each InventoryItem In SortedInventory
+                        If InventoryItem.IsSelected Then
+                            If Not (InventoryItem Is SortedInventory.Last) Then
+                                SortedInventory.
+                            End If
+                        End If
+                    Next
+
+
+
+            End Select
 
 
 
 
-        Console.ReadKey(True)
+        Loop
+
+
+        Console.ReadLine()
+
         ViewportClear()
 
     End Sub
 
-    Private Sub EquippedItemsClear()
-        For y = MESSAGEAREAHEIGHT + 2 To Console.WindowHeight - STATUSAREAHEIGHT - 2
-            Console.SetCursorPosition(FIRSTCOLUMNX, y)
-            Console.Write(Space(SECONDCOLUMNX - FIRSTCOLUMNX))
-        Next
-    End Sub
-
-    Private Sub EquippedItemsList(StartAtItem As Integer)
-        Dim y As Integer = 0
-        For Each InventoryItem As ItemBase In Player1.Inventory.Where(Function(x) x.IsEquipped)
-            If y >= StartAtItem And y <= Console.WindowHeight - MESSAGEAREAHEIGHT - STATUSAREAHEIGHT Then
-                If y = StartAtItem Then
-                    InventoryItem.IsSelected = True
-                End If
-
-                Console.SetCursorPosition(FIRSTCOLUMNX, MESSAGEAREAHEIGHT + y + 2)
-                If InventoryItem.IsSelected Then
-                    Console.BackgroundColor = ConsoleColor.White
-                    Console.ForegroundColor = ConsoleColor.Black
-                End If
-                Console.Write(InventoryItem.Name)
-                Console.BackgroundColor = ConsoleColor.Black
-                Console.ForegroundColor = ConsoleColor.White
-            End If
-            y += 1
-        Next
-    End Sub
-
-    Private Sub CarriedItemsList(StartAtItem As Integer)
-        Dim y As Integer = 0
-        For Each InventoryItem As ItemBase In Player1.Inventory.Where(Function(x) x.IsEquipped = False)
-            If y >= StartAtItem And y <= Console.WindowHeight - MESSAGEAREAHEIGHT - STATUSAREAHEIGHT - 4 Then
-                Console.SetCursorPosition(SECONDCOLUMNX, MESSAGEAREAHEIGHT + y + 2)
-                Console.Write(InventoryItem.Name)
-            End If
-            y += 1
-        Next
-    End Sub
 
     Private Sub CenterMessage(Message As String)
 
@@ -96,6 +72,9 @@
 
     End Sub
 
-
+    'TODO: Move to utility module
+    Private Function IsBetween(Value As Integer, RangeStart As Integer, RangeEnd As Integer) As Boolean
+        Return (Value >= RangeStart And Value <= RangeEnd)
+    End Function
 
 End Module

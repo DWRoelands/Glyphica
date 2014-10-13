@@ -44,13 +44,14 @@
             .BaseCharisma = 13
         End With
 
-        Dim ar As New ArmorBandedMail
-        Player1.Inventory.Add(ar)
-        Player1.Equip(ar)
+        For x = 1 To 20
+            Dim m As New MaceMedium
+            Player1.Inventory.Add(m)
+        Next
 
-        Dim m As New MaceMedium
-        Player1.Inventory.Add(m)
-        Player1.Equip(m)
+        Dim ab As New ArmorBreastPlate
+        Player1.Inventory.Add(ab)
+        Player1.Equip(ab)
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
