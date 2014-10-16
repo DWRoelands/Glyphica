@@ -109,6 +109,33 @@
         End Set
     End Property
 
+    Public ReadOnly Property EquippedAmmunition As AmmunitionBase
+        Get
+            Dim ReturnValue As AmmunitionBase = Nothing
+            For Each AmmoBunch As AmmunitionBase In Me.Inventory.Where(Function(w) TypeOf w Is AmmunitionBase)
+                If AmmoBunch.IsEquipped Then
+                    ReturnValue = AmmoBunch
+                    Exit For
+                End If
+            Next
+            Return ReturnValue
+        End Get
+    End Property
+
+    Public ReadOnly Property EquippedWeapon As WeaponBase
+        Get
+            Dim ReturnValue As WeaponBase = Nothing
+            For Each Weapon As WeaponBase In Me.Inventory.Where(Function(w) TypeOf w Is WeaponBase)
+                If Weapon.IsEquipped Then
+                    ReturnValue = Weapon
+                    Exit For
+                End If
+            Next
+            Return ReturnValue
+        End Get
+    End Property
+
+
     Public Shared Function Find(Location As Point) As CreatureBase
         Dim ReturnValue As CreatureBase = Nothing
         For Each c As CreatureBase In Creatures
@@ -183,7 +210,7 @@
                 Exit Sub
 
             Case GetType(WeaponBase)
-                ' only one armor item can be equipped, so we unequip any equipped armor
+                ' only one weapon can be equipped, so we unequip any equipped weapon
                 ' TODO: support dual-wielding
                 For Each WeaponItem As WeaponBase In Me.Inventory.OfType(Of WeaponBase)()
                     WeaponItem.IsEquipped = False
@@ -191,6 +218,13 @@
                 Item.IsEquipped = True
                 Exit Sub
 
+                ' Only one type of amunition can be equipped, so we unequip and equipped ammunition
+            Case GetType(AmmunitionBase)
+                For Each AmmoItem As AmmunitionBase In Me.Inventory.OfType(Of AmmunitionBase)()
+                    AmmoItem.IsEquipped = False
+                Next
+                Item.IsEquipped = True
+                Exit Sub
         End Select
 
         ' if we reach this point in the method, we have attempted to equip an item for which
@@ -198,5 +232,10 @@
         Throw New Exception("Equip() failed because it didn't know how to equip an item: " & Item.Name)
 
     End Sub
+
+
+
+
+
 
 End Class

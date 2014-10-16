@@ -49,17 +49,13 @@
             Player1.Inventory.Add(m)
         Next
 
-        Dim ab As New ArmorBreastPlate
-        Player1.Inventory.Add(ab)
+        Dim w As New HeavyCrossbowMedium
+        Player1.Inventory.Add(w)
+        Player1.Equip(w)
 
-        Dim ad As New ArmorHalfPlate
-        Player1.Inventory.Add(ad)
-
-        Dim ap As New ArmorChainMail
-        Player1.Inventory.Add(ap)
-
-        Dim amm As New Arrow
-        Player1.Inventory.Add(amm)
+        Dim ar As New Bolt
+        Player1.Inventory.Add(ar)
+        Player1.Equip(ar)
 
         For Each InventoryItem As ItemBase In Player1.Inventory
             If TypeOf (InventoryItem) Is WeaponBase Then
@@ -126,30 +122,41 @@
                     ToLocation = New Point(Player1.Location.X + 1, Player1.Location.Y + 1)
 
                 Case ConsoleKey.S  ' shoot ranged weapon
-                    If KeyPress.Modifiers And ConsoleModifiers.Shift Then
-                        ' allow player to choose target
-                        Dim Target As CreatureBase = TargetSelect(Player1.Location)
-                        If Target IsNot Nothing Then
-                            CombatResolve(Target, CombatType.Ranged)
-                        Else
+
+                    If Player1.EquippedWeapon IsNot Nothing AndAlso Player1.EquippedWeapon.Tier = WeaponBase.WeaponType.Ranged Then
+                        If Player1.EquippedAmmunition IsNot Nothing AndAlso Player1.EquippedAmmunition.Type = Player1.EquippedWeapon.AmmunitionType Then
+                            If KeyPress.Modifiers And ConsoleModifiers.Shift Then
+                                ' allow player to choose target
+                                Dim Target As CreatureBase = TargetSelect(Player1.Location)
+                                If Target IsNot Nothing Then
+                                    CombatResolve(Target, CombatType.Ranged)
+                                Else
+                                    ViewportCreaturesDraw()
+                                    ViewportArtifactsDraw()
+                                    Player1.Draw()
+                                    Continue Do
+                                End If
+                            Else
+                                ' lowercase "s" automatically target the closest creature
+                                Dim ClosestCreature As CreatureBase = Player1.FindClosest
+                                If ClosestCreature IsNot Nothing AndAlso ClosestCreature.IsVisible Then
+                                    CombatResolve(Player1.FindClosest(), CombatType.Ranged)
+                                Else
+                                    MessageWrite("There is nothing to shoot here.")
+                                End If
+                            End If
+
                             ViewportCreaturesDraw()
                             ViewportArtifactsDraw()
                             Player1.Draw()
-                            Continue Do
+                        Else
+                            MessageWrite("You do not have the right kind of ammunition equipped!")
                         End If
                     Else
-                        ' lowercase "s" automatically target the closest creature
-                        Dim ClosestCreature As CreatureBase = Player1.FindClosest
-                        If ClosestCreature IsNot Nothing AndAlso ClosestCreature.IsVisible Then
-                            CombatResolve(Player1.FindClosest(), CombatType.Ranged)
-                        Else
-                            MessageWrite("There is nothing to shoot here.")
-                        End If
+                        MessageWrite("You do not have a ranged weapon equipped!")
                     End If
 
-                    ViewportCreaturesDraw()
-                    ViewportArtifactsDraw()
-                    Player1.Draw()
+
 
                     ' jump to the bottom of the loop as there is no "move" to process
                     Continue Do
@@ -211,6 +218,11 @@
         End If
 
     End Sub
+
+
+
+
+
 
     Public Sub StatusUpdate()
         Dim Anchor As Integer = Console.WindowHeight - MESSAGEAREAHEIGHT
