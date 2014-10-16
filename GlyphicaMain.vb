@@ -58,6 +58,9 @@
         Dim ap As New ArmorChainMail
         Player1.Inventory.Add(ap)
 
+        Dim amm As New Arrow
+        Player1.Inventory.Add(amm)
+
         For Each InventoryItem As ItemBase In Player1.Inventory
             If TypeOf (InventoryItem) Is WeaponBase Then
                 Debug.Write("w")

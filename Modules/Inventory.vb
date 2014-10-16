@@ -1,5 +1,10 @@
 ﻿Module Inventory
 
+    '
+    ' The concept for the inventory management page is completely stolen from the Skyrim mod "SkyUI"
+    ' I have not yet encountered a better way to manage inventory in an RPG
+    '
+
     Const ITEMNAMESTART As Integer = 4
     Const ARMORDAMAGESTART As Integer = 30
     Const WEIGHTSTART As Integer = 50
@@ -10,23 +15,22 @@
     Dim ListStartRow As Integer
     Dim ListLastRow As Integer
     Dim ListHeaderStart As Integer
-    Dim SelectedFilter As InventoryFilterType = InventoryFilterType.AllItems
+    Dim SelectedFilter As InventoryFilterType
 
-    Dim InventoryFilters() As String = {"All Items", "Armor", "Weapons"}
-    Dim FilterStartColumns() As Integer = {4, 20, 35}
-
+    Dim InventoryFilters() As String = {"All Items", "Armor", "Weapons", "Ammunition"}
     Dim SortedInventory As List(Of ItemBase) = Nothing
 
     Public Enum InventoryFilterType
         AllItems = 0
         Armor = 1
         Weapons = 2
+        Ammunition = 3
     End Enum
 
     Private Sub FiltersDraw()
 
+        Console.SetCursorPosition(4, FilterNameRow)
         For x = 0 To InventoryFilters.Length - 1
-            Console.SetCursorPosition(FilterStartColumns(x), FilterNameRow)
             If SelectedFilter = x Then
                 Console.ForegroundColor = ConsoleColor.Black
                 Console.BackgroundColor = ConsoleColor.White
@@ -38,6 +42,8 @@
 
             Console.ForegroundColor = ConsoleColor.White
             Console.BackgroundColor = ConsoleColor.Black
+
+            Console.Write("  ")
         Next
 
     End Sub
@@ -53,6 +59,38 @@
         Next
     End Sub
 
+    Private Sub FilterApply()
+        Select Case SelectedFilter
+            Case InventoryFilterType.AllItems
+                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
+            Case InventoryFilterType.Armor
+                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is ArmorBase Order By InventoryItem.Name).ToList
+            Case InventoryFilterType.Weapons
+                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is WeaponBase Order By InventoryItem.Name).ToList
+            Case InventoryFilterType.Ammunition
+                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is AmmunitionBase Order By InventoryItem.Name).ToList
+        End Select
+
+        If SortedInventory.Count > 0 Then
+            SortedInventory(0).IsSelected = True
+        End If
+    End Sub
+
+    Private Sub FilterPrevious()
+        If SelectedFilter > 0 Then
+            SelectedFilter -= 1
+        Else
+            SelectedFilter = InventoryFilters.Length - 1
+        End If
+    End Sub
+
+    Private Sub FilterNext()
+        If SelectedFilter < InventoryFilters.Length - 1 Then
+            SelectedFilter += 1
+        Else
+            SelectedFilter = 0
+        End If
+    End Sub
 
     Public Sub InventoryManage()
 
@@ -94,23 +132,11 @@
         Console.Write("Press ESCAPE to exit")
 
         Dim ListRange As New Point(0, Console.WindowHeight - ListStartRow)
-
+        SelectedFilter = InventoryFilterType.AllItems
+        FilterApply()
 
         Do
             FiltersDraw()
-
-            Select Case SelectedFilter
-                Case InventoryFilterType.AllItems
-                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
-                Case InventoryFilterType.Armor
-                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is ArmorBase Order By InventoryItem.Name).ToList
-                Case InventoryFilterType.Weapons
-                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is WeaponBase Order By InventoryItem.Name).ToList
-            End Select
-
-            If SortedInventory.Count > 0 Then
-                SortedInventory(0).IsSelected = True
-            End If
 
             Dim ScreenRow As Integer = ListStartRow
             For ItemIndex As Integer = 0 To SortedInventory.Count - 1
@@ -127,7 +153,14 @@
                     End If
 
                     ' item name
-                    Dim NameText As String = InventoryItem.Name & Space(ARMORDAMAGESTART - ITEMNAMESTART - InventoryItem.Name.Length)
+                    Dim NameText As String = String.Empty
+                    If TypeOf InventoryItem Is AmmunitionBase Then
+                        ' for ammo, include the group size and number remaining in this group
+                        NameText = String.Format("{0} ({1}/{2})", InventoryItem.Name, CType(InventoryItem, AmmunitionBase).Remaining, CType(InventoryItem, AmmunitionBase).Size)
+                    Else
+                        NameText = InventoryItem.Name
+                    End If
+                    NameText += Space(ARMORDAMAGESTART - ITEMNAMESTART - NameText.Length)
 
                     ' item armor/damage
                     ' typeof() allows multiple levels of inheritance, so WeaponBase > HeavyCrowwbowMedium > DwarvenCrossbow will still resolve to WeaponBase
@@ -137,7 +170,6 @@
                     ElseIf TypeOf (InventoryItem) Is WeaponBase Then
                         ArmorDamageText = CType(InventoryItem, WeaponBase).Damage
                     End If
-
                     ArmorDamageText += Space(WEIGHTSTART - ARMORDAMAGESTART - ArmorDamageText.Length)
 
                     ' item weight
@@ -184,20 +216,14 @@
             Select Case Console.ReadKey(True).Key
 
                 Case ConsoleKey.LeftArrow
-                    If SelectedFilter > 0 Then
-                        SelectedFilter -= 1
-                    Else
-                        SelectedFilter = InventoryFilters.Length - 1
-                    End If
                     ClearList()
+                    FilterPrevious()
+                    FilterApply()
 
                 Case ConsoleKey.RightArrow
-                    If SelectedFilter < InventoryFilters.Length - 1 Then
-                        SelectedFilter += 1
-                    Else
-                        SelectedFilter = 0
-                    End If
                     ClearList()
+                    FilterNext()
+                    FilterApply()
 
                 Case ConsoleKey.DownArrow
 
