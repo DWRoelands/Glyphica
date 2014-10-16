@@ -6,14 +6,68 @@
     Const VALUESTART As Integer = 65
     Const DESCSTART As Integer = 80
 
+    Dim FilterNameRow As Integer
+    Dim ListStartRow As Integer
+    Dim ListLastRow As Integer
+    Dim ListHeaderStart As Integer
+    Dim SelectedFilter As InventoryFilterType = InventoryFilterType.AllItems
+
+    Dim InventoryFilters() As String = {"All Items", "Armor", "Weapons"}
+    Dim FilterStartColumns() As Integer = {4, 20, 35}
+
+    Dim SortedInventory As List(Of ItemBase) = Nothing
+
+    Public Enum InventoryFilterType
+        AllItems = 0
+        Armor = 1
+        Weapons = 2
+    End Enum
+
+    Private Sub FiltersDraw()
+
+        For x = 0 To InventoryFilters.Length - 1
+            Console.SetCursorPosition(FilterStartColumns(x), FilterNameRow)
+            If SelectedFilter = x Then
+                Console.ForegroundColor = ConsoleColor.Black
+                Console.BackgroundColor = ConsoleColor.White
+            Else
+                Console.ForegroundColor = ConsoleColor.White
+                Console.BackgroundColor = ConsoleColor.Black
+            End If
+            Console.Write(InventoryFilters(x))
+
+            Console.ForegroundColor = ConsoleColor.White
+            Console.BackgroundColor = ConsoleColor.Black
+        Next
+
+    End Sub
+
+    Private Sub ClearList()
+        For x = ListStartRow To ListLastRow
+            Console.SetCursorPosition(ITEMNAMESTART, x)
+            Console.Write(Space(DESCSTART - ITEMNAMESTART))
+        Next
+
+        For Each i As ItemBase In Player1.Inventory
+            i.IsSelected = False
+        Next
+    End Sub
+
+
     Public Sub InventoryManage()
 
         Dim DescriptionWidth As Integer = Console.WindowWidth - DESCSTART - 5
+        FilterNameRow = MESSAGEAREAHEIGHT + 1
+        ListHeaderStart = FilterNameRow + 2
+        ListStartRow = ListHeaderStart + 1
+        ListLastRow = Console.WindowHeight - STATUSAREAHEIGHT - 2
 
         ViewportClear()
 
+        FiltersDraw()
+
         Dim x As Integer = ITEMNAMESTART
-        Dim y As Integer = MESSAGEAREAHEIGHT + 1
+        Dim y As Integer = ListHeaderStart
         Console.SetCursorPosition(x, y)
         Console.Write("Name")
 
@@ -39,15 +93,26 @@
         Console.SetCursorPosition(x, y)
         Console.Write("Press ESCAPE to exit")
 
-        Dim ListRange As New Point(0, Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT - 4)
+        Dim ListRange As New Point(0, Console.WindowHeight - ListStartRow)
 
-        Dim SortedInventory As List(Of ItemBase) = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
-        If SortedInventory.Count > 0 Then
-            SortedInventory(0).IsSelected = True
-        End If
 
         Do
-            Dim ScreenRow As Integer = MESSAGEAREAHEIGHT + 2
+            FiltersDraw()
+
+            Select Case SelectedFilter
+                Case InventoryFilterType.AllItems
+                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
+                Case InventoryFilterType.Armor
+                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is ArmorBase Order By InventoryItem.Name).ToList
+                Case InventoryFilterType.Weapons
+                    SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is WeaponBase Order By InventoryItem.Name).ToList
+            End Select
+
+            If SortedInventory.Count > 0 Then
+                SortedInventory(0).IsSelected = True
+            End If
+
+            Dim ScreenRow As Integer = ListStartRow
             For ItemIndex As Integer = 0 To SortedInventory.Count - 1
                 If IsBetween(ItemIndex, ListRange.X, ListRange.Y) Then
 
@@ -73,20 +138,6 @@
                         ArmorDamageText = CType(InventoryItem, WeaponBase).Damage
                     End If
 
-
-                    'Select Case SortedInventory(ItemIndex).GetType.BaseType
-                    '    Case GetType(ArmorBase)
-                    '        ArmorDamageText = CType(SortedInventory(ItemIndex), ArmorBase).ArmorBonus
-                    '    Case GetType(WeaponBase)
-                    '        ArmorDamageText = CType(SortedInventory(ItemIndex), WeaponBase).Damage
-                    'End Select
-
-
-
-
-
-
-
                     ArmorDamageText += Space(WEIGHTSTART - ARMORDAMAGESTART - ArmorDamageText.Length)
 
                     ' item weight
@@ -96,7 +147,7 @@
                     Dim ValueText As String = InventoryItem.Value & Space(DESCSTART - 1 - VALUESTART - InventoryItem.Value.ToString.Length)
 
                     ' Clear the description
-                    For DescLine As Integer = MESSAGEAREAHEIGHT + 2 To Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT
+                    For DescLine As Integer = ListStartRow To Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT
                         Console.SetCursorPosition(DESCSTART, DescLine)
                         Console.Write(Space(DescriptionWidth))
                     Next
@@ -124,13 +175,29 @@
                 If InventoryItem.IsSelected Then
                     Dim DescriptionText As List(Of String) = Utility.WordWrap(InventoryItem.Description, DescriptionWidth)
                     For DescLine As Integer = 0 To DescriptionText.Count - 1
-                        Console.SetCursorPosition(DESCSTART, DescLine + MESSAGEAREAHEIGHT + 2)
+                        Console.SetCursorPosition(DESCSTART, DescLine + ListStartRow)
                         Console.Write(DescriptionText(DescLine))
                     Next
                 End If
             Next
 
             Select Case Console.ReadKey(True).Key
+
+                Case ConsoleKey.LeftArrow
+                    If SelectedFilter > 0 Then
+                        SelectedFilter -= 1
+                    Else
+                        SelectedFilter = InventoryFilters.Length - 1
+                    End If
+                    ClearList()
+
+                Case ConsoleKey.RightArrow
+                    If SelectedFilter < InventoryFilters.Length - 1 Then
+                        SelectedFilter += 1
+                    Else
+                        SelectedFilter = 0
+                    End If
+                    ClearList()
 
                 Case ConsoleKey.DownArrow
 

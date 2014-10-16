@@ -52,6 +52,9 @@
         Dim ab As New ArmorBreastPlate
         Player1.Inventory.Add(ab)
 
+        Dim ad As New ArmorHalfPlate
+        Player1.Inventory.Add(ad)
+
         Dim ap As New ArmorChainMail
         Player1.Inventory.Add(ap)
 
