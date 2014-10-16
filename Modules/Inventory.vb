@@ -49,9 +49,9 @@
     End Sub
 
     Private Sub ClearList()
-        For x = ListStartRow To ListLastRow
-            Console.SetCursorPosition(ITEMNAMESTART, x)
-            Console.Write(Space(DESCSTART - ITEMNAMESTART))
+        For ScreenRow = ListStartRow To ListLastRow
+            Console.SetCursorPosition(ITEMNAMESTART - 1, ScreenRow)
+            Console.Write(Space(DESCSTART - ITEMNAMESTART - 1))
         Next
 
         For Each i As ItemBase In Player1.Inventory
