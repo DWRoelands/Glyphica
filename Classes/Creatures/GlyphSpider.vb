@@ -1,11 +1,13 @@
 ﻿Public Class GlyphSpider
     Inherits CreatureBase
-    Public Sub New(_MapLevel As Integer, _Location As Point)
+
+    Public Sub New()
+        Me.New("glyph spider")
+    End Sub
+
+    Public Sub New(CreatureName As String)
+        Me.Name = CreatureName
         With Me
-            .Location = _Location
-            .MapLevel = _MapLevel
-            .Name = "glyph spider"
-            .Description = "a glyph spider"
             .BaseArmorClass = 14
             .BaseStrength = 7
             .BaseDexterity = 17

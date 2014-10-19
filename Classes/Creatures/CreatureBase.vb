@@ -135,7 +135,6 @@
         End Get
     End Property
 
-
     Public Shared Function Find(Location As Point) As CreatureBase
         Dim ReturnValue As CreatureBase = Nothing
         For Each c As CreatureBase In Creatures
@@ -233,7 +232,9 @@
 
     End Sub
 
-
+    Public Sub New()
+        MyBase.New()
+    End Sub
 
 
 

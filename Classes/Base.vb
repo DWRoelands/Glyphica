@@ -18,12 +18,11 @@
         Console.Write(Me.DisplayCharacter)
 
         If Not Me.HasBeenSeen Then
-            MessageWrite(String.Format("There is {0} here.", Me.Description))
+            Viewport.MessageWrite(String.Format("There is {0} {1} here.", IIf("AEIOU".Contains(Me.Name.Substring(1, 1).ToUpper), "an", "a"), Me.Name))
             Me.HasBeenSeen = True
         End If
 
         Me.IsVisible = True
     End Sub
-
 
 End Class

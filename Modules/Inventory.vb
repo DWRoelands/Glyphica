@@ -100,7 +100,7 @@
         ListStartRow = ListHeaderStart + 1
         ListLastRow = Console.WindowHeight - STATUSAREAHEIGHT - 2
 
-        ViewportClear()
+        Viewport.Clear()
 
         FiltersDraw()
 
@@ -282,7 +282,7 @@
                         End If
                     Next
                     CreatureBase.ItemEffectsProcess(Player1)
-                    StatusUpdate()
+                    Viewport.StatusUpdate()
 
 
                 Case ConsoleKey.Escape
@@ -290,7 +290,7 @@
             End Select
         Loop
 
-        ViewportClear()
+        Viewport.Clear()
 
     End Sub
 

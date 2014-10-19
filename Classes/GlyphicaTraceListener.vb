@@ -4,7 +4,7 @@
     Public Overloads Overrides Sub Write(message As String)
         Dim sw As New BooleanSwitch("GlyphicaTraceSwitch", "Glyphica Tracing Messages")
         If sw.Enabled Then
-            MessageWrite(message, ConsoleColor.Green)
+            Viewport.MessageWrite(message, ConsoleColor.Green)
         End If
     End Sub
 

@@ -51,10 +51,13 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -67,6 +70,10 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Containers\ChestSmall.vb">
+      <Generator>MSBuild:Compile</Generator>
+    </Compile>
+    <Compile Include="Classes\Containers\ContainerBase.vb" />
     <Compile Include="Classes\Items\Ammunition\AmmunitionBase.vb" />
     <Compile Include="Classes\Items\Ammunition\Arrow.vb" />
     <Compile Include="Classes\Items\Ammunition\Bolt.vb" />
@@ -136,6 +143,7 @@
     <Compile Include="Classes\Items\ItemBase.vb" />
     <Compile Include="Classes\Base.vb" />
     <Compile Include="Classes\Items\Corpse.vb" />
+    <Compile Include="Viewport.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
