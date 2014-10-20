@@ -66,12 +66,7 @@
 
 #End Region
 
-#Region "Equipment Properties"
     Public Property TotalWeightCarried As Integer
-    Public Property Inventory As New List(Of ItemBase)
-
-
-#End Region
 
     Public Property Alignment As CreatureAlignment
     Public Property [Class] As CreatureClass

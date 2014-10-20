@@ -19,7 +19,9 @@
     Dim Row_ListLastItem As Integer
     Dim Row_ListHeaders As Integer
 
-    Dim ActiveInventory As ActiveInventoryType
+    'Dim ActiveInventory As ActiveInventoryType
+    Dim ActiveInventory As List(Of ItemBase) = Nothing
+    Dim ExternalInventory As List(Of ItemBase) = Nothing
     Dim ActiveFilter As InventoryFilterType
     Dim Mode As InventoryMode
 
@@ -34,15 +36,15 @@
     End Enum
 
     Public Enum InventoryMode
-        PlayerInventory
+        Player
         Vendor
         Container
     End Enum
 
-    Public Enum ActiveInventoryType
-        Player
-        External
-    End Enum
+    'Public Enum ActiveInventoryType
+    '    Player
+    '    External
+    'End Enum
 
     Private Sub FiltersDraw()
 
@@ -79,13 +81,13 @@
     Private Sub FilterApply()
         Select Case ActiveFilter
             Case InventoryFilterType.AllItems
-                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
+                SortedInventory = (From InventoryItem As ItemBase In ActiveInventory Order By InventoryItem.Name).ToList
             Case InventoryFilterType.Armor
-                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is ArmorBase Order By InventoryItem.Name).ToList
+                SortedInventory = (From InventoryItem As ItemBase In ActiveInventory Where TypeOf InventoryItem Is ArmorBase Order By InventoryItem.Name).ToList
             Case InventoryFilterType.Weapons
-                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is WeaponBase Order By InventoryItem.Name).ToList
+                SortedInventory = (From InventoryItem As ItemBase In ActiveInventory Where TypeOf InventoryItem Is WeaponBase Order By InventoryItem.Name).ToList
             Case InventoryFilterType.Ammunition
-                SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is AmmunitionBase Order By InventoryItem.Name).ToList
+                SortedInventory = (From InventoryItem As ItemBase In ActiveInventory Where TypeOf InventoryItem Is AmmunitionBase Order By InventoryItem.Name).ToList
         End Select
 
         If SortedInventory.Count > 0 And (From x As ItemBase In SortedInventory Where x.IsSelected).Count = 0 Then
@@ -112,7 +114,7 @@
     Private Sub InventoryNamesDraw(Source As Base)
         Console.SetCursorPosition(ITEMNAMESTART, Row_InventoryNames)
 
-        If ActiveInventory = ActiveInventoryType.Player Then
+        If ActiveInventory Is Player1.Inventory Then
             Console.BackgroundColor = ConsoleColor.White
             Console.ForegroundColor = ConsoleColor.Black
         End If
@@ -122,7 +124,7 @@
         Console.ForegroundColor = ConsoleColor.White
         Console.Write(" ")
 
-        If ActiveInventory = ActiveInventoryType.External Then
+        If ActiveInventory Is Source.Inventory Then
             Console.BackgroundColor = ConsoleColor.White
             Console.ForegroundColor = ConsoleColor.Black
         End If
@@ -135,11 +137,16 @@
     Public Sub InventoryManage(Source As Base)
 
         If TypeOf Source Is Player Then
-            Mode = InventoryMode.Vendor
+            Mode = InventoryMode.Player
+            ActiveInventory = Player1.Inventory
         ElseIf TypeOf Source Is ContainerBase Then
             Mode = InventoryMode.Container
+            ExternalInventory = Source.Inventory
+            ActiveInventory = ExternalInventory
         ElseIf TypeOf Source Is VendorBase Then
             Mode = InventoryMode.Vendor
+            ExternalInventory = Source.Inventory
+            ActiveInventory = ExternalInventory
         Else
             Throw New Exception("Could not determine the inventory mode because of an unrecognized source.")
         End If
@@ -156,7 +163,6 @@
         ' all other rows are positioned relative to the inventory names row
         Row_FilterNames = Row_InventoryNames + 2
         Row_ListHeaders = Row_FilterNames + 2
-        Row_FilterNames = MESSAGEAREAHEIGHT + 1
         Row_ListFirstItem = Row_ListHeaders + 1
         Row_ListLastItem = Console.WindowHeight - STATUSAREAHEIGHT - 4
 
@@ -254,13 +260,20 @@
 
             Select Case Console.ReadKey(True).Key
 
+                Case ConsoleKey.PageDown, ConsoleKey.PageUp
+                    ClearList()
+                    ActiveInventory = IIf(ActiveInventory Is Player1.Inventory, Source.Inventory, Player1.Inventory)
+                    Continue Do
+
                 Case ConsoleKey.LeftArrow
                     ClearList()
                     FilterPrevious()
+                    Continue Do
 
                 Case ConsoleKey.RightArrow
                     ClearList()
                     FilterNext()
+                    Continue Do
 
                 Case ConsoleKey.DownArrow
 

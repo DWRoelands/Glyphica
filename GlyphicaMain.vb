@@ -50,9 +50,9 @@
 
         MapLoad()
 
-        Dim C As New ChestSmall
-        C.Location = New Point(20, 13)
-        Items.Add(C)
+        'Dim C As New ChestSmall
+        'C.Location = New Point(20, 13)
+        'Items.Add(C)
 
         Player1.Location = New Point(13, 13)
 
@@ -72,6 +72,14 @@
             End If
         Next
 
+        Dim v As New VendorBase()
+        v.Name = "Vinnie Vendor"
+        For x = 3 To 7
+            Dim s As New ShortspearMedium("Short Spear " & x)
+            v.Inventory.Add(s)
+        Next
+
+        InventoryManage(v)
 
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo

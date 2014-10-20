@@ -7,6 +7,7 @@
     Public Property DisplayCharacter As String = String.Empty
     Public Property HasBeenSeen As Boolean = False
     Public Property IsVisible As Boolean = False
+    Public Property Inventory As New List(Of ItemBase)
 
     Protected Function GraphicsCharacterGet(bvalue As Byte) As Char
         Return System.Text.Encoding.GetEncoding(437).GetChars(New Byte() {bvalue})(0)
