@@ -64,6 +64,15 @@
 
         Trace.Listeners.Add(New GlyphicaTraceListener)
 
+        For x = 1 To 12
+            Dim w As New MaceHeavyMedium("Mace #" & x)
+            Player1.Inventory.Add(w)
+            If x = 12 Then
+                Player1.Equip(w)
+            End If
+        Next
+
+
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
         Do
@@ -75,7 +84,7 @@
             Select Case KeyPress.Key
 
                 Case ConsoleKey.I
-                    InventoryManage()
+                    InventoryManage(Player1)
 
                 Case ConsoleKey.DownArrow, ConsoleKey.NumPad2
                     ToLocation = New Point(Player1.Location.X, Player1.Location.Y + 1)

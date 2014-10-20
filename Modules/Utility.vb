@@ -29,6 +29,18 @@ Module Utility
     Public Function DistanceGet(Location1 As Point, Location2 As Point) As Decimal
         Return Sqrt((Abs(Location2.X - Location1.X) ^ 2) + (Abs(Location2.Y - Location1.Y) ^ 2))
     End Function
+
+    Public Function Ask(Question As String) As Boolean
+        MessageWrite(Question)
+        Dim Response As ConsoleKeyInfo = Nothing
+        Do
+            Response = Console.ReadKey(True)
+        Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N
+
+        Return Response.Key = ConsoleKey.Y
+    End Function
+
+
 End Module
 
 

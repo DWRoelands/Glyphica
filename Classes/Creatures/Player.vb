@@ -56,53 +56,25 @@
 
     End Sub
 
+    Public Sub PostMoveProcess()
 
-
-
-
-    ''' <summary>
-    ''' Perform all of the checks and processing required before a player moves into a chosen location
-    ''' </summary>
-    ''' <param name="ToLocation">A System.Drawing.Point represnting the two-dimensional position on the current map level</param>
-    ''' <returns>A PlayerMoveResult enum</returns>
-    ''' <remarks></remarks>
-    Public Function MoveBefore(ToLocation As Point) As MoveBeforeResult
-        Dim ReturnValue As Player.MoveBeforeResult = Nothing
-
-        ' First, is there a monster here?  If so, the result is combat
-        Dim MonsterFound As Boolean = False
-        For Each m As CreatureBase In Creatures
-            If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
-                MonsterFound = True
-                ReturnValue = Player.MoveBeforeResult.Combat
-                Exit For
+        ' is there a container in the same spot as the player?
+        Dim Container As ContainerBase = Nothing
+        For Each i As ItemBase In Items.Where(Function(x) TypeOf x Is ContainerBase)
+            If i.Location = Me.Location Then
+                Container = i
             End If
         Next
 
-        ' No monster 
-        ' Check for collision with map feature
-        If Not MonsterFound Then
-            Select Case MapTile.GetTile(ToLocation).TileType
-                Case MapTile.MapTileType.Empty
-                    ReturnValue = Player.MoveBeforeResult.Move
-                Case MapTile.MapTileType.Wall
-                    ReturnValue = Player.MoveBeforeResult.Blocked
-                Case MapTile.MapTileType.Door
-                    Map(Player1.MapLevel, ToLocation.X, ToLocation.Y).TileType = MapTile.MapTileType.Empty
-                    Debug.WriteLine("The door opens")
-                    Return Player.MoveBeforeResult.Move
-                Case MapTile.MapTileType.DoorLocked
-                    Debug.WriteLine("The door is locked")
-                    Return Player.MoveBeforeResult.Blocked
-            End Select
+        If Container IsNot Nothing Then
+            If Ask(String.Format("Do you want to search the {0}?", Container.Name)) Then
+
+            End If
         End If
 
-        Return ReturnValue
 
-    End Function
 
-    Public Function MoveAfter() As MoveAfterResult
 
-    End Function
+    End Sub
 
 End Class

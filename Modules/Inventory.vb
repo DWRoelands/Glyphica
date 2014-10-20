@@ -11,11 +11,17 @@
     Const VALUESTART As Integer = 65
     Const DESCSTART As Integer = 80
 
-    Dim FilterNameRow As Integer
-    Dim ListStartRow As Integer
-    Dim ListLastRow As Integer
-    Dim ListHeaderStart As Integer
-    Dim SelectedFilter As InventoryFilterType
+    Dim ListRange As Point
+    Dim DescriptionWidth As Integer
+    Dim Row_FilterNames As Integer
+    Dim Row_InventoryNames As Integer
+    Dim Row_ListFirstItem As Integer
+    Dim Row_ListLastItem As Integer
+    Dim Row_ListHeaders As Integer
+
+    Dim ActiveInventory As ActiveInventoryType
+    Dim ActiveFilter As InventoryFilterType
+    Dim Mode As InventoryMode
 
     Dim InventoryFilters() As String = {"All Items", "Armor", "Weapons", "Ammunition"}
     Dim SortedInventory As List(Of ItemBase) = Nothing
@@ -27,11 +33,22 @@
         Ammunition = 3
     End Enum
 
+    Public Enum InventoryMode
+        PlayerInventory
+        Vendor
+        Container
+    End Enum
+
+    Public Enum ActiveInventoryType
+        Player
+        External
+    End Enum
+
     Private Sub FiltersDraw()
 
-        Console.SetCursorPosition(4, FilterNameRow)
+        Console.SetCursorPosition(4, Row_FilterNames)
         For x = 0 To InventoryFilters.Length - 1
-            If SelectedFilter = x Then
+            If ActiveFilter = x Then
                 Console.ForegroundColor = ConsoleColor.Black
                 Console.BackgroundColor = ConsoleColor.White
             Else
@@ -49,7 +66,7 @@
     End Sub
 
     Private Sub ClearList()
-        For ScreenRow = ListStartRow To ListLastRow
+        For ScreenRow = Row_ListFirstItem To Row_ListLastItem
             Console.SetCursorPosition(ITEMNAMESTART - 1, ScreenRow)
             Console.Write(Space(DESCSTART - ITEMNAMESTART - 1))
         Next
@@ -60,7 +77,7 @@
     End Sub
 
     Private Sub FilterApply()
-        Select Case SelectedFilter
+        Select Case ActiveFilter
             Case InventoryFilterType.AllItems
                 SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Order By InventoryItem.Name).ToList
             Case InventoryFilterType.Armor
@@ -71,74 +88,96 @@
                 SortedInventory = (From InventoryItem As ItemBase In Player1.Inventory Where TypeOf InventoryItem Is AmmunitionBase Order By InventoryItem.Name).ToList
         End Select
 
-        If SortedInventory.Count > 0 Then
+        If SortedInventory.Count > 0 And (From x As ItemBase In SortedInventory Where x.IsSelected).Count = 0 Then
             SortedInventory(0).IsSelected = True
         End If
     End Sub
 
     Private Sub FilterPrevious()
-        If SelectedFilter > 0 Then
-            SelectedFilter -= 1
+        If ActiveFilter > 0 Then
+            ActiveFilter -= 1
         Else
-            SelectedFilter = InventoryFilters.Length - 1
+            ActiveFilter = InventoryFilters.Length - 1
         End If
     End Sub
 
     Private Sub FilterNext()
-        If SelectedFilter < InventoryFilters.Length - 1 Then
-            SelectedFilter += 1
+        If ActiveFilter < InventoryFilters.Length - 1 Then
+            ActiveFilter += 1
         Else
-            SelectedFilter = 0
+            ActiveFilter = 0
         End If
     End Sub
 
-    Public Sub InventoryManage()
+    Private Sub InventoryNamesDraw(Source As Base)
+        Console.SetCursorPosition(ITEMNAMESTART, Row_InventoryNames)
 
-        Dim DescriptionWidth As Integer = Console.WindowWidth - DESCSTART - 5
-        FilterNameRow = MESSAGEAREAHEIGHT + 1
-        ListHeaderStart = FilterNameRow + 2
-        ListStartRow = ListHeaderStart + 1
-        ListLastRow = Console.WindowHeight - STATUSAREAHEIGHT - 2
+        If ActiveInventory = ActiveInventoryType.Player Then
+            Console.BackgroundColor = ConsoleColor.White
+            Console.ForegroundColor = ConsoleColor.Black
+        End If
+        Console.Write(Player1.Name)
 
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+        Console.Write(" ")
+
+        If ActiveInventory = ActiveInventoryType.External Then
+            Console.BackgroundColor = ConsoleColor.White
+            Console.ForegroundColor = ConsoleColor.Black
+        End If
+        Console.Write(Source.Name)
+
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
+    End Sub
+
+    Public Sub InventoryManage(Source As Base)
+
+        If TypeOf Source Is Player Then
+            Mode = InventoryMode.Vendor
+        ElseIf TypeOf Source Is ContainerBase Then
+            Mode = InventoryMode.Container
+        ElseIf TypeOf Source Is VendorBase Then
+            Mode = InventoryMode.Vendor
+        Else
+            Throw New Exception("Could not determine the inventory mode because of an unrecognized source.")
+        End If
+
+        ' set up the variables that control the screen layout
+        If Source IsNot Player1 Then
+            ' We are managing two inventories (e.g. chest, vendor, etc.)
+            Row_InventoryNames = MESSAGEAREAHEIGHT + 1
+        Else
+            ' We are only managing the p;ayer's inventory
+            Row_InventoryNames = MESSAGEAREAHEIGHT - 1
+        End If
+
+        ' all other rows are positioned relative to the inventory names row
+        Row_FilterNames = Row_InventoryNames + 2
+        Row_ListHeaders = Row_FilterNames + 2
+        Row_FilterNames = MESSAGEAREAHEIGHT + 1
+        Row_ListFirstItem = Row_ListHeaders + 1
+        Row_ListLastItem = Console.WindowHeight - STATUSAREAHEIGHT - 4
+
+        ' Other layout variables
+        DescriptionWidth = Console.WindowWidth - DESCSTART - 5
+        ListRange = New Point(0, Console.WindowHeight - Row_ListFirstItem)
+
+        ' Initialize
+        ActiveFilter = InventoryFilterType.AllItems
         Viewport.Clear()
-
-        FiltersDraw()
-
-        Dim x As Integer = ITEMNAMESTART
-        Dim y As Integer = ListHeaderStart
-        Console.SetCursorPosition(x, y)
-        Console.Write("Name")
-
-        x = ARMORDAMAGESTART
-        Console.SetCursorPosition(x, y)
-        Console.Write("Armor/Damage")
-
-        x = WEIGHTSTART
-        Console.SetCursorPosition(x, y)
-        Console.Write("Weight")
-
-        x = VALUESTART
-        Console.SetCursorPosition(x, y)
-        Console.Write("Value")
-
-        x = DESCSTART
-        Console.SetCursorPosition(x, y)
-        Console.Write("Description")
-
-
-        x = Console.WindowWidth - 20
-        y = Console.WindowHeight - STATUSAREAHEIGHT - 2
-        Console.SetCursorPosition(x, y)
-        Console.Write("Press ESCAPE to exit")
-
-        Dim ListRange As New Point(0, Console.WindowHeight - ListStartRow)
-        SelectedFilter = InventoryFilterType.AllItems
-        FilterApply()
+        ColumnHeadersDraw()
 
         Do
+            If Source IsNot Player1 Then
+                InventoryNamesDraw(Source)
+            End If
+
+            FilterApply()
             FiltersDraw()
 
-            Dim ScreenRow As Integer = ListStartRow
+            Dim ScreenRow As Integer = Row_ListFirstItem
             For ItemIndex As Integer = 0 To SortedInventory.Count - 1
                 If IsBetween(ItemIndex, ListRange.X, ListRange.Y) Then
 
@@ -179,7 +218,7 @@
                     Dim ValueText As String = InventoryItem.Value & Space(DESCSTART - 1 - VALUESTART - InventoryItem.Value.ToString.Length)
 
                     ' Clear the description
-                    For DescLine As Integer = ListStartRow To Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT
+                    For DescLine As Integer = Row_ListFirstItem To Console.WindowHeight - STATUSAREAHEIGHT - MESSAGEAREAHEIGHT
                         Console.SetCursorPosition(DESCSTART, DescLine)
                         Console.Write(Space(DescriptionWidth))
                     Next
@@ -207,7 +246,7 @@
                 If InventoryItem.IsSelected Then
                     Dim DescriptionText As List(Of String) = Utility.WordWrap(InventoryItem.Description, DescriptionWidth)
                     For DescLine As Integer = 0 To DescriptionText.Count - 1
-                        Console.SetCursorPosition(DESCSTART, DescLine + ListStartRow)
+                        Console.SetCursorPosition(DESCSTART, DescLine + Row_ListFirstItem)
                         Console.Write(DescriptionText(DescLine))
                     Next
                 End If
@@ -218,12 +257,10 @@
                 Case ConsoleKey.LeftArrow
                     ClearList()
                     FilterPrevious()
-                    FilterApply()
 
                 Case ConsoleKey.RightArrow
                     ClearList()
                     FilterNext()
-                    FilterApply()
 
                 Case ConsoleKey.DownArrow
 
@@ -293,6 +330,36 @@
         Viewport.Clear()
 
     End Sub
+
+    Private Sub ColumnHeadersDraw()
+        Dim x As Integer = ITEMNAMESTART
+        Dim y As Integer = Row_ListHeaders
+        Console.SetCursorPosition(x, y)
+        Console.Write("Name")
+
+        x = ARMORDAMAGESTART
+        Console.SetCursorPosition(x, y)
+        Console.Write("Armor/Damage")
+
+        x = WEIGHTSTART
+        Console.SetCursorPosition(x, y)
+        Console.Write("Weight")
+
+        x = VALUESTART
+        Console.SetCursorPosition(x, y)
+        Console.Write("Value")
+
+        x = DESCSTART
+        Console.SetCursorPosition(x, y)
+        Console.Write("Description")
+
+        x = Console.WindowWidth - 20
+        y = Console.WindowHeight - STATUSAREAHEIGHT - 2
+        Console.SetCursorPosition(x, y)
+        Console.Write("Press ESCAPE to exit")
+    End Sub
+
+
 
 
     Private Sub CenterMessage(Message As String)

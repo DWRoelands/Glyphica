@@ -74,6 +74,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Compile>
     <Compile Include="Classes\Containers\ContainerBase.vb" />
+    <Compile Include="Classes\Creatures\VendorBase.vb" />
     <Compile Include="Classes\Items\Ammunition\AmmunitionBase.vb" />
     <Compile Include="Classes\Items\Ammunition\Arrow.vb" />
     <Compile Include="Classes\Items\Ammunition\Bolt.vb" />
