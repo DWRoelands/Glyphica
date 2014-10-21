@@ -58,6 +58,8 @@
 
     Public Sub PostMoveProcess()
 
+        Dim RefreshViewport As Boolean = False
+
         ' is there a container in the same spot as the player?
         Dim Container As ContainerBase = Nothing
         For Each i As ItemBase In Items.Where(Function(x) TypeOf x Is ContainerBase)
@@ -68,12 +70,14 @@
 
         If Container IsNot Nothing Then
             If Ask(String.Format("Do you want to search the {0}?", Container.Name)) Then
-
+                RefreshViewport = True
+                InventoryManage(Container)
+                If RefreshViewport Then
+                    Viewport.Refresh()
+                    Exit Sub
+                End If
             End If
         End If
-
-
-
 
     End Sub
 

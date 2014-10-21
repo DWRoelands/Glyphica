@@ -40,6 +40,11 @@ Module Utility
         Return Response.Key = ConsoleKey.Y
     End Function
 
+    Public Sub RightJustifiedMessage(ScreenRow As Integer, Message As String)
+        Dim x As Integer = Console.WindowWidth - Message.Length
+        Console.SetCursorPosition(Console.WindowWidth - Message.Length - 1, ScreenRow)
+        Console.Write(Message)
+    End Sub
 
 End Module
 

@@ -1,6 +1,15 @@
 ﻿'
 ' Methods related to the display of the player and map
 Module Viewport
+
+    Public Sub Refresh()
+        Viewport.MapScroll()
+        Viewport.VisibleCellsProcess()
+        Viewport.CreaturesDraw()
+        Viewport.ItemsDraw()
+        Player1.Draw()
+    End Sub
+
     Public Sub MapScroll()
         If Player1.Location.X >= ViewportOrigin.X + ViewportSize.Width - Viewport.XScrollBufferGet() Then
             Debug.WriteLine("right scroll border hit")

@@ -18,6 +18,7 @@
     Dim Row_ListFirstItem As Integer
     Dim Row_ListLastItem As Integer
     Dim Row_ListHeaders As Integer
+    Dim Row_Helptext As Integer
 
     'Dim ActiveInventory As ActiveInventoryType
     Dim ActiveInventory As List(Of ItemBase) = Nothing
@@ -41,13 +42,7 @@
         Container
     End Enum
 
-    'Public Enum ActiveInventoryType
-    '    Player
-    '    External
-    'End Enum
-
     Private Sub FiltersDraw()
-
         Console.SetCursorPosition(4, Row_FilterNames)
         For x = 0 To InventoryFilters.Length - 1
             If ActiveFilter = x Then
@@ -64,7 +59,6 @@
 
             Console.Write("  ")
         Next
-
     End Sub
 
     Private Sub ClearList()
@@ -165,16 +159,27 @@
         Row_ListHeaders = Row_FilterNames + 2
         Row_ListFirstItem = Row_ListHeaders + 1
         Row_ListLastItem = Console.WindowHeight - STATUSAREAHEIGHT - 4
+        Row_Helptext = Console.WindowHeight - STATUSAREAHEIGHT - 2
 
         ' Other layout variables
         DescriptionWidth = Console.WindowWidth - DESCSTART - 5
         ListRange = New Point(0, Console.WindowHeight - Row_ListFirstItem)
 
         ' Initialize
-        ActiveFilter = InventoryFilterType.AllItems
         Viewport.Clear()
-        ColumnHeadersDraw()
+        Console.BackgroundColor = ConsoleColor.Black
+        Console.ForegroundColor = ConsoleColor.White
 
+        Dim HelpText As String = "Left/Right to change filter, Up/Down to change selection, ESCAPE to exit"
+        If Source IsNot Player1 Then
+            HelpText = "PAGEUP/PAGEDOWN to change view, " & HelpText
+        End If
+        RightJustifiedMessage(Row_Helptext, HelpText)
+
+        ColumnHeadersDraw()
+        ActiveFilter = InventoryFilterType.AllItems
+
+        ' MAIN INVENTORY LOOP
         Do
             If Source IsNot Player1 Then
                 InventoryNamesDraw(Source)
@@ -276,7 +281,6 @@
                     Continue Do
 
                 Case ConsoleKey.DownArrow
-
                     For Each InventoryItem In SortedInventory
                         If InventoryItem.IsSelected And SortedInventory.IndexOf(InventoryItem) < SortedInventory.Count - 1 Then
                             InventoryItem.IsSelected = False
@@ -345,35 +349,21 @@
     End Sub
 
     Private Sub ColumnHeadersDraw()
-        Dim x As Integer = ITEMNAMESTART
-        Dim y As Integer = Row_ListHeaders
-        Console.SetCursorPosition(x, y)
+        Console.SetCursorPosition(ITEMNAMESTART, Row_ListHeaders)
         Console.Write("Name")
 
-        x = ARMORDAMAGESTART
-        Console.SetCursorPosition(x, y)
+        Console.SetCursorPosition(ARMORDAMAGESTART, Row_ListHeaders)
         Console.Write("Armor/Damage")
 
-        x = WEIGHTSTART
-        Console.SetCursorPosition(x, y)
+        Console.SetCursorPosition(WEIGHTSTART, Row_ListHeaders)
         Console.Write("Weight")
 
-        x = VALUESTART
-        Console.SetCursorPosition(x, y)
+        Console.SetCursorPosition(VALUESTART, Row_ListHeaders)
         Console.Write("Value")
 
-        x = DESCSTART
-        Console.SetCursorPosition(x, y)
+        Console.SetCursorPosition(DESCSTART, Row_ListHeaders)
         Console.Write("Description")
-
-        x = Console.WindowWidth - 20
-        y = Console.WindowHeight - STATUSAREAHEIGHT - 2
-        Console.SetCursorPosition(x, y)
-        Console.Write("Press ESCAPE to exit")
     End Sub
-
-
-
 
     Private Sub CenterMessage(Message As String)
 

@@ -50,9 +50,9 @@
 
         MapLoad()
 
-        'Dim C As New ChestSmall
-        'C.Location = New Point(20, 13)
-        'Items.Add(C)
+        Dim C As New ChestSmall
+        C.Location = New Point(20, 13)
+        Items.Add(C)
 
         Player1.Location = New Point(13, 13)
 
@@ -63,23 +63,6 @@
         Player1.Draw()
 
         Trace.Listeners.Add(New GlyphicaTraceListener)
-
-        For x = 1 To 12
-            Dim w As New MaceHeavyMedium("Mace #" & x)
-            Player1.Inventory.Add(w)
-            If x = 12 Then
-                Player1.Equip(w)
-            End If
-        Next
-
-        Dim v As New VendorBase()
-        v.Name = "Vinnie Vendor"
-        For x = 3 To 7
-            Dim s As New ShortspearMedium("Short Spear " & x)
-            v.Inventory.Add(s)
-        Next
-
-        InventoryManage(v)
 
         ' MAIN GAME LOOP
         Dim KeyPress As ConsoleKeyInfo
@@ -178,11 +161,8 @@
             End Select
 
             Player1.PreMoveProcess(ToLocation)
-            Viewport.MapScroll()
-            Viewport.VisibleCellsProcess()
-            Viewport.CreaturesDraw()
-            Viewport.ItemsDraw()
-            Player1.Draw()
+            Viewport.Refresh()
+            Player1.PostMoveProcess()
 
         Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPointsCurrent > 0
 
