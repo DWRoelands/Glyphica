@@ -13,96 +13,33 @@
         Wizard
     End Enum
 
-#Region "Ability Score Properties"
-    Public Property BaseStrength As Integer
-    Public Property BaseDexterity As Integer
-    Public Property BaseConstitution As Integer
-    Public Property BaseIntelligence As Integer
-    Public Property BaseWisdom As Integer
-    Public Property BaseCharisma As Integer
+    Public Enum AttributeId
+        Alignment
+        ArcaneSpellFailureChance
+        ArmorClass
+        CharacterClass
+        Charisma
+        Constitution
+        Damage_Base
+        Dexterity
+        Encumbrance
+        Encumbrance_Max
+        HitDice
+        HitPoints
+        HitPoints_Base
+        Initiative
+        Intelligence
+        Strength
+        VisualRange
+        Wisdom
+    End Enum
 
-    Public Property StrengthModifier As Integer
-    Public Property DexterityModifier As Integer
-    Public Property ConstitutionModifier As Integer
-    Public Property IntelligenceModifier As Integer
-    Public Property WisdomModifier As Integer
-    Public Property CharismaModifier As Integer
+    Public Attributes As New Dictionary(Of CreatureBase.AttributeId, String)
+    Public VisibleCells As New List(Of Point)
 
-    Public ReadOnly Property Strength As Integer
-        Get
-            Return BaseStrength + StrengthModifier
-        End Get
-    End Property
+    Public Sub New()
 
-    Public ReadOnly Property Intelligence As Integer
-        Get
-            Return BaseIntelligence + IntelligenceModifier
-        End Get
-    End Property
-
-    Public ReadOnly Property Wisdom As Integer
-        Get
-            Return BaseWisdom + WisdomModifier
-        End Get
-    End Property
-
-    Public ReadOnly Property Dexterity As Integer
-        Get
-            Return BaseDexterity + DexterityModifier
-        End Get
-    End Property
-
-    Public ReadOnly Property Constitution As Integer
-        Get
-            Return BaseConstitution + ConstitutionModifier
-        End Get
-    End Property
-
-    Public ReadOnly Property Charisma As Integer
-        Get
-            Return BaseCharisma + CharismaModifier
-        End Get
-    End Property
-
-#End Region
-
-    Public Property TotalWeightCarried As Integer
-
-    Public Property Alignment As CreatureAlignment
-    Public Property [Class] As CreatureClass
-
-    Public Property VisualRange As Integer
-    Public Property VisibleCells As New List(Of Point)
-
-    Public Property HitPointsCurrent As Integer
-    Public Property HitPointsMax As Integer
-
-    Public Property DamageDice As String
-    Public Property DamageModifier As Integer
-
-    Public Property Initiative As Integer
-
-    Public Property BaseArmorClass As Integer
-    Public Property ArmorClassModifier As Integer
-    Public ReadOnly Property ArmorClass As Integer
-        Get
-            Return BaseArmorClass + ArmorClassModifier
-        End Get
-    End Property
-
-    Public Property ArcaneSpellFailureChance As Decimal
-
-    Private _HitDice As String
-    Public Property HitDice As String
-        Get
-            Return _HitDice
-        End Get
-        Set(value As String)
-            _HitDice = value
-            HitPointsMax = Dice.RollDice(value)
-            HitPointsCurrent = HitPointsMax
-        End Set
-    End Property
+    End Sub
 
     Public ReadOnly Property EquippedAmmunition As AmmunitionBase
         Get
@@ -229,9 +166,6 @@
 
     End Sub
 
-    Public Sub New()
-        MyBase.New()
-    End Sub
 
 
 

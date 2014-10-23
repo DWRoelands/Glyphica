@@ -70,6 +70,7 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Attribute.vb" />
     <Compile Include="Classes\Containers\ChestSmall.vb">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
@@ -112,6 +113,7 @@
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowMedium.vb" />
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
+    <Compile Include="Effect.vb" />
     <Compile Include="Effects\EffectArcaneSpellFailureChance.vb" />
     <Compile Include="Effects\EffectArmorClass.vb" />
     <Compile Include="Effects\EffectBase.vb" />

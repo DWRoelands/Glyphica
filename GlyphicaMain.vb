@@ -32,17 +32,11 @@
         Player1 = New Player
         Player1.MapLevel = 0
         Player1.HitDice = "4d8"
-        Player1.BaseArmorClass = 10
         Player1.DamageDice = "1d8"
         Player1.Name = "Duane"
-        With Player1
-            .BaseStrength = 18
-            .BaseIntelligence = 17
-            .BaseWisdom = 16
-            .BaseDexterity = 15
-            .BaseConstitution = 14
-            .BaseCharisma = 13
-        End With
+
+
+
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport

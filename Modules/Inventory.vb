@@ -314,6 +314,7 @@
                     For Each InventoryItem In SortedInventory
                         If InventoryItem.IsSelected Then
                             If InventoryItem.IsEquipped Then
+
                                 InventoryItem.IsEquipped = False
                                 'Continue Do
                             Else
