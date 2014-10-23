@@ -112,6 +112,11 @@
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowMedium.vb" />
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
+    <Compile Include="Effects\EffectArcaneSpellFailureChance.vb" />
+    <Compile Include="Effects\EffectArmorClass.vb" />
+    <Compile Include="Effects\EffectBase.vb" />
+    <Compile Include="Effects\EffectWeght.vb" />
+    <Compile Include="Effects\EffectMaximumDexterityBonus.vb" />
     <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />
     <Compile Include="Classes\Map\FOVRecurse.vb" />

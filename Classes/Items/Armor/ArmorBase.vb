@@ -27,19 +27,24 @@
     Public Property ArcaneSpellFailureChance As Decimal
     Public Property ArmorBonus As Integer
 
-    ' Armor that has other effects on the wearer should overide this method and then call MyBase.Process()
-    Public Overrides Sub Process(Wearer As CreatureBase)
-        If Me.IsEquipped Then
-            Wearer.ArmorClassModifier += Me.ArmorBonus
-            Wearer.TotalWeightCarried += Me.Weight
-            Wearer.ArcaneSpellFailureChance = IIf(Wearer.ArcaneSpellFailureChance < Me.ArcaneSpellFailureChance, Me.ArcaneSpellFailureChance, Wearer.ArcaneSpellFailureChance)
-            Wearer.DexterityModifier = IIf(Wearer.DexterityModifier > Me.MaxDexterityBonus, Me.MaxDexterityBonus, Wearer.DexterityModifier)
-        End If
-    End Sub
-
     Public Sub New()
         Me.DisplayCharacter = "a"
         Me.IsEquippable = True
         Me.IsPortable = True
+    End Sub
+
+    Public Overridable Sub OnEquip_Handler() Handles Me.OnEquip
+        With Me.Effects
+            .Add(New EffectArmorClass(Me.ArmorBonus))
+            .Add(New EffectArcaneSpellFailureChance(Me.ArcaneSpellFailureChance))
+            .Add(New EffectMaximumDexterityBonus(Me.MaxDexterityBonus))
+        End With
+    End Sub
+
+    Public Overridable Sub OnPickup_Handler() Handles Me.OnPickup
+        With Me.Effects
+            .Clear()
+            .Add(New EffectWeight(Me.Weight))
+        End With
     End Sub
 End Class

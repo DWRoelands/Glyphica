@@ -141,10 +141,10 @@
         Return ReturnValue
     End Function
 
-    Public Shared Sub ItemEffectsProcess(Creature As CreatureBase)
+    Public Sub ItemEffectsProcess()
 
         ' reset all modifiers to 0
-        With Creature
+        With Me
             .ArmorClassModifier = 0
             .DamageModifier = 0
             .StrengthModifier = 0
@@ -155,8 +155,10 @@
             .CharismaModifier = 0
         End With
 
-        For Each item As ItemBase In Creature.Inventory
-            item.Process(Creature)
+        For Each Item As ItemBase In Me.Inventory
+            For Each e As EffectBase In Item.Effects
+                e.Process(Me)
+            Next
         Next
     End Sub
 

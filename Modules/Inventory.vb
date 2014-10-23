@@ -335,9 +335,8 @@
                             End If
                         End If
                     Next
-                    CreatureBase.ItemEffectsProcess(Player1)
+                    Player1.ItemEffectsProcess()
                     Viewport.StatusUpdate()
-
 
                 Case ConsoleKey.Escape
                     Exit Do
