@@ -1,4 +1,4 @@
 ﻿Public Class Attribute
-    Public Property ID As CreatureBase.AttributeId
-    Public Property Value As String
+    Public ID As CreatureBase.AttributeId
+    Public Value As String
 End Class

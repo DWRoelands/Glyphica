@@ -22,8 +22,8 @@
         Constitution
         Damage_Base
         Dexterity
-        Encumbrance
-        Encumbrance_Max
+        Weight
+        Weight_Max
         HitDice
         HitPoints
         HitPoints_Base
@@ -81,16 +81,16 @@
     Public Sub ItemEffectsProcess()
 
         ' reset all modifiers to 0
-        With Me
-            .ArmorClassModifier = 0
-            .DamageModifier = 0
-            .StrengthModifier = 0
-            .IntelligenceModifier = 0
-            .WisdomModifier = 0
-            .DexterityModifier = 0
-            .ConstitutionModifier = 0
-            .CharismaModifier = 0
-        End With
+        'With Me
+        '    .ArmorClassModifier = 0
+        '    .DamageModifier = 0
+        '    .StrengthModifier = 0
+        '    .IntelligenceModifier = 0
+        '    .WisdomModifier = 0
+        '    .DexterityModifier = 0
+        '    .ConstitutionModifier = 0
+        '    .CharismaModifier = 0
+        'End With
 
         For Each Item As ItemBase In Me.Inventory
             For Each e As EffectBase In Item.Effects
