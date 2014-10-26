@@ -13,28 +13,8 @@
         Wizard
     End Enum
 
-    Public Enum AttributeId
-        Alignment
-        ArcaneSpellFailureChance
-        ArmorClass
-        CharacterClass
-        Charisma
-        Constitution
-        Damage_Base
-        Dexterity
-        Weight
-        Weight_Max
-        HitDice
-        HitPoints
-        HitPoints_Base
-        Initiative
-        Intelligence
-        Strength
-        VisualRange
-        Wisdom
-    End Enum
-
-    Public Attributes As New Dictionary(Of CreatureBase.AttributeId, String)
+    Public Attributes As New List(Of CreatureAttribute)
+    Public ItemEffects As New List(Of ItemEffect_Base)
     Public VisibleCells As New List(Of Point)
 
     Public Sub New()
@@ -77,27 +57,6 @@
         Next
         Return ReturnValue
     End Function
-
-    Public Sub ItemEffectsProcess()
-
-        ' reset all modifiers to 0
-        'With Me
-        '    .ArmorClassModifier = 0
-        '    .DamageModifier = 0
-        '    .StrengthModifier = 0
-        '    .IntelligenceModifier = 0
-        '    .WisdomModifier = 0
-        '    .DexterityModifier = 0
-        '    .ConstitutionModifier = 0
-        '    .CharismaModifier = 0
-        'End With
-
-        For Each Item As ItemBase In Me.Inventory
-            For Each e As EffectBase In Item.Effects
-                e.Process(Me)
-            Next
-        Next
-    End Sub
 
     Public Function FindClosest() As CreatureBase
 

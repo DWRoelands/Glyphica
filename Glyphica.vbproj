@@ -70,7 +70,7 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\Attribute.vb" />
+    <Compile Include="Classes\CreatureAttribute.vb" />
     <Compile Include="Classes\Containers\ChestSmall.vb">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
@@ -113,8 +113,14 @@
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowMedium.vb" />
     <Compile Include="Classes\Items\Weapons\Ranged\HeavyCrossbowSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
-    <Compile Include="Effects\Effect_AbilityScore.vb" />
-    <Compile Include="Effects\Effect_Base.vb" />
+    <Compile Include="Effects\EffectFactory.vb" />
+    <Compile Include="Effects\Effect_ArcaneSpellFailureChance.vb" />
+    <Compile Include="Effects\Effect_ArmorBonus.vb" />
+    <Compile Include="Effects\Effect_MaximumDexterityBonus.vb" />
+    <Compile Include="Effects\Effect_Weight.vb" />
+    <Compile Include="Effects\iAttributeEffect.vb" />
+    <Compile Include="Effects\iItemEffect.vb" />
+    <Compile Include="Effects\ItemEffect_Base.vb" />
     <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />
     <Compile Include="Classes\Map\FOVRecurse.vb" />

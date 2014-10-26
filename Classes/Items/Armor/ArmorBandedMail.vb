@@ -1,12 +1,9 @@
 ﻿Public Class ArmorBandedMail
     Inherits ArmorBase
     Public Sub New()
-        Me.New("Banded Mail Armor")
-    End Sub
-    Public Sub New(ArmorName As String)
         MyBase.New()
-        Me.Name = ArmorName
         With Me
+            .Name = "Banded Mail Name"
             .Tier = ArmorTier.Heavy
             .Type = ArmorType.BandedMail
             .Value = 250
