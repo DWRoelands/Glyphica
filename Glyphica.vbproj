@@ -130,9 +130,7 @@
     <Compile Include="Classes\Map\MapTile.vb" />
     <Compile Include="GlyphicaMain.vb" />
     <Compile Include="Classes\Message.vb" />
-    <Compile Include="Classes\Creatures\GlyphSpider.vb" />
     <Compile Include="Classes\Creatures\CreatureBase.vb" />
-    <Compile Include="Classes\Creatures\Kobold.vb" />
     <Compile Include="Modules\Utility.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
