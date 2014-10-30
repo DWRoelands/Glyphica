@@ -8,7 +8,7 @@
             .Type = ArmorType.BandedMail
             .Value = 250
             .ArmorBonus = 6
-            .MaxDexterityBonus = 1
+            .MaximumDeterityBonus = 1
             .ArcaneSpellFailureChance = 0.35
             .Weight = 35
         End With

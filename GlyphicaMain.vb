@@ -30,6 +30,10 @@
         Console.SetBufferSize(120, 50)
 
         Player1 = New Player
+        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
+        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Base, Dice.RollDice("4d8")))
+
+
         Player1.MapLevel = 0
         Player1.HitDice = "4d8"
         Player1.DamageDice = "1d8"

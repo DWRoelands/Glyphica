@@ -15,7 +15,6 @@
     End Enum
 
     Public Sub New()
-        Me.VisualRange = 8
     End Sub
 
     Public Overrides Sub Draw()

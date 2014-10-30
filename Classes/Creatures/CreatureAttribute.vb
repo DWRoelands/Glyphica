@@ -21,6 +21,11 @@
         Wisdom
     End Enum
 
-    Public ID As CreatureAttribute.AttributeId
-    Public Value As String
+    Public Property ID As CreatureAttribute.AttributeId
+    Public Property Value As String
+
+    Public Sub New(Attribute_ID As AttributeId, Attribute_Value As Integer)
+        ID = Attribute_ID
+        Value = Attribute_Value
+    End Sub
 End Class

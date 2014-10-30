@@ -70,7 +70,7 @@
     <Import Include="System.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\CreatureAttribute.vb" />
+    <Compile Include="Classes\Creatures\CreatureAttribute.vb" />
     <Compile Include="Classes\Containers\ChestSmall.vb">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
