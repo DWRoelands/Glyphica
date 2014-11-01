@@ -11,7 +11,7 @@
             .Type = ArmorType.Padded
             .Value = 5
             .ArmorBonus = 1
-            .MaxDexterityBonus = 8
+            .MaximumDeterityBonus = 8
             .ArcaneSpellFailureChance = 0.05
             .Weight = 10
             .Description = "Unremarkable padded armor"

@@ -11,7 +11,7 @@
             .Type = ArmorType.ChainShirt
             .Value = 100
             .ArmorBonus = 4
-            .MaxDexterityBonus = 4
+            .MaximumDeterityBonus = 4
             .ArcaneSpellFailureChance = 0.2
             .Weight = 25
         End With

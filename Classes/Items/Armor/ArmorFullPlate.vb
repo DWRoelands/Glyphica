@@ -11,7 +11,7 @@
             .Type = ArmorType.FullPlate
             .Value = 1500
             .ArmorBonus = 8
-            .MaxDexterityBonus = 1
+            .MaximumDeterityBonus = 1
             .ArcaneSpellFailureChance = 0.35
             .Weight = 50
         End With

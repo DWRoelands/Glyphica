@@ -11,7 +11,7 @@
             .Type = ArmorType.ScaleMail
             .Value = 50
             .ArmorBonus = 4
-            .MaxDexterityBonus = 3
+            .MaximumDeterityBonus = 3
             .ArcaneSpellFailureChance = 0.25
             .Weight = 30
         End With

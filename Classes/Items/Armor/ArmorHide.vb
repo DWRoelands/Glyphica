@@ -11,7 +11,7 @@
             .Type = ArmorType.Hide
             .Value = 15
             .ArmorBonus = 3
-            .MaxDexterityBonus = 4
+            .MaximumDeterityBonus = 4
             .ArcaneSpellFailureChance = 0.2
             .Weight = 25
         End With

@@ -11,7 +11,7 @@
             .Type = ArmorType.StuddedLeather
             .Value = 25
             .ArmorBonus = 3
-            .MaxDexterityBonus = 5
+            .MaximumDeterityBonus = 5
             .ArcaneSpellFailureChance = 0.15
             .Weight = 20
         End With

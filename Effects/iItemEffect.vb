@@ -1,4 +1,4 @@
-﻿Public Interface iItemEffect
+﻿Public Interface IItemEffect
     Property ItemId As Guid
     Property EffectId As ItemEffect_Base.ItemEffectId
     Property IsActiveOnEquip As Boolean

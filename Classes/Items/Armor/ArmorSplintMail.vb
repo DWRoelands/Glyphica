@@ -11,7 +11,7 @@
             .Type = ArmorType.SplintMail
             .Value = 200
             .ArmorBonus = 6
-            .MaxDexterityBonus = 0
+            .MaximumDeterityBonus = 0
             .ArcaneSpellFailureChance = 0.4
             .Weight = 45
         End With

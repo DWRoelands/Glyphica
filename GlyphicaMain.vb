@@ -32,11 +32,13 @@
         Player1 = New Player
         Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
         Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Base, Dice.RollDice("4d8")))
+        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.Damage_Base, "1d8"))
+        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.Initiative, 10))
+        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.ArmorClass, 5))
+
 
 
         Player1.MapLevel = 0
-        Player1.HitDice = "4d8"
-        Player1.DamageDice = "1d8"
         Player1.Name = "Duane"
 
 
@@ -162,11 +164,11 @@
             Viewport.Refresh()
             Player1.PostMoveProcess()
 
-        Loop While KeyPress.Key <> ConsoleKey.X And Player1.HitPointsCurrent > 0
+        Loop While KeyPress.Key <> ConsoleKey.X And Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints) > 0
 
         Viewport.StatusUpdate()
 
-        If Player1.HitPointsCurrent <= 0 Then
+        If Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
             Viewport.MessageWrite("You have died.")
             Viewport.MessageWrite("Press any key to exit.")
             WaitForKeypress()
@@ -247,8 +249,8 @@
 
         If Type = CombatType.Melee Then
             ' do initiative roll
-            PlayerInitiative = Dice.RollDice("1d20") + Player1.Initiative + 20
-            EnemyInitiative = Dice.RollDice("1d20") + Enemy.Initiative
+            PlayerInitiative = Dice.RollDice("1d20") + Player1.AttributeGet(CreatureAttribute.AttributeId.Initiative) + 20
+            EnemyInitiative = Dice.RollDice("1d20") + Enemy.AttributeGet(CreatureAttribute.AttributeId.Initiative)
             Attacker = IIf(PlayerInitiative > EnemyInitiative, Player1, Enemy)
             Defender = IIf(PlayerInitiative < EnemyInitiative, Player1, Enemy)
         Else
@@ -260,8 +262,8 @@
         ' Attacker goes first
         ' TODO: implement "20 aleays hits" and "1 always misses"
         Dim AttackerRoll As Integer = Dice.RollDice("1d20")
-        Trace.Write(String.Format("Attacker H:{0} AC:{1}", AttackerRoll, Defender.ArmorClass))
-        If AttackerRoll >= Defender.ArmorClass Then
+        Trace.Write(String.Format("Attacker H:{0} AC:{1}", AttackerRoll, Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass)))
+        If AttackerRoll >= Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass) Then
             Dim Damage As Integer = Dice.RollDice(Attacker.DamageDice)
             If Attacker Is Player1 Then
                 Viewport.MessageWrite(String.Format("You hit the {0} for {1} damage.", Defender.Name, Damage))

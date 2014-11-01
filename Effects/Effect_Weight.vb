@@ -4,10 +4,10 @@
 ''' <remarks></remarks>
 Public Class Effect_Weight
     Inherits ItemEffect_Base
-    Implements iAttributeEffect
+    Implements IAttributeEffect
 
-    Public Property AttributeId As CreatureAttribute.AttributeId Implements iAttributeEffect.AttributeId
-    Public Property Modifier As Integer Implements iAttributeEffect.Modifier
+    Public Property AttributeId As CreatureAttribute.AttributeId Implements IAttributeEffect.AttributeId
+    Public Property Modifier As Integer Implements IAttributeEffect.Modifier
 
     Public Sub New(Weight As Integer)
         AttributeId = CreatureAttribute.AttributeId.Weight

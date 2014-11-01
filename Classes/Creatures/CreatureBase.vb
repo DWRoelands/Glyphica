@@ -125,7 +125,20 @@
 
     End Sub
 
+    Public Function AttributeGet(Attribute_ID As CreatureAttribute.AttributeId) As Integer
+        Dim ReturnValue As Integer
 
+        ' Calculate the base score for the attribute
+        ReturnValue = (From a In Attributes Where a.ID = Attribute_ID).Sum(Function(x) x.Score)
+
+        ' Add the effects of any items
+        For Each ie As IAttributeEffect In ItemEffects.OfType(Of IAttributeEffect)()
+            ReturnValue += ie.Modifier
+        Next
+
+        Return ReturnValue
+
+    End Function
 
 
 

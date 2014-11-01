@@ -4,10 +4,10 @@
 ''' <remarks></remarks>
 Public Class Effect_MaximumDexterityBonus
     Inherits ItemEffect_Base
-    Implements iAttributeEffect
+    Implements IAttributeEffect
 
-    Public Property Modifier As Integer Implements iAttributeEffect.Modifier
-    Public Property AttributeId As CreatureAttribute.AttributeId Implements iAttributeEffect.AttributeId
+    Public Property Modifier As Integer Implements IAttributeEffect.Modifier
+    Public Property AttributeId As CreatureAttribute.AttributeId Implements IAttributeEffect.AttributeId
 
     Public Sub New(MaximumDexterityBonues As Integer)
         AttributeId = CreatureAttribute.AttributeId.DexterityMaximumBonus

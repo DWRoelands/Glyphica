@@ -11,7 +11,7 @@
             .Type = ArmorType.HalfPlate
             .Value = 600
             .ArmorBonus = 7
-            .MaxDexterityBonus = 0
+            .MaximumDeterityBonus = 0
             .ArcaneSpellFailureChance = 0.4
             .Weight = 50
         End With

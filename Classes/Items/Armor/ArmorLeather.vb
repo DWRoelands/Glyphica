@@ -11,7 +11,7 @@
             .Type = ArmorType.Leather
             .Value = 10
             .ArmorBonus = 2
-            .MaxDexterityBonus = 6
+            .MaximumDeterityBonus = 6
             .ArcaneSpellFailureChance = 0.1
             .Weight = 15
         End With

@@ -11,7 +11,7 @@
             .Type = ArmorType.Chainmail
             .Value = 150
             .ArmorBonus = 5
-            .MaxDexterityBonus = 2
+            .MaximumDeterityBonus = 2
             .ArcaneSpellFailureChance = 0.3
             .Weight = 40
         End With
