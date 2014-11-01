@@ -264,13 +264,13 @@
         Dim AttackerRoll As Integer = Dice.RollDice("1d20")
         Trace.Write(String.Format("Attacker H:{0} AC:{1}", AttackerRoll, Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass)))
         If AttackerRoll >= Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass) Then
-            Dim Damage As Integer = Dice.RollDice(Attacker.DamageDice)
+            Dim Damage As Integer = Dice.RollDice(Attacker.EquippedWeapon.Damage)
             If Attacker Is Player1 Then
                 Viewport.MessageWrite(String.Format("You hit the {0} for {1} damage.", Defender.Name, Damage))
             Else
                 Viewport.MessageWrite(String.Format("The {0} hit you for {1} damage.", Attacker.Name, Damage))
             End If
-            Defender.HitPointsCurrent -= Damage
+            Defender.AttributeSet(CreatureAttribute.AttributeId.HitPoints, Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints) - Damage)
         Else
             If Attacker Is Player1 Then
                 Viewport.MessageWrite(String.Format("You missed the {0}.", Defender.Name))
@@ -280,7 +280,7 @@
         End If
 
         ' did the defender die?
-        If Defender.HitPointsCurrent <= 0 Then
+        If Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
             If Defender Is Player1 Then
                 Exit Sub
             Else
@@ -295,15 +295,15 @@
         ' TODO: implement "20 aleays hits" and "1 always misses"
         If Type = CombatType.Melee Then
             Dim DefenderRoll As Integer = Dice.RollDice("1d20")
-            Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.ArmorClass))
-            If DefenderRoll >= Attacker.ArmorClass Then
-                Dim Damage As Integer = Dice.RollDice(Defender.HitDice)
+            Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.AttributeGet(CreatureAttribute.AttributeId.ArmorClass)))
+            If DefenderRoll >= Attacker.AttributeGet(CreatureAttribute.AttributeId.ArmorClass) Then
+                Dim Damage As Integer = Dice.RollDice(Defender.EquippedWeapon.Damage)
                 If Defender Is Player1 Then
                     Viewport.MessageWrite(String.Format("You hit the {0} for {1} damage.", Attacker.Name, Damage))
                 Else
                     Viewport.MessageWrite(String.Format("The {0} hit you for {1} damage.", Defender.Name, Damage))
                 End If
-                Attacker.HitPointsCurrent -= Damage
+                Attacker.AttributeSet(CreatureAttribute.AttributeId.HitPoints, Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints) - Damage)
             Else
                 If Defender Is Player1 Then
                     Viewport.MessageWrite(String.Format("You missed the {0}.", Attacker.Name))
@@ -313,7 +313,7 @@
             End If
 
             ' did the attacker die
-            If Attacker.HitPointsCurrent <= 0 Then
+            If Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
                 If Attacker Is Player1 Then
                     Exit Sub
                 Else

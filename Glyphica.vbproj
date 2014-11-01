@@ -118,8 +118,8 @@
     <Compile Include="Effects\Effect_ArmorBonus.vb" />
     <Compile Include="Effects\Effect_MaximumDexterityBonus.vb" />
     <Compile Include="Effects\Effect_Weight.vb" />
-    <Compile Include="Effects\iAttributeEffect.vb" />
-    <Compile Include="Effects\iItemEffect.vb" />
+    <Compile Include="Effects\IAttributeEffect.vb" />
+    <Compile Include="Effects\IItemEffect.vb" />
     <Compile Include="Effects\ItemEffect_Base.vb" />
     <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />

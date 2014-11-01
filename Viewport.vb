@@ -76,7 +76,7 @@ Module Viewport
 
     Public Sub VisibleCellsProcess()
         ' Light the cells that are visible as a result of the player move
-        Dim NewlyVisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+        Dim NewlyVisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.AttributeGet(CreatureAttribute.AttributeId.VisualRange))
         For Each p As Point In NewlyVisibleCells
             Console.SetCursorPosition(p.X - ViewportOrigin.X, p.Y - ViewportOrigin.Y)
             Map(Player1.MapLevel, p.X, p.Y).IsRevealed = True
@@ -104,13 +104,13 @@ Module Viewport
         Console.SetCursorPosition(0, Anchor + 1)
         Console.Write(Space(20))
         Console.SetCursorPosition(0, Anchor + 1)
-        Console.Write("HP:{0}/{2} AC:{1}", Player1.HitPointsCurrent, Player1.ArmorClass, Player1.HitPointsMax)
+        Console.Write("HP:{0}/{2} AC:{1}", Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints), Player1.AttributeGet(CreatureAttribute.AttributeId.ArmorClass), Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base))
 
         Console.SetCursorPosition(0, Anchor + 2)
-        Console.Write("STR:{0} INT:{1} WIS:{2}", Player1.Strength, Player1.Intelligence, Player1.Wisdom)
+        Console.Write("STR:{0} INT:{1} WIS:{2}", Player1.AttributeGet(CreatureAttribute.AttributeId.Strength), Player1.AttributeGet(CreatureAttribute.AttributeId.Intelligence), Player1.AttributeGet(CreatureAttribute.AttributeId.Wisdom))
 
         Console.SetCursorPosition(0, Anchor + 3)
-        Console.Write("DEX:{0} CON:{1} CHA:{2}", Player1.Dexterity, Player1.Constitution, Player1.Charisma)
+        Console.Write("DEX:{0} CON:{1} CHA:{2}", Player1.AttributeGet(CreatureAttribute.AttributeId.Dexterity), Player1.AttributeGet(CreatureAttribute.AttributeId.Constitution), Player1.AttributeGet(CreatureAttribute.AttributeId.Charisma))
 
     End Sub
 
@@ -147,7 +147,7 @@ Module Viewport
 
     Public Sub ItemsDraw()
         ' get the list of visible cells once so we don't have to recalculate repeatedly
-        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.AttributeGet(CreatureAttribute.AttributeId.VisualRange))
 
         For Each a As ItemBase In Items
             ' Is the item's location even on the screen?
@@ -181,7 +181,7 @@ Module Viewport
 
     Public Sub CreaturesDraw()
         ' get the list of visible cells once so we don't have to recalculate repeatedly
-        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.VisualRange)
+        Dim VisibleCells As List(Of Point) = VisibleCellsGet(Player1.Location, Player1.AttributeGet(CreatureAttribute.AttributeId.VisualRange))
 
         For Each m As CreatureBase In Creatures
             ' Is the monster's location even on the screen?

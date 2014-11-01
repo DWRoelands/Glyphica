@@ -13,9 +13,11 @@
         Wizard
     End Enum
 
-    Public Attributes As New List(Of CreatureAttribute)
-    Public ItemEffects As New List(Of ItemEffect_Base)
-    Public VisibleCells As New List(Of Point)
+    Public Property Attributes As New List(Of CreatureAttribute)
+    Public Property ItemEffects As New List(Of ItemEffect_Base)
+    Public Property VisibleCells As New List(Of Point)
+    Public Property Alignment As CreatureAlignment
+    Public Property [Class] As CreatureClass
 
     Public Sub New()
 
@@ -140,6 +142,11 @@
 
     End Function
 
-
+    Public Sub AttributeSet(Attribute_ID As CreatureAttribute.AttributeId, NewScore As Integer)
+        For Each a As CreatureAttribute In Attributes
+            If a.ID = Attribute_ID Then a.Score = NewScore
+            Exit For
+        Next
+    End Sub
 
 End Class

@@ -1,9 +1,7 @@
 ﻿Public Class CreatureAttribute
     Public Enum AttributeId
-        Alignment
         ArcaneSpellFailureChance
         ArmorClass
-        CharacterClass
         Charisma
         Constitution
         Damage_Base

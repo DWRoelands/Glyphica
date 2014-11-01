@@ -336,7 +336,6 @@
                             End If
                         End If
                     Next
-                    Player1.ItemEffectsProcess()
                     Viewport.StatusUpdate()
 
                 Case ConsoleKey.Escape
