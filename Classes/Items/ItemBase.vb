@@ -32,8 +32,6 @@
     End Property
 #End Region
 
-#Region "Events"
-
     Public Sub Equip(Creature As CreatureBase)
         For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
             ie.OnEquip(Me, Creature)
@@ -61,8 +59,6 @@
             ie.OnDrop(Me, Creature)
         Next
     End Sub
-
-#End Region
 
     Public Sub New()
         MyBase.New()

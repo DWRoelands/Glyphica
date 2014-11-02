@@ -4,13 +4,13 @@
         ArmorClass
         Charisma
         Constitution
-        Damage_Base
+        DamageDiceMelee
         Dexterity
         DexterityMaximumBonus
         Weight
         Weight_Max
         HitDice
-        HitPoints
+        HitPoints_Current
         HitPoints_Base
         Initiative
         Intelligence

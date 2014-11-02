@@ -33,8 +33,8 @@
         With Player1.Attributes
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Base, Dice.RollDice("4d8")))
-            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints, Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base)))
-            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Damage_Base, "1d8"))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Current, Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base)))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.DamageDiceMelee, "1d8"))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Initiative, 10))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.ArmorClass, 5))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Strength, 18))
@@ -43,6 +43,7 @@
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Dexterity, 15))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Constitution, 14))
             .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Charisma, 13))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.DamageDiceMelee, "1d3"))
         End With
 
         Player1.MapLevel = 0
@@ -172,11 +173,11 @@
             Viewport.Refresh()
             Player1.PostMoveProcess()
 
-        Loop While KeyPress.Key <> ConsoleKey.X And Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints) > 0
+        Loop While KeyPress.Key <> ConsoleKey.X And Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) > 0
 
         Viewport.StatusUpdate()
 
-        If Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
+        If Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) <= 0 Then
             Viewport.MessageWrite("You have died.")
             Viewport.MessageWrite("Press any key to exit.")
             WaitForKeypress()
@@ -272,13 +273,13 @@
         Dim AttackerRoll As Integer = Dice.RollDice("1d20")
         Trace.Write(String.Format("Attacker H:{0} AC:{1}", AttackerRoll, Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass)))
         If AttackerRoll >= Defender.AttributeGet(CreatureAttribute.AttributeId.ArmorClass) Then
-            Dim Damage As Integer = Dice.RollDice(Attacker.EquippedWeapon.Damage)
+            Dim Damage As Integer = Dice.RollDice(Attacker.DamageDiceMelee)
             If Attacker Is Player1 Then
                 Viewport.MessageWrite(String.Format("You hit the {0} for {1} damage.", Defender.Name, Damage))
             Else
                 Viewport.MessageWrite(String.Format("The {0} hit you for {1} damage.", Attacker.Name, Damage))
             End If
-            Defender.AttributeSet(CreatureAttribute.AttributeId.HitPoints, Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints) - Damage)
+            Defender.AttributeSet(CreatureAttribute.AttributeId.HitPoints_Current, Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) - Damage)
         Else
             If Attacker Is Player1 Then
                 Viewport.MessageWrite(String.Format("You missed the {0}.", Defender.Name))
@@ -288,7 +289,7 @@
         End If
 
         ' did the defender die?
-        If Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
+        If Defender.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) <= 0 Then
             If Defender Is Player1 Then
                 Exit Sub
             Else
@@ -305,13 +306,13 @@
             Dim DefenderRoll As Integer = Dice.RollDice("1d20")
             Trace.Write(String.Format("Defender H:{0} AC:{1}", DefenderRoll, Attacker.AttributeGet(CreatureAttribute.AttributeId.ArmorClass)))
             If DefenderRoll >= Attacker.AttributeGet(CreatureAttribute.AttributeId.ArmorClass) Then
-                Dim Damage As Integer = Dice.RollDice(Defender.EquippedWeapon.Damage)
+                Dim Damage As Integer = Dice.RollDice(Defender.DamageDiceMelee)
                 If Defender Is Player1 Then
                     Viewport.MessageWrite(String.Format("You hit the {0} for {1} damage.", Attacker.Name, Damage))
                 Else
                     Viewport.MessageWrite(String.Format("The {0} hit you for {1} damage.", Defender.Name, Damage))
                 End If
-                Attacker.AttributeSet(CreatureAttribute.AttributeId.HitPoints, Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints) - Damage)
+                Attacker.AttributeSet(CreatureAttribute.AttributeId.HitPoints_Current, Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) - Damage)
             Else
                 If Defender Is Player1 Then
                     Viewport.MessageWrite(String.Format("You missed the {0}.", Attacker.Name))
@@ -321,7 +322,7 @@
             End If
 
             ' did the attacker die
-            If Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints) <= 0 Then
+            If Attacker.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current) <= 0 Then
                 If Attacker Is Player1 Then
                     Exit Sub
                 Else

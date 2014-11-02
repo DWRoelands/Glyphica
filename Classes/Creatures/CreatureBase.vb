@@ -23,6 +23,16 @@
 
     End Sub
 
+    Public ReadOnly Property DamageDiceMelee As String
+        Get
+            If Me.EquippedWeapon IsNot Nothing Then
+                Return Me.EquippedWeapon.Damage
+            Else
+                Return Me.AttributeGet(CreatureAttribute.AttributeId.DamageDiceMelee)
+            End If
+        End Get
+    End Property
+
     Public ReadOnly Property EquippedAmmunition As AmmunitionBase
         Get
             Dim ReturnValue As AmmunitionBase = Nothing

@@ -104,7 +104,7 @@ Module Viewport
         Console.SetCursorPosition(0, Anchor + 1)
         Console.Write(Space(20))
         Console.SetCursorPosition(0, Anchor + 1)
-        Console.Write("HP:{0}/{2} AC:{1}", Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints), Player1.AttributeGet(CreatureAttribute.AttributeId.ArmorClass), Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base))
+        Console.Write("HP:{0}/{2} AC:{1}", Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Current), Player1.AttributeGet(CreatureAttribute.AttributeId.ArmorClass), Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base))
 
         Console.SetCursorPosition(0, Anchor + 2)
         Console.Write("STR:{0} INT:{1} WIS:{2}", Player1.AttributeGet(CreatureAttribute.AttributeId.Strength), Player1.AttributeGet(CreatureAttribute.AttributeId.Intelligence), Player1.AttributeGet(CreatureAttribute.AttributeId.Wisdom))
