@@ -37,6 +37,8 @@ Module Utility
             Response = Console.ReadKey(True)
         Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N
 
+        Console.WriteLine(IIf(Response.Key = ConsoleKey.Y, "Yes", "No"))
+
         Return Response.Key = ConsoleKey.Y
     End Function
 

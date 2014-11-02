@@ -58,6 +58,7 @@
         For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
             ie.OnDrop(Me, Creature)
         Next
+        Creature.Inventory.Remove(Me)
     End Sub
 
     Public Sub New()

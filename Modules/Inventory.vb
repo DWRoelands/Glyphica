@@ -311,30 +311,50 @@
                     Next
 
                 Case ConsoleKey.Enter
-                    For Each InventoryItem In SortedInventory
-                        If InventoryItem.IsSelected Then
-                            If InventoryItem.IsEquipped Then
-                                InventoryItem.UnEquip(Player1)
-                            Else
-                                If InventoryItem.IsEquippable Then
-                                    ' certain item types only allow you to equip one of that type
-                                    ' here, we unequip any other item of that type before equipping the selected item
-                                    If TypeOf (InventoryItem) Is ArmorBase Then
-                                        For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) TypeOf (a) Is ArmorBase)
-                                            ArmorItem.UnEquip(Player1)
-                                        Next
-                                    ElseIf TypeOf (InventoryItem) Is WeaponBase Then
-                                        For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) TypeOf (w) Is WeaponBase)
-                                            WeaponItem.UnEquip(Player1)
-                                        Next
+                    If TypeOf Source Is Player Then
+                        ' PLayer is managing inventory - ENTER key equips and unequips
+                        For Each InventoryItem In SortedInventory
+                            If InventoryItem.IsSelected Then
+                                If InventoryItem.IsEquipped Then
+                                    InventoryItem.UnEquip(Player1)
+                                Else
+                                    If InventoryItem.IsEquippable Then
+                                        ' certain item types only allow you to equip one of that type
+                                        ' here, we unequip any other item of that type before equipping the selected item
+                                        If TypeOf (InventoryItem) Is ArmorBase Then
+                                            For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) TypeOf (a) Is ArmorBase)
+                                                ArmorItem.UnEquip(Player1)
+                                            Next
+                                        ElseIf TypeOf (InventoryItem) Is WeaponBase Then
+                                            For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) TypeOf (w) Is WeaponBase)
+                                                WeaponItem.UnEquip(Player1)
+                                            Next
+                                        End If
+                                        InventoryItem.Equip(Player1)
                                     End If
-
-                                    InventoryItem.Equip(Player1)
                                 End If
                             End If
-                        End If
-                    Next
-                    Viewport.StatusUpdate()
+                        Next
+                        Viewport.StatusUpdate()
+
+                    ElseIf TypeOf Source Is ContainerBase Then
+                        ' Player is working with a container - ENTER moves things between inventory and container
+                        Dim TargetInventory As List(Of ItemBase) = IIf(ActiveInventory Is Player1.Inventory, Source.Inventory, Player1.Inventory)
+                        For x = 0 To ActiveInventory.Count - 1
+                            If ActiveInventory(x).IsSelected Then
+                                Dim ItemToMove As ItemBase = ActiveInventory(x)
+                                If TargetInventory Is Player1.Inventory Then
+                                    Player1.Pickup(ItemToMove)
+                                    ActiveInventory.Remove(ItemToMove)
+                                Else
+                                    Player1.Drop(ItemToMove)
+                                    TargetInventory.Add(ItemToMove)
+                                End If
+                            End If
+                        Next
+                        ClearList()
+                        Viewport.StatusUpdate()
+                    End If
 
                 Case ConsoleKey.Escape
                     Exit Do

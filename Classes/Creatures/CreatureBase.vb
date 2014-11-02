@@ -106,6 +106,14 @@
         Item.Pickup(Me)
     End Sub
 
+    Public Sub Drop(Item As ItemBase)
+        Item.UnEquip(Me)
+        Item.Drop(Me)
+    End Sub
+
+    Public Sub UnEquip(Item As ItemBase)
+        Item.UnEquip(Me)
+    End Sub
 
     Public Sub Equip(Item As ItemBase)
 
@@ -113,20 +121,20 @@
             Case GetType(ArmorBase)
                 ' only one armor item can be equipped, so we unequip any equipped armor
                 For Each ArmorItem As ArmorBase In Me.Inventory.OfType(Of ArmorBase)()
-                    ArmorItem.UnEquip(Me)
+                    Me.UnEquip(ArmorItem)
                 Next
 
             Case GetType(WeaponBase)
                 ' only one weapon can be equipped, so we unequip any equipped weapon
                 ' TODO: support dual-wielding
                 For Each WeaponItem As WeaponBase In Me.Inventory.OfType(Of WeaponBase)()
-                    WeaponItem.UnEquip(Me)
+                    Me.UnEquip(WeaponItem)
                 Next
 
                 ' Only one type of amunition can be equipped, so we unequip and equipped ammunition
             Case GetType(AmmunitionBase)
                 For Each AmmoItem As AmmunitionBase In Me.Inventory.OfType(Of AmmunitionBase)()
-                    AmmoItem.UnEquip(Me)
+                    Me.UnEquip(AmmoItem)
                 Next
 
             Case Else
