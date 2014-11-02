@@ -314,24 +314,22 @@
                     For Each InventoryItem In SortedInventory
                         If InventoryItem.IsSelected Then
                             If InventoryItem.IsEquipped Then
-
-                                InventoryItem.IsEquipped = False
-                                'Continue Do
+                                InventoryItem.UnEquip(Player1)
                             Else
                                 If InventoryItem.IsEquippable Then
                                     ' certain item types only allow you to equip one of that type
                                     ' here, we unequip any other item of that type before equipping the selected item
                                     If TypeOf (InventoryItem) Is ArmorBase Then
                                         For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) TypeOf (a) Is ArmorBase)
-                                            ArmorItem.IsEquipped = False
+                                            ArmorItem.UnEquip(Player1)
                                         Next
                                     ElseIf TypeOf (InventoryItem) Is WeaponBase Then
                                         For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) TypeOf (w) Is WeaponBase)
-                                            WeaponItem.IsEquipped = False
+                                            WeaponItem.UnEquip(Player1)
                                         Next
                                     End If
 
-                                    InventoryItem.IsEquipped = True
+                                    InventoryItem.Equip(Player1)
                                 End If
                             End If
                         End If

@@ -112,6 +112,9 @@ Module Viewport
         Console.SetCursorPosition(0, Anchor + 3)
         Console.Write("DEX:{0} CON:{1} CHA:{2}", Player1.AttributeGet(CreatureAttribute.AttributeId.Dexterity), Player1.AttributeGet(CreatureAttribute.AttributeId.Constitution), Player1.AttributeGet(CreatureAttribute.AttributeId.Charisma))
 
+        Console.SetCursorPosition(0, Anchor + 4)
+        Console.Write("Weight: {0}", Player1.AttributeGet(CreatureAttribute.AttributeId.Weight))
+
     End Sub
 
 #Region "Viewport.MessageWrite Methods"

@@ -6,9 +6,8 @@
     Property IsActiveOnPickup As Boolean
     Property IsRemovedOnDrop As Boolean
 
-    Sub OnEquip_Handler(Item As ItemBase, Creature As CreatureBase)
-    Sub OnPickup_Handler(Item As ItemBase, Creature As CreatureBase)
-    Sub OnUnEquip_Handler(Item As ItemBase, Creature As CreatureBase)
-    Sub OnDrop_Handler(Item As ItemBase, Creature As CreatureBase)
-
+    Sub OnPickup(Item As ItemBase, Creature As CreatureBase)
+    Sub OnDrop(Item As ItemBase, Creature As CreatureBase)
+    Sub OnEquip(Item As ItemBase, Creature As CreatureBase)
+    Sub OnUnEquip(Item As ItemBase, Creature As CreatureBase)
 End Interface

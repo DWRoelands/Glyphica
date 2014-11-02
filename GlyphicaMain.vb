@@ -30,19 +30,27 @@
         Console.SetBufferSize(120, 50)
 
         Player1 = New Player
-        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
-        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Base, Dice.RollDice("4d8")))
-        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.Damage_Base, "1d8"))
-        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.Initiative, 10))
-        Player1.Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.ArmorClass, 5))
-
-
+        With Player1.Attributes
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints_Base, Dice.RollDice("4d8")))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.HitPoints, Player1.AttributeGet(CreatureAttribute.AttributeId.HitPoints_Base)))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Damage_Base, "1d8"))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Initiative, 10))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.ArmorClass, 5))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Strength, 18))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Intelligence, 17))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Wisdom, 16))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Dexterity, 15))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Constitution, 14))
+            .Add(New CreatureAttribute(CreatureAttribute.AttributeId.Charisma, 13))
+        End With
 
         Player1.MapLevel = 0
         Player1.Name = "Duane"
 
-
-
+        Dim a As New ArmorBandedMail
+        Player1.Pickup(a)
+        Player1.Equip(a)
 
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport

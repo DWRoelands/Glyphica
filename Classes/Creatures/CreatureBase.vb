@@ -92,38 +92,38 @@
         Creatures.Remove(DeadCreature)
     End Sub
 
+    Public Sub Pickup(Item As ItemBase)
+        Item.Pickup(Me)
+    End Sub
+
+
     Public Sub Equip(Item As ItemBase)
 
         Select Case Item.GetType.BaseType
             Case GetType(ArmorBase)
                 ' only one armor item can be equipped, so we unequip any equipped armor
                 For Each ArmorItem As ArmorBase In Me.Inventory.OfType(Of ArmorBase)()
-                    ArmorItem.IsEquipped = False
+                    ArmorItem.UnEquip(Me)
                 Next
-                Item.IsEquipped = True
-                Exit Sub
 
             Case GetType(WeaponBase)
                 ' only one weapon can be equipped, so we unequip any equipped weapon
                 ' TODO: support dual-wielding
                 For Each WeaponItem As WeaponBase In Me.Inventory.OfType(Of WeaponBase)()
-                    WeaponItem.IsEquipped = False
+                    WeaponItem.UnEquip(Me)
                 Next
-                Item.IsEquipped = True
-                Exit Sub
 
                 ' Only one type of amunition can be equipped, so we unequip and equipped ammunition
             Case GetType(AmmunitionBase)
                 For Each AmmoItem As AmmunitionBase In Me.Inventory.OfType(Of AmmunitionBase)()
-                    AmmoItem.IsEquipped = False
+                    AmmoItem.UnEquip(Me)
                 Next
-                Item.IsEquipped = True
-                Exit Sub
+
+            Case Else
+                Throw New Exception("Equip() failed because it didn't know how to equip an item: " & Item.Name)
         End Select
 
-        ' if we reach this point in the method, we have attempted to equip an item for which
-        ' there is no "equipping" code.
-        Throw New Exception("Equip() failed because it didn't know how to equip an item: " & Item.Name)
+        Item.Equip(Me)
 
     End Sub
 
@@ -135,7 +135,9 @@
 
         ' Add the effects of any items
         For Each ie As IAttributeEffect In ItemEffects.OfType(Of IAttributeEffect)()
-            ReturnValue += ie.Modifier
+            If ie.AttributeId = Attribute_ID Then
+                ReturnValue += ie.Modifier
+            End If
         Next
 
         Return ReturnValue

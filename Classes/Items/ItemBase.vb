@@ -1,7 +1,6 @@
 ﻿Public Class ItemBase
     Inherits Base
 
-
 #Region "Basic item properties"
     Public Property ItemId As Guid
     Public Property IsEquippable As Boolean
@@ -34,10 +33,35 @@
 #End Region
 
 #Region "Events"
-    Public Event OnEquip(Item As ItemBase, Creature As CreatureBase)
-    Public Event OnUnEquip(Item As ItemBase, Creature As CreatureBase)
-    Public Event OnPickup(Item As ItemBase, Creature As CreatureBase)
-    Public Event OnDrop(Item As ItemBase, Creature As CreatureBase)
+
+    Public Sub Equip(Creature As CreatureBase)
+        For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
+            ie.OnEquip(Me, Creature)
+        Next
+        Me.IsEquipped = True
+    End Sub
+
+    Public Sub UnEquip(Creature As CreatureBase)
+        For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
+            ie.OnUnEquip(Me, Creature)
+        Next
+        Me.IsEquipped = False
+    End Sub
+
+    Public Sub Pickup(Creature As CreatureBase)
+        For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
+            ie.OnPickup(Me, Creature)
+        Next
+        Creature.Inventory.Add(Me)
+    End Sub
+
+    Public Sub Drop(Creature As CreatureBase)
+        Me.UnEquip(Creature)
+        For Each ie As IItemEffect In Effects.OfType(Of IItemEffect)()
+            ie.OnDrop(Me, Creature)
+        Next
+    End Sub
+
 #End Region
 
     Public Sub New()
