@@ -69,12 +69,9 @@
 
         If Container IsNot Nothing Then
             If Ask(String.Format("Do you want to search the {0}?", Container.Name)) Then
-                RefreshViewport = True
+                MessageWrite("Searching...")
                 InventoryManage(Container)
-                If RefreshViewport Then
-                    Viewport.Refresh()
-                    Exit Sub
-                End If
+                Viewport.Refresh()
             End If
         End If
 

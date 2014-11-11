@@ -35,9 +35,9 @@ Module Utility
         Dim Response As ConsoleKeyInfo = Nothing
         Do
             Response = Console.ReadKey(True)
-        Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N
+        Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N Or Response.Key = ConsoleKey.Escape
 
-        Console.WriteLine(IIf(Response.Key = ConsoleKey.Y, "Yes", "No"))
+        MessageWrite(IIf(Response.Key = ConsoleKey.Y, "Yes", "No"))
 
         Return Response.Key = ConsoleKey.Y
     End Function
