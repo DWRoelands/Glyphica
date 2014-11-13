@@ -20,7 +20,7 @@
     Public Overrides Sub Draw()
         'MyBase.Draw()
 
-        Console.SetCursorPosition(Player1.Location.X - ViewportOrigin.X, Player1.Location.Y - ViewportOrigin.Y)
+        Console.SetCursorPosition(Player1.Location.X - vp.Origin.X, Player1.Location.Y - vp.Origin.Y)
         Console.ForegroundColor = ConsoleColor.White
         Console.Write("@")
     End Sub
@@ -38,13 +38,13 @@
 
         ' If there's a monster here, perform a round of melee combat and exit the sub
         If Enemy IsNot Nothing Then
-            CombatResolve(Enemy, CombatType.Melee)
+            Combat.Resolve(Enemy, CombatType.Melee)
             Exit Sub
         End If
 
         ' If there's a wall, humiliate the player
         If MapTile.GetTile(ToLocation).TileType = MapTile.MapTileType.Wall Then
-            Viewport.MessageWrite("You bump your head.")
+            Main.MessageWrite("You bump your head.")
             Exit Sub
         End If
 
@@ -69,9 +69,12 @@
 
         If Container IsNot Nothing Then
             If Ask(String.Format("Do you want to search the {0}?", Container.Name)) Then
-                MessageWrite("Searching...")
+                RefreshViewport = True
                 InventoryManage(Container)
-                Viewport.Refresh()
+                If RefreshViewport Then
+                    vp.Refresh()
+                    Exit Sub
+                End If
             End If
         End If
 

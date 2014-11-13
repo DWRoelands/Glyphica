@@ -166,7 +166,7 @@
         ListRange = New Point(0, Console.WindowHeight - Row_ListFirstItem)
 
         ' Initialize
-        Viewport.Clear()
+        vp.Clear()
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
 
@@ -335,7 +335,7 @@
                                 End If
                             End If
                         Next
-                        Viewport.StatusUpdate()
+                        vp.StatusUpdate()
 
                     ElseIf TypeOf Source Is ContainerBase Then
                         ' Player is working with a container - ENTER moves things between inventory and container
@@ -353,7 +353,7 @@
                             End If
                         Next
                         ClearList()
-                        Viewport.StatusUpdate()
+                        vp.StatusUpdate()
                     End If
 
                 Case ConsoleKey.Escape
@@ -361,7 +361,7 @@
             End Select
         Loop
 
-        Viewport.Clear()
+        vp.Clear()
 
     End Sub
 

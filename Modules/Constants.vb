@@ -16,6 +16,7 @@
 #Region "Screen layout"
     Public Const MESSAGEAREAHEIGHT As Integer = 5
     Public Const STATUSAREAHEIGHT As Integer = 5
+    Public Const SPRITESIZE As Integer = 32
 #End Region
 
 #Region "map file locations"

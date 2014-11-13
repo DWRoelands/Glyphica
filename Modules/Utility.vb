@@ -31,13 +31,13 @@ Module Utility
     End Function
 
     Public Function Ask(Question As String) As Boolean
-        MessageWrite(Question)
+        Main.MessageWrite(Question)
         Dim Response As ConsoleKeyInfo = Nothing
         Do
             Response = Console.ReadKey(True)
-        Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N Or Response.Key = ConsoleKey.Escape
+        Loop Until Response.Key = ConsoleKey.Y Or Response.Key = ConsoleKey.N
 
-        MessageWrite(IIf(Response.Key = ConsoleKey.Y, "Yes", "No"))
+        Console.WriteLine(IIf(Response.Key = ConsoleKey.Y, "Yes", "No"))
 
         Return Response.Key = ConsoleKey.Y
     End Function

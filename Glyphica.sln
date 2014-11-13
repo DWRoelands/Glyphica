@@ -1,18 +1,20 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Glyphica", "Glyphica.vbproj", "{B62CDC06-0F71-4963-8D2E-6692A3D882A0}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Glyphica", "Glyphica.vbproj", "{B701E2EF-CEC6-4693-A985-D61C10EA7193}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B62CDC06-0F71-4963-8D2E-6692A3D882A0}.Debug|x86.ActiveCfg = Debug|x86
-		{B62CDC06-0F71-4963-8D2E-6692A3D882A0}.Debug|x86.Build.0 = Debug|x86
-		{B62CDC06-0F71-4963-8D2E-6692A3D882A0}.Release|x86.ActiveCfg = Release|x86
-		{B62CDC06-0F71-4963-8D2E-6692A3D882A0}.Release|x86.Build.0 = Release|x86
+		{B701E2EF-CEC6-4693-A985-D61C10EA7193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B701E2EF-CEC6-4693-A985-D61C10EA7193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B701E2EF-CEC6-4693-A985-D61C10EA7193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B701E2EF-CEC6-4693-A985-D61C10EA7193}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
