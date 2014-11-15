@@ -24,5 +24,6 @@
     Public Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 #End Region
 
+    Public Const WALLS As String = "C:\Users\Duane\Documents\dawnlike\Objects\wall.png"
 
 End Module

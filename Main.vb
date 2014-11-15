@@ -1,7 +1,8 @@
 ﻿Public Class Main
 
     Private Sub Main_Load(sender As Object, e As EventArgs) Handles Me.Load
-        Initialize()
+        BitmapsLoad()
+        'Initialize()
     End Sub
 
     Private Sub Initialize()
@@ -11,6 +12,7 @@
 
         Creatures = New List(Of CreatureBase)
         Items = New List(Of ItemBase)
+        Bitmaps = New Hashtable
         Player1 = New Player
 
         With Player1
@@ -88,4 +90,56 @@
             .ScrollToCaret()
         End With
     End Sub
+
+    Protected Overrides Sub OnPaint(e As PaintEventArgs)
+        MyBase.OnPaint(e)
+
+        'For x As Integer = vp.Origin.X To vp.Origin.X + vp.Dimensions.Width - 1
+        '    For y As Integer = vp.Origin.Y To vp.Origin.Y + vp.Dimensions.Height - 2
+        '        If Map(Player1.MapLevel, x, y).IsRevealed Then
+        '            Console.SetCursorPosition(x - vp.Origin.X, y - vp.Origin.Y)
+        '            MapTile.Render(New Point(x, y))
+        '        End If
+        '    Next
+        'Next
+
+        Dim b As Bitmap = CType(Bitmaps(MapTile.BitmapId.WallVertical), Bitmap)
+        e.Graphics.DrawImage(b, 200, 200, SPRITESIZE, SPRITESIZE)
+
+
+
+    End Sub
+
+    Private Sub BitmapsLoad()
+
+        Bitmaps = New Hashtable
+
+        ' create an empty squaye bitmap
+        Using b As New SolidBrush(Color.Black)
+            Dim bmp As New Bitmap(16, 16)
+            Dim g As Graphics = Graphics.FromImage(bmp)
+            g.FillRectangle(b, New Rectangle(0, 0, 16, 16))
+            Bitmaps.Add(MapTile.BitmapId.Empty, bmp)
+        End Using
+
+        Bitmaps.Add(MapTile.BitmapId.WallUpperLeft, SpriteGet(WALLS, 0, 9))
+        Bitmaps.Add(MapTile.BitmapId.WallVertical, SpriteGet(WALLS, 0, 10))
+        Bitmaps.Add(MapTile.BitmapId.WallLowerLeft, SpriteGet(WALLS, 0, 11))
+        Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(WALLS, 1, 9))
+        Bitmaps.Add(MapTile.BitmapId.WallUpperRight, SpriteGet(WALLS, 2, 9))
+        Bitmaps.Add(MapTile.BitmapId.WallLowerRight, SpriteGet(WALLS, 2, 11))
+
+        Me.Refresh()
+
+
+
+    End Sub
+
+    Private Function SpriteGet(Filename As String, x As Integer, y As Integer) As Bitmap
+        Dim bmp As New Bitmap(16, 16)
+        Dim g As Graphics = Graphics.FromImage(bmp)
+        g.DrawImage(New Bitmap(Filename), 0, 0, New Rectangle(New Point(x * 16, y * 16), New Size(16, 16)), GraphicsUnit.Pixel)
+        Return bmp
+    End Function
+
 End Class

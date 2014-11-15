@@ -9,6 +9,17 @@
         DoorLocked
     End Enum
 
+    Public Enum BitmapId
+        Empty
+        WallUpperLeft
+        WallVertical
+        WallLowerLeft
+        WallHorizontal
+        WallUpperRight
+        WallLowerRight
+    End Enum
+
+
     Public Property TileType As MapTileType
     Public Property IsRevealed As Boolean = False
     Public Property IsVisible As Boolean = True

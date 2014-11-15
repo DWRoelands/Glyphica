@@ -158,12 +158,11 @@
     End Function
 
     Public Sub MapDraw()
-        For x As Integer = Me.Origin.X To Me.Origin.X + Me.Dimensions.Width - 1
-            For y As Integer = Me.Origin.Y To Me.Origin.Y + Me.Dimensions.Height - 2
-                Console.SetCursorPosition(x - Me.Origin.X, y - Me.Origin.Y)
-                Console.Write(" ")
-            Next
-        Next
+        'For x As Integer = Me.Origin.X To Me.Origin.X + Me.Dimensions.Width - 1
+        '    For y As Integer = Me.Origin.Y To Me.Origin.Y + Me.Dimensions.Height - 2
+        '        Console.SetCursorPosition(x - Me.Origin.X, y - Me.Origin.Y)
+        '        Console.Write(" ")
+        'Next
 
         For x As Integer = Me.Origin.X To Me.Origin.X + Me.Dimensions.Width - 1
             For y As Integer = Me.Origin.Y To Me.Origin.Y + Me.Dimensions.Height - 2
