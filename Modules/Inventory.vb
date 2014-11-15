@@ -67,7 +67,7 @@
             Console.Write(Space(DESCSTART - ITEMNAMESTART - 1))
         Next
 
-        For Each i As ItemBase In Player1.Inventory
+        For Each i As ItemBase In Main.Player1.Inventory
             i.IsSelected = False
         Next
     End Sub
@@ -108,11 +108,11 @@
     Private Sub InventoryNamesDraw(Source As Base)
         Console.SetCursorPosition(ITEMNAMESTART, Row_InventoryNames)
 
-        If ActiveInventory Is Player1.Inventory Then
+        If ActiveInventory Is Main.Player1.Inventory Then
             Console.BackgroundColor = ConsoleColor.White
             Console.ForegroundColor = ConsoleColor.Black
         End If
-        Console.Write(Player1.Name)
+        Console.Write(Main.Player1.Name)
 
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
@@ -132,7 +132,7 @@
 
         If TypeOf Source Is Player Then
             Mode = InventoryMode.Player
-            ActiveInventory = Player1.Inventory
+            ActiveInventory = Main.Player1.Inventory
         ElseIf TypeOf Source Is ContainerBase Then
             Mode = InventoryMode.Container
             ExternalInventory = Source.Inventory
@@ -146,7 +146,7 @@
         End If
 
         ' set up the variables that control the screen layout
-        If Source IsNot Player1 Then
+        If Source IsNot Main.Player1 Then
             ' We are managing two inventories (e.g. chest, vendor, etc.)
             Row_InventoryNames = MESSAGEAREAHEIGHT + 1
         Else
@@ -166,12 +166,12 @@
         ListRange = New Point(0, Console.WindowHeight - Row_ListFirstItem)
 
         ' Initialize
-        vp.Clear()
+        Main.vp.Clear()
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.White
 
         Dim HelpText As String = "Left/Right to change filter, Up/Down to change selection, ESCAPE to exit"
-        If Source IsNot Player1 Then
+        If Source IsNot Main.Player1 Then
             HelpText = "PAGEUP/PAGEDOWN to change view, " & HelpText
         End If
         RightJustifiedMessage(Row_Helptext, HelpText)
@@ -181,7 +181,7 @@
 
         ' MAIN INVENTORY LOOP
         Do
-            If Source IsNot Player1 Then
+            If Source IsNot Main.Player1 Then
                 InventoryNamesDraw(Source)
             End If
 
@@ -267,7 +267,7 @@
 
                 Case ConsoleKey.PageDown, ConsoleKey.PageUp
                     ClearList()
-                    ActiveInventory = IIf(ActiveInventory Is Player1.Inventory, Source.Inventory, Player1.Inventory)
+                    ActiveInventory = IIf(ActiveInventory Is Main.Player1.Inventory, Source.Inventory, Main.Player1.Inventory)
                     Continue Do
 
                 Case ConsoleKey.LeftArrow
@@ -316,44 +316,44 @@
                         For Each InventoryItem In SortedInventory
                             If InventoryItem.IsSelected Then
                                 If InventoryItem.IsEquipped Then
-                                    InventoryItem.UnEquip(Player1)
+                                    InventoryItem.UnEquip(Main.Player1)
                                 Else
                                     If InventoryItem.IsEquippable Then
                                         ' certain item types only allow you to equip one of that type
                                         ' here, we unequip any other item of that type before equipping the selected item
                                         If TypeOf (InventoryItem) Is ArmorBase Then
                                             For Each ArmorItem As ItemBase In SortedInventory.Where(Function(a) TypeOf (a) Is ArmorBase)
-                                                ArmorItem.UnEquip(Player1)
+                                                ArmorItem.UnEquip(Main.Player1)
                                             Next
                                         ElseIf TypeOf (InventoryItem) Is WeaponBase Then
                                             For Each WeaponItem As ItemBase In SortedInventory.Where(Function(w) TypeOf (w) Is WeaponBase)
-                                                WeaponItem.UnEquip(Player1)
+                                                WeaponItem.UnEquip(Main.Player1)
                                             Next
                                         End If
-                                        InventoryItem.Equip(Player1)
+                                        InventoryItem.Equip(Main.Player1)
                                     End If
                                 End If
                             End If
                         Next
-                        vp.StatusUpdate()
+                        Main.vp.StatusUpdate()
 
                     ElseIf TypeOf Source Is ContainerBase Then
                         ' Player is working with a container - ENTER moves things between inventory and container
-                        Dim TargetInventory As List(Of ItemBase) = IIf(ActiveInventory Is Player1.Inventory, Source.Inventory, Player1.Inventory)
+                        Dim TargetInventory As List(Of ItemBase) = IIf(ActiveInventory Is Main.Player1.Inventory, Source.Inventory, Main.Player1.Inventory)
                         For x = 0 To ActiveInventory.Count - 1
                             If ActiveInventory(x).IsSelected Then
                                 Dim ItemToMove As ItemBase = ActiveInventory(x)
-                                If TargetInventory Is Player1.Inventory Then
-                                    Player1.Pickup(ItemToMove)
+                                If TargetInventory Is Main.Player1.Inventory Then
+                                    Main.Player1.Pickup(ItemToMove)
                                     ActiveInventory.Remove(ItemToMove)
                                 Else
-                                    Player1.Drop(ItemToMove)
+                                    Main.Player1.Drop(ItemToMove)
                                     TargetInventory.Add(ItemToMove)
                                 End If
                             End If
                         Next
                         ClearList()
-                        vp.StatusUpdate()
+                        Main.vp.StatusUpdate()
                     End If
 
                 Case ConsoleKey.Escape
@@ -361,7 +361,7 @@
             End Select
         Loop
 
-        vp.Clear()
+        Main.vp.Clear()
 
     End Sub
 

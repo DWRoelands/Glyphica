@@ -20,7 +20,7 @@
     Public Overrides Sub Draw()
         'MyBase.Draw()
 
-        Console.SetCursorPosition(Player1.Location.X - vp.Origin.X, Player1.Location.Y - vp.Origin.Y)
+        Console.SetCursorPosition(Main.Player1.Location.X - Main.vp.Origin.X, Main.Player1.Location.Y - Main.vp.Origin.Y)
         Console.ForegroundColor = ConsoleColor.White
         Console.Write("@")
     End Sub
@@ -29,8 +29,8 @@
 
         ' First, is there a monster here?
         Dim Enemy As CreatureBase = Nothing
-        For Each m As CreatureBase In Creatures
-            If m.MapLevel = Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
+        For Each m As CreatureBase In Main.Creatures
+            If m.MapLevel = Main.Player1.MapLevel AndAlso m.Location.X = ToLocation.X AndAlso m.Location.Y = ToLocation.Y Then
                 Enemy = CreatureBase.Find(ToLocation)
                 Exit For
             End If
@@ -50,7 +50,7 @@
 
         '' If we reach this point, then there is nothing in the target location that requires special
         '' pre-move handling
-        Player1.Location = ToLocation
+        Main.Player1.Location = ToLocation
 
 
     End Sub
@@ -61,7 +61,7 @@
 
         ' is there a container in the same spot as the player?
         Dim Container As ContainerBase = Nothing
-        For Each i As ItemBase In Items.Where(Function(x) TypeOf x Is ContainerBase)
+        For Each i As ItemBase In Main.Items.Where(Function(x) TypeOf x Is ContainerBase)
             If i.Location = Me.Location Then
                 Container = i
             End If
@@ -72,7 +72,7 @@
                 RefreshViewport = True
                 InventoryManage(Container)
                 If RefreshViewport Then
-                    vp.Refresh()
+                    Main.vp.Refresh()
                     Exit Sub
                 End If
             End If

@@ -20,10 +20,11 @@
 #End Region
 
 #Region "map file locations"
-    Public Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
+    Public Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Glyphica\Map Files\"
     Public Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 #End Region
 
     Public Const WALLS As String = "C:\Users\Duane\Documents\dawnlike\Objects\wall.png"
+    Public Const DOORS As String = "C:\Users\Duane\Documents\dawnlike\Objects\door0.png"
 
 End Module

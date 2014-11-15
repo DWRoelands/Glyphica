@@ -1,8 +1,16 @@
 ﻿Public Class Main
 
+    Public Player1 As Player
+    Public vp As Viewport
+    Public Creatures As List(Of CreatureBase)
+    Public Items As List(Of ItemBase)
+    Public Map(,,) As MapTile
+    Public Bitmaps As Hashtable
+
     Private Sub Main_Load(sender As Object, e As EventArgs) Handles Me.Load
         BitmapsLoad()
-        'Initialize()
+        MapLoad()
+        Initialize()
     End Sub
 
     Private Sub Initialize()
@@ -19,6 +27,7 @@
             .MapLevel = 0
             .Name = "Duane"
             .Location = New Point(13, 13)
+            .Attributes.Add(New CreatureAttribute(CreatureAttribute.AttributeId.VisualRange, 8))
         End With
 
         vp = New Viewport
@@ -29,9 +38,9 @@
 
         vp.Scroll()
         vp.VisibleCellsProcess()
-        vp.CreaturesDraw()
-        vp.ItemsDraw()
-        Player1.Draw()
+        'vp.CreaturesDraw()
+        'vp.ItemsDraw()
+        'Player1.Draw()
 
     End Sub
 
@@ -55,7 +64,7 @@
             Loop
         End Using
 
-        ReDim Map(Player1.MapLevel, MapLines(0).Length - 1, MapLines.Count - 1)
+        ReDim Me.Map(Player1.MapLevel, MapLines(0).Length - 1, MapLines.Count - 1)
 
         Dim y As Integer = 0
         For Each MapLine As String In MapLines
@@ -91,17 +100,24 @@
         End With
     End Sub
 
+
+    Public Function DrawingOriginGet() As Point
+        Return New Point(0, 0 + Me.rtbMessages.Height)
+    End Function
+
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
         MyBase.OnPaint(e)
 
-        'For x As Integer = vp.Origin.X To vp.Origin.X + vp.Dimensions.Width - 1
-        '    For y As Integer = vp.Origin.Y To vp.Origin.Y + vp.Dimensions.Height - 2
-        '        If Map(Player1.MapLevel, x, y).IsRevealed Then
-        '            Console.SetCursorPosition(x - vp.Origin.X, y - vp.Origin.Y)
-        '            MapTile.Render(New Point(x, y))
-        '        End If
-        '    Next
-        'Next
+        Dim DrawingX As Integer = DrawingOriginGet.X
+        Dim DrawingY As Integer = DrawingOriginGet.Y
+
+        For x As Integer = vp.Origin.X To vp.Origin.X + vp.Dimensions.Width - 1
+            For y As Integer = vp.Origin.Y To vp.Origin.Y + vp.Dimensions.Height - 2
+                If Map(Player1.MapLevel, x, y).IsRevealed Then
+                    e.Graphics.DrawImage(CType(Bitmaps(MapTile.BitmapIdGet(x, y)), Bitmap), DrawingX, DrawingY, SPRITESIZE, SPRITESIZE)
+                End If
+            Next
+        Next
 
         Dim b As Bitmap = CType(Bitmaps(MapTile.BitmapId.WallVertical), Bitmap)
         e.Graphics.DrawImage(b, 200, 200, SPRITESIZE, SPRITESIZE)
@@ -128,10 +144,8 @@
         Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(WALLS, 1, 9))
         Bitmaps.Add(MapTile.BitmapId.WallUpperRight, SpriteGet(WALLS, 2, 9))
         Bitmaps.Add(MapTile.BitmapId.WallLowerRight, SpriteGet(WALLS, 2, 11))
-
-        Me.Refresh()
-
-
+        Bitmaps.Add(MapTile.BitmapId.Floor, SpriteGet(WALLS, 3, 3))
+        Bitmaps.Add(MapTile.BitmapId.Door, SpriteGet(DOORS, 0, 0))
 
     End Sub
 

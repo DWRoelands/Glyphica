@@ -139,7 +139,6 @@
     <Compile Include="Modules\Constants.vb" />
     <Compile Include="Modules\Dice.vb" />
     <Compile Include="Modules\FOVRecurse.vb" />
-    <Compile Include="Modules\Globals.vb" />
     <Compile Include="Modules\Inventory.vb" />
     <Compile Include="Modules\Utility.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
