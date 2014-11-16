@@ -185,6 +185,10 @@
     <Content Include="Map Files\testmap1.txt" />
     <Content Include="Map Files\testmap2.txt" />
     <Content Include="Map Files\testmap3.txt" />
+    <Content Include="Resources\dawnlike\characters\Player0.png" />
+    <Content Include="Resources\dawnlike\objects\Door0.png" />
+    <Content Include="Resources\dawnlike\objects\Wall.png" />
+    <None Include="Resources\Wall0.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
