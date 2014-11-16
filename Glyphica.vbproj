@@ -125,6 +125,7 @@
     <Compile Include="Classes\Items\Weapons\ShortspearSmall.vb" />
     <Compile Include="Classes\Items\Weapons\WeaponBase.vb" />
     <Compile Include="Classes\Map\MapBuilder.vb" />
+    <Compile Include="Classes\Map\MapManager.vb" />
     <Compile Include="Classes\Map\MapTile.vb" />
     <Compile Include="Classes\Message.vb" />
     <Compile Include="Classes\Viewport.vb" />

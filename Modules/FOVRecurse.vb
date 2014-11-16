@@ -17,6 +17,8 @@ Module FOVRecurse
 
     Private Sub ScanOctant(pDepth As Integer, pOctant As Integer, pStartSlope As Double, pEndSlope As Double, Location As Point, Range As Integer)
 
+        Dim CurrentLevelWidth As Integer = Main.Map.DimensionsGet.Width
+        Dim CurrentLevelHeight As Integer = Main.Map.DimensionsGet.Height
         Dim visrange2 As Integer = Range * Range
         Dim x As Integer = 0
         Dim y As Integer = 0
@@ -37,17 +39,17 @@ Module FOVRecurse
 
                 While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
                             'current cell blocked
-                            If x - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x - 1, y).BlocksVision = False Then
+                            If x - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x - 1, y).BlocksVision = False Then
                                 'prior cell within range AND open...
                                 '...incremenet the depth, adjust the endslope and recurse
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
 
-                            If x - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x - 1, y).BlocksVision Then
+                            If x - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x - 1, y).BlocksVision Then
                                 'prior cell within range AND open...
                                 '..adjust the startslope
                                 pStartSlope = GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False)
@@ -69,19 +71,19 @@ Module FOVRecurse
                 End If
 
                 x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Main.Map.GetLength(1) Then
-                    x = Main.Map.GetLength(1) - 1
+                If x >= CurrentLevelWidth Then
+                    x = CurrentLevelWidth - 1
                 End If
 
                 While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x + 1 < Main.Map.GetLength(1) AndAlso Main.Map(Main.Player1.MapLevel, x + 1, y).BlocksVision = False Then
+                            If x + 1 < CurrentLevelWidth AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x + 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
-                            If x + 1 < Main.Map.GetLength(1) AndAlso Main.Map(Main.Player1.MapLevel, x + 1, y).BlocksVision Then
+                            If x + 1 < CurrentLevelWidth AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x + 1, y).BlocksVision Then
                                 pStartSlope = -GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False)
                             End If
 
@@ -96,7 +98,7 @@ Module FOVRecurse
             Case 3
 
                 x = Location.X + pDepth
-                If x >= Main.Map.GetLength(1) Then
+                If x >= CurrentLevelWidth Then
                     Return
                 End If
 
@@ -109,13 +111,13 @@ Module FOVRecurse
 
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x, y - 1).BlocksVision = False Then
+                            If y - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y - 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x, y - 1).BlocksVision Then
+                            If y - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y - 1).BlocksVision Then
                                 pStartSlope = -GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True)
                             End If
 
@@ -130,26 +132,26 @@ Module FOVRecurse
             Case 4
 
                 x = Location.X + pDepth
-                If x >= Main.Map.GetLength(1) Then
+                If x >= CurrentLevelWidth Then
                     Return
                 End If
 
                 y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Main.Map.GetLength(2) Then
-                    y = Main.Map.GetLength(2) - 1
+                If y >= CurrentLevelHeight Then
+                    y = CurrentLevelHeight - 1
                 End If
 
                 While GetSlope(x, y, Location.X, Location.Y, True) >= pEndSlope
 
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y + 1 < Main.Map.GetLength(2) AndAlso Main.Map(Main.Player1.MapLevel, x, y + 1).BlocksVision = False Then
+                            If y + 1 < CurrentLevelHeight AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y + 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y + 1 < Main.Map.GetLength(2) AndAlso Main.Map(Main.Player1.MapLevel, x, y + 1).BlocksVision Then
+                            If y + 1 < CurrentLevelHeight AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y + 1).BlocksVision Then
                                 pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True)
                             End If
 
@@ -164,25 +166,25 @@ Module FOVRecurse
             Case 5
 
                 y = Location.Y + pDepth
-                If y >= Main.Map.GetLength(2) Then
+                If y >= CurrentLevelHeight Then
                     Return
                 End If
 
                 x = Location.X + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If x >= Main.Map.GetLength(1) Then
-                    x = Main.Map.GetLength(1) - 1
+                If x >= CurrentLevelHeight Then
+                    x = CurrentLevelHeight - 1
                 End If
 
                 While GetSlope(x, y, Location.X, Location.Y, False) >= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x + 1 < Main.Map.GetLength(1) AndAlso Main.Map(Main.Player1.MapLevel, x + 1, y).BlocksVision = False Then
+                            If x + 1 < CurrentLevelWidth AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x + 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
-                            If x + 1 < Main.Map.GetLength(1) AndAlso Main.Map(Main.Player1.MapLevel, x + 1, y).BlocksVision Then
+                            If x + 1 < CurrentLevelWidth AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x + 1, y).BlocksVision Then
                                 pStartSlope = GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, False)
                             End If
 
@@ -197,7 +199,7 @@ Module FOVRecurse
             Case 6
 
                 y = Location.Y + pDepth
-                If y >= Main.Map.GetLength(2) Then
+                If y >= CurrentLevelHeight Then
                     Return
                 End If
 
@@ -209,13 +211,13 @@ Module FOVRecurse
                 While GetSlope(x, y, Location.X, Location.Y, False) <= pEndSlope
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If x - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x - 1, y).BlocksVision = False Then
+                            If x - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x - 1, y).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, False), Location, Range)
                             End If
                         Else
-                            If x - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x - 1, y).BlocksVision Then
+                            If x - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x - 1, y).BlocksVision Then
                                 pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, False)
                             End If
 
@@ -235,21 +237,21 @@ Module FOVRecurse
                 End If
 
                 y = Location.Y + Convert.ToInt32((pStartSlope * Convert.ToDouble(pDepth)))
-                If y >= Main.Map.GetLength(2) Then
-                    y = Main.Map.GetLength(2) - 1
+                If y >= CurrentLevelHeight Then
+                    y = CurrentLevelHeight - 1
                 End If
 
                 While GetSlope(x, y, Location.X, Location.Y, True) <= pEndSlope
 
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y + 1 < Main.Map.GetLength(2) AndAlso Main.Map(Main.Player1.MapLevel, x, y + 1).BlocksVision = False Then
+                            If y + 1 < CurrentLevelHeight AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y + 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y + 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y + 1 < Main.Map.GetLength(2) AndAlso Main.Map(Main.Player1.MapLevel, x, y + 1).BlocksVision Then
+                            If y + 1 < CurrentLevelHeight AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y + 1).BlocksVision Then
                                 pStartSlope = -GetSlope(x - 0.5, y + 0.5, Location.X, Location.Y, True)
                             End If
 
@@ -277,13 +279,13 @@ Module FOVRecurse
 
                     If GetVisDistance(x, y, Location.X, Location.Y) <= visrange2 Then
 
-                        If Main.Map(Main.Player1.MapLevel, x, y).BlocksVision Then
+                        If Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision Then
                             VisiblePoints.Add(New Point(x, y))   ' testing
-                            If y - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x, y - 1).BlocksVision = False Then
+                            If y - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y - 1).BlocksVision = False Then
                                 ScanOctant(pDepth + 1, pOctant, pStartSlope, GetSlope(x + 0.5, y - 0.5, Location.X, Location.Y, True), Location, Range)
                             End If
                         Else
-                            If y - 1 >= 0 AndAlso Main.Map(Main.Player1.MapLevel, x, y - 1).BlocksVision Then
+                            If y - 1 >= 0 AndAlso Main.Map.TileGet(Main.Player1.MapLevel, x, y - 1).BlocksVision Then
                                 pStartSlope = GetSlope(x - 0.5, y - 0.5, Location.X, Location.Y, True)
                             End If
 
@@ -299,17 +301,17 @@ Module FOVRecurse
 
         If x < 0 Then
             x = 0
-        ElseIf x >= Main.Map.GetLength(1) Then
-            x = Main.Map.GetLength(1) - 1
+        ElseIf x >= CurrentLevelWidth Then
+            x = CurrentLevelWidth - 1
         End If
 
         If y < 0 Then
             y = 0
-        ElseIf y >= Main.Map.GetLength(2) Then
-            y = Main.Map.GetLength(2) - 1
+        ElseIf y >= CurrentLevelHeight Then
+            y = CurrentLevelHeight - 1
         End If
 
-        If pDepth < Range And Main.Map(Main.Player1.MapLevel, x, y).BlocksVision = False Then
+        If pDepth < Range And Main.Map.TileGet(Main.Player1.MapLevel, x, y).BlocksVision = False Then
             ScanOctant(pDepth + 1, pOctant, pStartSlope, pEndSlope, Location, Range)
         End If
 

@@ -26,5 +26,5 @@
 
     Public Const WALLS As String = "C:\Users\Duane\Documents\dawnlike\Objects\wall.png"
     Public Const DOORS As String = "C:\Users\Duane\Documents\dawnlike\Objects\door0.png"
-
+    Public Const PLAYERS As String = "C:\dawnlike\Characters\player0.png"
 End Module

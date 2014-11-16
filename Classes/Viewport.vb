@@ -23,15 +23,18 @@
 
     Public Sub Scroll()
 
+        Dim CurrentLevelWidth As Integer = Main.Map.DimensionsGet.Width
+        Dim CurrentLevelHeight As Integer = Main.Map.DimensionsGet.Height
+
         If Main.Player1.Location.X >= Me.Origin.X + Me.Dimensions.Width - Me.ScrollBuffer.X Then
             Debug.WriteLine("right scroll border hit")
 
-            If Me.Origin.X < Main.Map.GetLength(1) - Me.Dimensions.Width Then
+            If Me.Origin.X < Main.Map.DimensionsGet.Width - Me.Dimensions.Width Then
                 ' If we are too close to the right edge of the map to scroll fully, then scroll just enough
                 Dim NewOriginLeft As Integer = Me.Origin.X + (Me.Dimensions.Width / 2)
 
-                If Main.Map.GetLength(1) - NewOriginLeft < Me.Dimensions.Width Then
-                    Me.Origin.X = (Main.Map.GetLength(1) - (Me.Dimensions.Width) + 1)
+                If CurrentLevelWidth - NewOriginLeft < Me.Dimensions.Width Then
+                    Me.Origin.X = CurrentLevelWidth - Me.Dimensions.Width + 1
                 Else
                     Me.Origin.X = (Me.Origin.X + (Me.Dimensions.Width / 2))
                 End If
@@ -58,11 +61,11 @@
         ElseIf Main.Player1.Location.Y >= Me.Origin.Y + Me.Dimensions.Height - 1 - Me.ScrollBuffer.Y Then
             Debug.WriteLine("bottom scroll border hit")
 
-            If Me.Origin.Y < Main.Map.GetLength(2) - Me.Dimensions.Height Then
+            If Me.Origin.Y < CurrentLevelHeight - Me.Dimensions.Height Then
                 ' If we are too close to the bottom edge of the map to scroll fully, then scroll just enough
                 Dim NewOriginTop As Integer = Me.Origin.Y + (Me.Dimensions.Height / 2)
-                If Main.Map.GetLength(2) - NewOriginTop < Me.Dimensions.Height Then
-                    Me.Origin.Y = (Main.Map.GetLength(2) - Me.Dimensions.Height + 1)
+                If CurrentLevelHeight - NewOriginTop < Me.Dimensions.Height Then
+                    Me.Origin.Y = CurrentLevelHeight - Me.Dimensions.Height + 1
                 Else
                     Me.Origin.Y = (Me.Origin.Y + (Me.Dimensions.Height / 2))
                 End If
@@ -93,21 +96,22 @@
         ' Light the cells that are visible as a result of the player move
         Dim NewlyVisibleCells As List(Of Point) = VisibleCellsGet(Main.Player1.Location, Main.Player1.AttributeGet(CreatureAttribute.AttributeId.VisualRange))
         For Each p As Point In NewlyVisibleCells
-            Console.SetCursorPosition(p.X - Me.Origin.X, p.Y - Me.Origin.Y)
-            Main.Map(Main.Player1.MapLevel, p.X, p.Y).IsRevealed = True
-            Main.Map(Main.Player1.MapLevel, p.X, p.Y).IsVisible = True
-            MapTile.Render(p)
+            'Console.SetCursorPosition(p.X - Me.Origin.X, p.Y - Me.Origin.Y)
+            Main.Map.TileGet(Main.Player1.MapLevel, p.X, p.Y).IsRevealed = True
+            Main.Map.TileGet(Main.Player1.MapLevel, p.X, p.Y).IsVisible = True
         Next
+        Main.Map.TileGet(Main.Player1.MapLevel, Main.Player1.Location.X, Main.Player1.Location.Y).IsRevealed = True
+        Main.Map.TileGet(Main.Player1.MapLevel, Main.Player1.Location.X, Main.Player1.Location.Y).IsVisible = True
 
         ' dim the cells that are no longer visible as a result of the player move
         For Each p As Point In Main.Player1.VisibleCells
             If Not NewlyVisibleCells.Contains(p) Then
-                Main.Map(Main.Player1.MapLevel, p.X, p.Y).IsVisible = False
-                Console.SetCursorPosition(p.X - Me.Origin.X, p.Y - Me.Origin.Y)
-                MapTile.Render(p)
+                Main.Map.TileGet(Main.Player1.MapLevel, p.X, p.Y).IsVisible = False
+                'Console.SetCursorPosition(p.X - Me.Origin.X, p.Y - Me.Origin.Y)
             End If
         Next
 
+        Main.Refresh()
         Main.Player1.VisibleCells = NewlyVisibleCells
     End Sub
 
@@ -124,7 +128,7 @@
                 If VisibleCells.Contains(m.Location) Then
                     m.Draw()
                 Else
-                    MapTile.Render(m.Location)
+                    'MapTile.Render(m.Location)
                 End If
             End If
         Next
@@ -143,7 +147,7 @@
                 If VisibleCells.Contains(a.Location) Then
                     a.Draw()
                 Else
-                    MapTile.Render(a.Location)
+                    'MapTile.Render(a.Location)
                 End If
             End If
         Next

@@ -20,9 +20,9 @@
     Public Overrides Sub Draw()
         'MyBase.Draw()
 
-        Console.SetCursorPosition(Main.Player1.Location.X - Main.vp.Origin.X, Main.Player1.Location.Y - Main.vp.Origin.Y)
-        Console.ForegroundColor = ConsoleColor.White
-        Console.Write("@")
+        'Console.SetCursorPosition(Main.Player1.Location.X - Main.vp.Origin.X, Main.Player1.Location.Y - Main.vp.Origin.Y)
+        'Console.ForegroundColor = ConsoleColor.White
+        'Console.Write("@")
     End Sub
 
     Public Sub PreMoveProcess(ToLocation As Point)
@@ -43,7 +43,7 @@
         End If
 
         ' If there's a wall, humiliate the player
-        If MapTile.GetTile(ToLocation).TileType = MapTile.MapTileType.Wall Then
+        If Main.Map.TileGet(Me.MapLevel, ToLocation.X, ToLocation.Y).TileType = MapTile.MapTileType.Wall Then
             Main.MessageWrite("You bump your head.")
             Exit Sub
         End If
