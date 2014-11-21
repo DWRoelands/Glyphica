@@ -4,11 +4,12 @@
     Public vp As Viewport
     Public Creatures As List(Of CreatureBase)
     Public Items As List(Of ItemBase)
+    Public Map(,,) As MapTile
     Public Bitmaps As Hashtable
-    Public Map As MapManager
 
     Private Sub Main_Load(sender As Object, e As EventArgs) Handles Me.Load
         BitmapsLoad()
+        MapLoad()
         Initialize()
     End Sub
 
@@ -17,10 +18,9 @@
         'configure the form
         Me.WindowState = FormWindowState.Maximized
 
-        Map = New MapManager
-        Map.Load()
         Creatures = New List(Of CreatureBase)
         Items = New List(Of ItemBase)
+        Bitmaps = New Hashtable
         Player1 = New Player
 
         With Player1
@@ -40,7 +40,50 @@
         vp.VisibleCellsProcess()
         'vp.CreaturesDraw()
         'vp.ItemsDraw()
-        Player1.Draw()
+        'Player1.Draw()
+
+    End Sub
+
+    Private Sub MapLoad()
+
+        ' this is temporary code which loads a text file map into the integer-based array which is the live map
+        Dim MapLocation As String
+        If System.IO.Directory.Exists(TESTMAPLOCATION1) Then
+            MapLocation = TESTMAPLOCATION1
+        Else
+            MapLocation = TESTMAPLOCATION2
+        End If
+
+
+        Dim MapLines As New List(Of String)
+        Using sr As New System.IO.StreamReader(MapLocation & "testmap3.txt")
+            Dim line As String = sr.ReadLine
+            Do While line IsNot Nothing
+                MapLines.Add(line)
+                line = sr.ReadLine
+            Loop
+        End Using
+
+        ReDim Me.Map(Player1.MapLevel, MapLines(0).Length - 1, MapLines.Count - 1)
+
+        Dim y As Integer = 0
+        For Each MapLine As String In MapLines
+            For x As Integer = 0 To MapLine.Length - 1
+                Select Case MapLine.Substring(x, 1)
+                    Case " "
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Empty)
+                    Case "#"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Wall)
+                    Case ">"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsDown)
+                    Case "<"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.StairsUp)
+                    Case "D"
+                        Map(Player1.MapLevel, x, y) = New MapTile(MapTile.MapTileType.Door)
+                End Select
+            Next
+            y += 1
+        Next
 
     End Sub
 
@@ -65,33 +108,19 @@
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
         MyBase.OnPaint(e)
 
-        ' Draw visible tiles
         Dim DrawingX As Integer = DrawingOriginGet.X
+        Dim DrawingY As Integer = DrawingOriginGet.Y
+
         For x As Integer = vp.Origin.X To vp.Origin.X + vp.Dimensions.Width - 1
-            Dim DrawingY As Integer = DrawingOriginGet.Y
             For y As Integer = vp.Origin.Y To vp.Origin.Y + vp.Dimensions.Height - 2
-                If Me.Map.TileGet(Player1.MapLevel, x, y).IsRevealed Then
-                    Debug.WriteLine(MapTile.BitmapIdGet(x, y) & ", " & DrawingX & ", " & DrawingY)
+                If Map(Player1.MapLevel, x, y).IsRevealed Then
                     e.Graphics.DrawImage(CType(Bitmaps(MapTile.BitmapIdGet(x, y)), Bitmap), DrawingX, DrawingY, SPRITESIZE, SPRITESIZE)
-                Else
-                    e.Graphics.DrawImage(CType(Bitmaps(MapTile.BitmapId.Empty), Bitmap), DrawingX, DrawingY, SPRITESIZE, SPRITESIZE)
                 End If
-                DrawingY += SPRITESIZE - 1
             Next
-            DrawingX += SPRITESIZE - 1
         Next
 
-        'draw the player
-        Dim PlayerX = (Me.Player1.Location.X - Me.vp.Origin.X) * (SPRITESIZE - 1)
-        Dim PlayerY = (Me.Player1.Location.Y - Me.vp.Origin.Y) * (SPRITESIZE - 1)
-        e.Graphics.DrawImage(CType(Bitmaps(MapTile.BitmapId.Player), Bitmap), PlayerX, PlayerY, SPRITESIZE, SPRITESIZE)
-
-
-
-
-
-
-        'Console.SetCursorPosition(Main.Player1.Location.X - Main.vp.Origin.X, Main.Player1.Location.Y - Main.vp.Origin.Y)
+        Dim b As Bitmap = CType(Bitmaps(MapTile.BitmapId.WallVertical), Bitmap)
+        e.Graphics.DrawImage(b, 200, 200, SPRITESIZE, SPRITESIZE)
 
 
 
@@ -109,15 +138,14 @@
             Bitmaps.Add(MapTile.BitmapId.Empty, bmp)
         End Using
 
-        Bitmaps.Add(MapTile.BitmapId.WallUpperLeft, SpriteGet(WALLS, 0, 12))
-        Bitmaps.Add(MapTile.BitmapId.WallVertical, SpriteGet(WALLS, 0, 13))
-        Bitmaps.Add(MapTile.BitmapId.WallLowerLeft, SpriteGet(WALLS, 0, 14))
-        Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(WALLS, 1, 12))
+        Bitmaps.Add(MapTile.BitmapId.WallUpperLeft, SpriteGet(WALLS, 0, 9))
+        Bitmaps.Add(MapTile.BitmapId.WallVertical, SpriteGet(WALLS, 0, 10))
+        Bitmaps.Add(MapTile.BitmapId.WallLowerLeft, SpriteGet(WALLS, 0, 11))
+        Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(WALLS, 1, 9))
         Bitmaps.Add(MapTile.BitmapId.WallUpperRight, SpriteGet(WALLS, 2, 9))
         Bitmaps.Add(MapTile.BitmapId.WallLowerRight, SpriteGet(WALLS, 2, 11))
-        Bitmaps.Add(MapTile.BitmapId.Floor, SpriteGet(WALLS, 3, 12))
+        Bitmaps.Add(MapTile.BitmapId.Floor, SpriteGet(WALLS, 3, 3))
         Bitmaps.Add(MapTile.BitmapId.Door, SpriteGet(DOORS, 0, 0))
-        Bitmaps.Add(MapTile.BitmapId.Player, SpriteGet(PLAYERS, 1, 1))
 
     End Sub
 
