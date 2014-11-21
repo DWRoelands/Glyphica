@@ -61,7 +61,7 @@
 
     Public Shared Function Find(Location As Point) As CreatureBase
         Dim ReturnValue As CreatureBase = Nothing
-        For Each c As CreatureBase In Main.Creatures
+        For Each c As CreatureBase In Creatures
             If c.Location.X = Location.X AndAlso c.Location.Y = Location.Y Then
                 ReturnValue = c
                 Exit For
@@ -74,7 +74,7 @@
 
         Dim ReturnValue As CreatureBase = Nothing
         Dim ClosestDistance As Decimal = 0
-        For Each c As CreatureBase In Main.Creatures
+        For Each c As CreatureBase In Creatures
             If ReturnValue Is Nothing Then
                 ReturnValue = c
             Else
@@ -87,9 +87,9 @@
         Next
 
         ' If the specified location isn't the player's location, then this method is being called by a monster looking for a target
-        If Main.Player1.Location <> Me.Location Then
-            If DistanceGet(Me.Location, Main.Player1.Location) < DistanceGet(Me.Location, ReturnValue.Location) Then
-                ReturnValue = Main.Player1
+        If Player1.Location <> Me.Location Then
+            If DistanceGet(Me.Location, Player1.Location) < DistanceGet(Me.Location, ReturnValue.Location) Then
+                ReturnValue = Player1
             End If
         End If
 
@@ -98,8 +98,8 @@
     End Function
 
     Public Shared Sub Kill(DeadCreature As CreatureBase)
-        Main.Items.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
-        Main.Creatures.Remove(DeadCreature)
+        Items.Add(New Corpse(DeadCreature.MapLevel, DeadCreature.Location, DeadCreature.Name))
+        Creatures.Remove(DeadCreature)
     End Sub
 
     Public Sub Pickup(Item As ItemBase)
