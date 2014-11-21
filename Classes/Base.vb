@@ -19,7 +19,7 @@
         Console.Write(Me.DisplayCharacter)
 
         If Not Me.HasBeenSeen Then
-            Main.MessageWrite(String.Format("There is {0} {1} here.", IIf("AEIOU".Contains(Me.Name.Substring(1, 1).ToUpper), "an", "a"), Me.Name))
+            Viewport.MessageWrite(String.Format("There is {0} {1} here.", IIf("AEIOU".Contains(Me.Name.Substring(1, 1).ToUpper), "an", "a"), Me.Name))
             Me.HasBeenSeen = True
         End If
 
