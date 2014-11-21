@@ -109,22 +109,22 @@
             Bitmaps.Add(MapTile.BitmapId.Empty, bmp)
         End Using
 
-        Bitmaps.Add(MapTile.BitmapId.WallUpperLeft, SpriteGet(My.Resources.Wall, 0, 12))
-        Bitmaps.Add(MapTile.BitmapId.WallVertical, SpriteGet(My.Resources.Wall, 0, 13))
-        Bitmaps.Add(MapTile.BitmapId.WallLowerLeft, SpriteGet(My.Resources.Wall, 0, 14))
-        Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(My.Resources.Wall, 1, 12))
-        Bitmaps.Add(MapTile.BitmapId.WallUpperRight, SpriteGet(My.Resources.Wall, 2, 9))
-        Bitmaps.Add(MapTile.BitmapId.WallLowerRight, SpriteGet(My.Resources.Wall, 2, 11))
-        Bitmaps.Add(MapTile.BitmapId.Floor, SpriteGet(My.Resources.Wall, 3, 12))
-        Bitmaps.Add(MapTile.BitmapId.Door, SpriteGet(My.Resources.Door0, 0, 0))
-        Bitmaps.Add(MapTile.BitmapId.Player, SpriteGet(My.Resources.Player0, 1, 1))
+        Bitmaps.Add(MapTile.BitmapId.WallUpperLeft, SpriteGet(WALLS, 0, 12))
+        Bitmaps.Add(MapTile.BitmapId.WallVertical, SpriteGet(WALLS, 0, 13))
+        Bitmaps.Add(MapTile.BitmapId.WallLowerLeft, SpriteGet(WALLS, 0, 14))
+        Bitmaps.Add(MapTile.BitmapId.WallHorizontal, SpriteGet(WALLS, 1, 12))
+        Bitmaps.Add(MapTile.BitmapId.WallUpperRight, SpriteGet(WALLS, 2, 9))
+        Bitmaps.Add(MapTile.BitmapId.WallLowerRight, SpriteGet(WALLS, 2, 11))
+        Bitmaps.Add(MapTile.BitmapId.Floor, SpriteGet(WALLS, 3, 12))
+        Bitmaps.Add(MapTile.BitmapId.Door, SpriteGet(DOORS, 0, 0))
+        Bitmaps.Add(MapTile.BitmapId.Player, SpriteGet(PLAYERS, 1, 1))
 
     End Sub
 
-    Private Function SpriteGet(Source As Bitmap, x As Integer, y As Integer) As Bitmap
+    Private Function SpriteGet(Filename As String, x As Integer, y As Integer) As Bitmap
         Dim bmp As New Bitmap(16, 16)
         Dim g As Graphics = Graphics.FromImage(bmp)
-        g.DrawImage(Source, 0, 0, New Rectangle(New Point(x * 16, y * 16), New Size(16, 16)), GraphicsUnit.Pixel)
+        g.DrawImage(New Bitmap(Filename), 0, 0, New Rectangle(New Point(x * 16, y * 16), New Size(16, 16)), GraphicsUnit.Pixel)
         Return bmp
     End Function
 
