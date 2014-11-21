@@ -128,38 +128,4 @@
         Return bmp
     End Function
 
-    Protected Overrides Function ProcessCmdKey(ByRef msg As Windows.Forms.Message, keyData As Keys) As Boolean
-
-        Select Case keyData
-            Case Keys.Up, Keys.NumPad8
-                Me.Player1.MoveProcess(New Point(Player1.Location.X, Player1.Location.Y - 1))
-
-            Case Keys.Down, Keys.NumPad2
-                Me.Player1.MoveProcess(New Point(Player1.Location.X, Player1.Location.Y + 1))
-
-            Case Keys.Left, Keys.NumPad4
-                Me.Player1.MoveProcess(New Point(Player1.Location.X - 1, Player1.Location.Y))
-
-            Case Keys.Right, Keys.NumPad6
-                Me.Player1.MoveProcess(New Point(Player1.Location.X + 1, Player1.Location.Y))
-
-            Case Keys.NumPad7
-                Me.Player1.MoveProcess(New Point(Player1.Location.X - 1, Player1.Location.Y - 1))
-
-            Case Keys.NumPad9
-                Me.Player1.MoveProcess(New Point(Player1.Location.X + 1, Player1.Location.Y - 1))
-
-            Case Keys.NumPad1
-                Me.Player1.MoveProcess(New Point(Player1.Location.X - 1, Player1.Location.Y + 1))
-
-            Case Keys.NumPad3
-                Me.Player1.MoveProcess(New Point(Player1.Location.X + 1, Player1.Location.Y + 1))
-
-        End Select
-
-
-        Return MyBase.ProcessCmdKey(msg, keyData)
-    End Function
-
-
 End Class
