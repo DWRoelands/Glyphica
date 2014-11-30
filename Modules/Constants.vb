@@ -19,7 +19,7 @@
 #End Region
 
 #Region "map file locations"
-    Public Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Map Files\"
+    Public Const TESTMAPLOCATION1 As String = "C:\Users\duane\Documents\GitHub\Glyphica\Glyphica\Map Files\"
     Public Const TESTMAPLOCATION2 As String = "C:\Users\droelands\Documents\GitHub\Glyphica\Map Files\"
 #End Region
 

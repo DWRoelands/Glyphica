@@ -27,6 +27,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>Glyphica.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -151,6 +152,7 @@
     <Compile Include="Classes\Items\ItemBase.vb" />
     <Compile Include="Classes\Base.vb" />
     <Compile Include="Classes\Items\Corpse.vb" />
+    <Compile Include="Spells\SpellBase.vb" />
     <Compile Include="Viewport.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +178,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Creatures.xml" />
     <Content Include="Map Files\testmap2.txt" />
     <Content Include="Map Files\testmap3.txt" />
   </ItemGroup>

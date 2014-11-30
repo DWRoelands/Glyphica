@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<creatures>
+  <creature name="kobold">
+    <attributes>
+      <description>A short reptilian humanoid with dark rusty brown skin and a tail.</description>
+      <visualrange>8</visualrange>
+      <hitpoints_base>1d8</hitpoints_base>
+      <armorclass>15</armorclass>
+      <savefortitude>2</savefortitude>
+      <savereflex>1</savereflex>
+      <savewill>-1</savewill>
+      <strength>9</strength>
+      <dexterity>13</dexterity>
+      <constitution>10</constitution>
+      <intelligence>10</intelligence>
+      <wisdom>9</wisdom>
+      <charisma>8</charisma>
+      <challengerating>.25</challengerating>
+      <damagedice>1d6-1</damagedice>
+      <damagetype>melee</damagetype>
+      <initiative>10</initiative>
+    </attributes>
+    <messages>
+      <hitsyou>The kobold hits you with its spear for {0} damage.</hitsyou>
+      <youhit>You {0} the kobold with you {1} for {2} damage.</youhit>
+      <dies>The kobold hisses at you hatefully as it dies.</dies>
+      <save>The kobold resisted your {0}.</save>
+    </messages>
+  </creature>
+</creatures>
