@@ -181,6 +181,7 @@
     <Content Include="Creatures.xml" />
     <Content Include="Map Files\testmap2.txt" />
     <Content Include="Map Files\testmap3.txt" />
+    <Content Include="weapons.xml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

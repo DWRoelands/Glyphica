@@ -4,17 +4,11 @@
     <attributes>
       <description>A short reptilian humanoid with dark rusty brown skin and a tail.</description>
       <visualrange>8</visualrange>
+      <power>9</power>
+      <spirit>10</spirit>
+      <finesse>13</finesse>
       <hitpoints_base>1d8</hitpoints_base>
       <armorclass>15</armorclass>
-      <savefortitude>2</savefortitude>
-      <savereflex>1</savereflex>
-      <savewill>-1</savewill>
-      <strength>9</strength>
-      <dexterity>13</dexterity>
-      <constitution>10</constitution>
-      <intelligence>10</intelligence>
-      <wisdom>9</wisdom>
-      <charisma>8</charisma>
       <challengerating>.25</challengerating>
       <damagedice>1d6-1</damagedice>
       <damagetype>melee</damagetype>
