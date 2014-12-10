@@ -49,10 +49,6 @@
         Player1.MapLevel = 0
         Player1.Name = "Duane"
 
-        Dim a As New ArmorBandedMail
-        Player1.Pickup(a)
-        Player1.Equip(a)
-
         ViewportSize = New Size(Console.WindowWidth, Console.WindowHeight - STATUSAREAHEIGHT)
         ViewportOrigin = New Point(0, 0)     ' The upper-left coordinate of the rectangular section of the map displayed in the viewport
         Viewport.BorderDraw()
@@ -112,7 +108,7 @@
 
                 Case ConsoleKey.S  ' shoot ranged weapon
 
-                    If Player1.EquippedWeapon IsNot Nothing AndAlso Player1.EquippedWeapon.Tier = WeaponBase.WeaponType.Ranged Then
+                    If Player1.EquippedWeapon IsNot Nothing AndAlso Player1.EquippedWeapon.IsRanged Then
                         If Player1.EquippedAmmunition IsNot Nothing AndAlso Player1.EquippedAmmunition.Type = Player1.EquippedWeapon.AmmunitionType Then
                             If KeyPress.Modifiers And ConsoleModifiers.Shift Then
                                 ' allow player to choose target

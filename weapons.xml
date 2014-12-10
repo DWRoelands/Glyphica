@@ -85,4 +85,16 @@
     <value>0</value>
     <weight>4</weight>
   </weapon>
+  <weapon name="Medium Heavy Crossbow">
+    <damage type="ranged">1d8</damage>
+    <value>50</value>
+    <weight>8</weight>
+    <ammunitiontype>crossbow bolt</ammunitiontype>
+  </weapon>
+  <weapon name="Small Heavy Crossbow">
+    <damage type="ranged">1d8</damage>
+    <value>50</value>
+    <weight>8</weight>
+    <ammunitiontype>crossbow bolt</ammunitiontype>
+  </weapon>
 </weapons>
